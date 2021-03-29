@@ -1,4 +1,4 @@
-package com.hcmus.clc18.buggynote
+package com.hcmus.clc18se.buggynote
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.hcmus.clc18.buggynote", appContext.packageName)
+        assertEquals("com.hcmus.clc18se.buggynote", appContext.packageName)
     }
 }

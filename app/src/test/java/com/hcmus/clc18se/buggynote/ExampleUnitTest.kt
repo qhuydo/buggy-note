@@ -1,4 +1,4 @@
-package com.hcmus.clc18.buggynote
+package com.hcmus.clc18se.buggynote
 
 import org.junit.Test
 

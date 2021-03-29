@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.hcmus.clc18.buggynote.fragments.HomeFragment"
+        android:name="com.hcmus.clc18se.buggynote.fragments.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.hcmus.clc18.buggynote.fragments.GalleryFragment"
+        android:name="com.hcmus.clc18se.buggynote.fragments.GalleryFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />
 </navigation>
