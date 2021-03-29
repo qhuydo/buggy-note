@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="@android:string/search_go"
+        android:id="@+id/search"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:visible="true"
+        app:showAsAction="always"/>
+
+    <item
+        android:title="@string/item_view"
+        android:id="@+id/note_list_item_view_type"
+        android:icon="@drawable/ic_baseline_list_alt_24"
+        android:titleCondensed="View"
+        android:visible="true"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
 </menu>

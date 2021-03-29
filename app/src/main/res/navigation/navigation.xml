@@ -2,18 +2,18 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    android:id="@+id/navigation"
+    app:startDestination="@+id/nav_notes">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.hcmus.clc18se.buggynote.fragments.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_notes"
+        android:name="com.hcmus.clc18se.buggynote.fragments.NotesFragment"
+        android:label="@string/menu_notes"
+        tools:layout="@layout/fragment_notes" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.hcmus.clc18se.buggynote.fragments.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_tags"
+        android:name="com.hcmus.clc18se.buggynote.fragments.TagsFragment"
+        android:label="@string/menu_tags"
+        tools:layout="@layout/fragment_tags" />
 </navigation>
