@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    kapt "androidx.room:room-compiler:$roomVersion"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.core:core-ktx:$rootProject.ktxVersion"
