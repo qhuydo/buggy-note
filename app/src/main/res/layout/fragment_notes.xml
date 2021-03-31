@@ -3,32 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="noteViewModel"
+            type="com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel" />
+    </data>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".fragments.NotesFragment">
 
-        <include layout="@layout/app_bar_main"
-            android:id="@+id/app_bar"/>
+        <include
+            android:id="@+id/app_bar"
+            layout="@layout/app_bar_main" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <TextView
-                android:id="@+id/text_home"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/note_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/item_note_margin"
+                android:layout_marginVertical="@dimen/item_note_margin"
+                app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                app:loadNotes="@{noteViewModel.noteList}"
+                app:spanCount="2"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_note_in_list" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
