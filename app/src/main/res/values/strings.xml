@@ -10,4 +10,7 @@
     <string name="menu_notes">Notes</string>
     <string name="menu_tags">Tags</string>
     <string name="item_view">Item view</string>
+    <string name="title">Title</string>
+    <string name="content">Content</string>
+    <string name="save">Save</string>
 </resources>
