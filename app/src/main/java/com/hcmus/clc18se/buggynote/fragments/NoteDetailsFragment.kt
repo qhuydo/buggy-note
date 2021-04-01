@@ -1,7 +1,9 @@
 package com.hcmus.clc18se.buggynote.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -24,15 +26,15 @@ class NoteDetailsFragment : Fragment() {
 
     private val viewModel: NoteDetailsViewModel by viewModels {
         NoteDetailsViewModelFactory(
-            arguments.noteId,
-            BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao
+                arguments.noteId,
+                BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao
         )
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         binding = FragmentNoteDetailsBinding.inflate(inflater, container, false)
 
@@ -40,6 +42,7 @@ class NoteDetailsFragment : Fragment() {
             lifecycleOwner = this@NoteDetailsFragment
             noteDetailsViewModel = viewModel
         }
+
 
         return binding.root
     }
@@ -55,8 +58,8 @@ class NoteDetailsFragment : Fragment() {
 
         parentActivity.setSupportActionBar(toolbar)
         parentActivity.setupActionBarWithNavController(
-            findNavController(),
-            parentActivity.appBarConfiguration
+                findNavController(),
+                parentActivity.appBarConfiguration
         )
     }
 }

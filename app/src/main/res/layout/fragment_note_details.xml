@@ -18,8 +18,7 @@
 
         <include
             android:id="@+id/app_bar"
-            layout="@layout/app_bar_main"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            layout="@layout/app_bar_main" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -28,10 +27,11 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
                 android:layout_marginBottom="16dp">
 
+                <!--    TODO: extract some attribute in MaterialEditText & EditText into styles-->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/title_layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -39,18 +39,22 @@
                     android:layout_height="wrap_content"
                     app:boxStrokeWidth="0dp"
                     app:boxStrokeWidthFocused="1dp"
+                    app:hintEnabled="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:placeholderText="@string/title">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/title"
                         style="?textAppearanceHeadline4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:autofillHints=""
                         android:gravity="start|top"
-                        android:inputType="textLongMessage|textMultiLine"
+                        android:hint="@string/title"
+                        android:inputType="textMultiLine"
+                        android:labelFor="@id/title_layout"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.title}"
                         android:textColor="@color/black"
                         tools:text="Title" />
@@ -61,6 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="12dp"
+                    android:layout_marginVertical="8dp"
                     android:textAppearance="?textAppearanceCaption"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -68,27 +73,32 @@
                     app:timeStampFromLong="@{noteDetailsViewModel.noteWithTags.note.lastModify}"
                     tools:text="@tools:sample/date/ddmmyy" />
 
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/content_layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     app:boxStrokeWidth="0dp"
                     app:boxStrokeWidthFocused="1dp"
+                    app:hintEnabled="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/time_stamp"
                     app:placeholderText="@string/content">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/note_content"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:autofillHints=""
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:gravity="top|start"
-                        android:inputType="textLongMessage|textMultiLine"
+                        android:hint="@string/content"
+                        android:inputType="textMultiLine"
+                        android:labelFor="@id/content_layout"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.noteContent}"
                         tools:text="@tools:sample/lorem/random" />
 
