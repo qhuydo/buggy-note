@@ -9,11 +9,15 @@ import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.databinding.ItemNoteInListBinding
 import com.hcmus.clc18se.buggynote.utils.convertLongToDateString
 
-class NoteAdapter : ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
+class NoteAdapter(private val onClickListener: OnClickListener = OnClickListener {}) :
+    ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val noteWithTags = getItem(position)
         holder.bind(noteWithTags)
+        holder.itemView.setOnClickListener {
+            onClickListener.onClick(noteWithTags)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,11 +41,15 @@ class NoteAdapter : ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTa
 
         companion object {
             fun from(
-                    parent: ViewGroup
+                parent: ViewGroup
             ): ViewHolder {
                 return ViewHolder(ItemNoteInListBinding.inflate(LayoutInflater.from(parent.context)))
             }
         }
 
     }
+}
+
+class OnClickListener(private val clickListener: (note: NoteWithTags) -> Unit) {
+    fun onClick(note: NoteWithTags) = clickListener(note)
 }

@@ -8,8 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
-import com.hcmus.clc18se.buggynote.R
-import com.hcmus.clc18se.buggynote.databinding.FragmentNotesBinding
 import com.hcmus.clc18se.buggynote.databinding.FragmentTagsBinding
 
 class TagsFragment : Fragment() {
@@ -20,7 +18,7 @@ class TagsFragment : Fragment() {
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentTagsBinding.inflate(inflater, container, false)
 
         return binding.root

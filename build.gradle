@@ -20,13 +20,15 @@ buildscript {
         testExtJunit = '1.1.2'
         uiAutomatorVersion = '2.2.0'
         kotlin_version = '1.4.30'
+        gradleVersion = '4.1.2'
+        dataBindingCompilerVersion = gradleVersion // Always need to be the same.
     }
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.2"
+        classpath "com.android.tools.build:gradle:$gradleVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
 

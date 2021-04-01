@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_nav_notes_to_addNoteFragment"
             app:destination="@id/nav_add_note" />
+        <action
+            android:id="@+id/action_nav_notes_to_noteDetailsFragment"
+            app:destination="@id/nav_note_details" />
     </fragment>
 
     <fragment
@@ -26,4 +29,13 @@
         android:name="com.hcmus.clc18se.buggynote.fragments.AddNoteFragment"
         android:label="AddNoteFragment"
         tools:layout="@layout/fragment_add_note" />
+    <fragment
+        android:id="@+id/nav_note_details"
+        android:name="com.hcmus.clc18se.buggynote.fragments.NoteDetailsFragment"
+        android:label="NoteDetailsFragment"
+        tools:layout="@layout/fragment_note_details">
+        <argument
+            android:name="noteId"
+            app:argType="long" />
+    </fragment>
 </navigation>

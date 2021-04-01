@@ -9,6 +9,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.NoteAdapter
+import com.hcmus.clc18se.buggynote.adapters.OnClickListener
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentNotesBinding
 import com.hcmus.clc18se.buggynote.utils.SpaceItemDecoration
@@ -19,24 +20,29 @@ class NotesFragment : Fragment() {
 
     private lateinit var binding: FragmentNotesBinding
 
-    private val viewModel: NoteViewModel by activityViewModels() {
+    private val viewModel: NoteViewModel by activityViewModels {
         NoteViewModelFactory(
-                requireActivity().application,
-                BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao
+            requireActivity().application,
+            BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao
         )
     }
 
     private val adapter by lazy {
-        NoteAdapter()
+        NoteAdapter(onNoteItemClickListener)
+    }
+
+    private val onNoteItemClickListener = OnClickListener { noteWithTags ->
+        viewModel.navigateToNoteDetails(noteWithTags.note.id)
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentNotesBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
+
         binding.fab.setOnClickListener {
             findNavController().navigate(
                     NotesFragmentDirections.actionNavNotesToAddNoteFragment()
@@ -47,13 +53,26 @@ class NotesFragment : Fragment() {
             lifecycleOwner = this@NotesFragment
             noteViewModel = viewModel
             noteList.adapter = adapter
-            noteList.addItemDecoration(SpaceItemDecoration(
-                    resources.getDimension(R.dimen.item_note_margin).toInt()))
+            noteList.addItemDecoration(
+                SpaceItemDecoration(
+                    resources.getDimension(R.dimen.item_note_margin).toInt()
+                )
+            )
         }
 
 
         viewModel.noteList.observe(viewLifecycleOwner) {
             adapter.notifyDataSetChanged()
+        }
+
+        viewModel.navigateToNoteDetails.observe(viewLifecycleOwner) {
+            if (it != null) {
+
+                findNavController().navigate(
+                    NotesFragmentDirections.actionNavNotesToNoteDetailsFragment(it)
+                )
+                viewModel.doneNavigatingToNoteDetails()
+            }
         }
 
         return binding.root
@@ -74,6 +93,9 @@ class NotesFragment : Fragment() {
         val parentActivity: BuggyNoteActivity = requireActivity() as BuggyNoteActivity
 
         parentActivity.setSupportActionBar(toolbar)
-        parentActivity.setupActionBarWithNavController(findNavController(), parentActivity.appBarConfiguration)
+        parentActivity.setupActionBarWithNavController(
+            findNavController(),
+            parentActivity.appBarConfiguration
+        )
     }
 }
