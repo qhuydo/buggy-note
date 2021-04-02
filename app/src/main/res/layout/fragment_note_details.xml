@@ -13,6 +13,7 @@
 
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -21,15 +22,18 @@
             layout="@layout/app_bar_main" />
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginHorizontal="8dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <!--    TODO: extract some attribute in MaterialEditText & EditText into styles-->
                 <com.google.android.material.textfield.TextInputLayout
@@ -42,11 +46,10 @@
                     app:hintEnabled="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:placeholderText="@string/title">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <EditText
-                        android:id="@+id/title"
+                        android:id="@+id/text_view_title"
                         style="?textAppearanceHeadline4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -64,8 +67,8 @@
                     android:id="@+id/time_stamp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="12dp"
-                    android:layout_marginVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="4dp"
                     android:textAppearance="?textAppearanceCaption"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -84,8 +87,7 @@
                     app:hintEnabled="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/time_stamp"
-                    app:placeholderText="@string/content">
+                    app:layout_constraintTop_toBottomOf="@id/time_stamp">
 
                     <EditText
                         android:id="@+id/note_content"

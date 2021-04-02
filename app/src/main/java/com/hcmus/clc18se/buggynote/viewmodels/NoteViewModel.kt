@@ -24,7 +24,7 @@ class NoteViewModel(
         loadNotes()
     }
 
-    private fun loadNotes() {
+    fun loadNotes() {
         viewModelScope.launch {
             loadNoteFromDatabase()
         }

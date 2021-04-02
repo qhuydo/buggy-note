@@ -16,6 +16,19 @@ data class NoteWithTags(
         )
         val tags: List<Tag>
 ) {
+
+    fun getTitle(): String {
+        return note.title
+    }
+
+    fun getNoteContent(): String {
+        return note.noteContent
+    }
+
+    fun getId(): Long {
+        return note.id
+    }
+
     companion object {
         val DiffCallBack = object : DiffUtil.ItemCallback<NoteWithTags>() {
             override fun areContentsTheSame(oldItem: NoteWithTags, newItem: NoteWithTags): Boolean {

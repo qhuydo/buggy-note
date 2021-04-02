@@ -45,7 +45,7 @@ class NotesFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             findNavController().navigate(
-                    NotesFragmentDirections.actionNavNotesToAddNoteFragment()
+                NotesFragmentDirections.actionNavNotesToAddNoteFragment()
             )
         }
 

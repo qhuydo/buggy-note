@@ -12,21 +12,16 @@ class NoteDetailsViewModel(
     dataSource: BuggyNoteDatabaseDao
 ) : ViewModel() {
 
-    val database = dataSource
+    private val database = dataSource
 
-    private val noteWithTags: LiveData<NoteWithTags> = database.getNoteFromId(noteId)
+    private var noteWithTags: LiveData<NoteWithTags> = database.getNoteFromId(noteId)
     fun getNoteWithTags() = noteWithTags
 
     private var _navigateToNoteList = MutableLiveData<Boolean?>()
-    val navigateToNoteList: LiveData<Boolean?>
-        get() = _navigateToNoteList
 
-    fun navigateToNoteList() {
-        _navigateToNoteList.value = true
-    }
 
-    fun doneNavigatingToNoteList() {
-        _navigateToNoteList.value = null
+    fun reloadNote() {
+        noteWithTags = database.getNoteFromId(noteId)
     }
 }
 
