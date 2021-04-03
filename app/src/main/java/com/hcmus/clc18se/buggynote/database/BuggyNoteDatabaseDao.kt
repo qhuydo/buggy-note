@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
+import com.hcmus.clc18se.buggynote.data.Tag
 
 @Dao
 interface BuggyNoteDatabaseDao {
 
     @Transaction
-    @Query("select * from note order by last_modify desc")
+    @Query("select * from note order by note_id desc")
     suspend fun getAllNoteWithTags(): List<NoteWithTags>
 
     @Transaction
@@ -22,4 +23,13 @@ interface BuggyNoteDatabaseDao {
     @Insert
     suspend fun addNewNote(vararg note: Note)
 
+
+    @Query("select * from tag order by name asc")
+    suspend fun getAllTags(): List<Tag>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(tag: Tag)
+
+    @Query("select count(*) from tag where name = :content")
+    suspend fun containsTag(content: String): Boolean
 }

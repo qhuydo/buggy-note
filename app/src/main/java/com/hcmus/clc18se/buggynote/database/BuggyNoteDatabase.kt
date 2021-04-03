@@ -8,7 +8,7 @@ import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteCrossRef
 import com.hcmus.clc18se.buggynote.data.Tag
 
-@Database(entities = [Note::class, Tag::class, NoteCrossRef::class], version = 1, exportSchema = false)
+@Database(entities = [Note::class, Tag::class, NoteCrossRef::class], version = 2, exportSchema = false)
 abstract class BuggyNoteDatabase : RoomDatabase() {
     abstract val buggyNoteDatabaseDao: BuggyNoteDatabaseDao
 
@@ -34,4 +34,5 @@ abstract class BuggyNoteDatabase : RoomDatabase() {
             }
         }
     }
+
 }

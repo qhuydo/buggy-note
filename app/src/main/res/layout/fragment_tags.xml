@@ -3,33 +3,95 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="tagViewModel"
+            type="com.hcmus.clc18se.buggynote.viewmodels.TagViewModel" />
+    </data>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragments.NotesFragment">
+        tools:context=".fragment.NotesFragment">
 
-        <include layout="@layout/app_bar_main"
-            android:id="@+id/app_bar"/>
+        <include
+            android:id="@+id/app_bar"
+            layout="@layout/app_bar_main" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:focusable="true"
+            android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <TextView
-                android:id="@+id/text_home"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/add_tag_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="?colorSurface"
+                        android:paddingHorizontal="16dp"
+                        android:src="@drawable/ic_baseline_add_24"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/add_tag_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        app:boxStrokeWidth="0dp"
+                        app:errorContentDescription="@string/exist_tag"
+                        app:errorEnabled="false"
+                        app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/create_new_tag"
+                            android:inputType="text"
+                            android:labelFor="@id/add_tag_layout"
+                            android:textColor="@color/black"
+                            android:id="@+id/add_tag_content"
+                            tools:text="Label" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageButton
+                        android:id="@+id/add_tag_done"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="?colorSurface"
+                        android:paddingHorizontal="16dp"
+                        android:src="@drawable/ic_baseline_done_24"
+                        tools:ignore="ContentDescription" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tag_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:loadTags="@{tagViewModel.tags}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/item_tag" />
+
+        </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </layout>
