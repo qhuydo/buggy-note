@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="noteViewModel"
             type="com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel" />
+
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -16,56 +19,93 @@
             android:id="@+id/app_bar"
             layout="@layout/app_bar_main" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/title_layout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:hint="@string/title"
-                android:paddingBottom="8dp"
-                app:boxStrokeColor="?colorPrimary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginVertical="16dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/title"
+                <!--    TODO: extract some attribute in MaterialEditText & EditText into styles-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/title_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textLongMessage|textMultiLine" />
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <EditText
+                        android:id="@+id/text_view_title"
+                        style="?textAppearanceHeadline4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints=""
+                        android:gravity="start|top"
+                        android:hint="@string/title"
+                        android:inputType="textMultiLine"
+                        android:labelFor="@id/title_layout"
+                        android:textColor="@color/black"
+                        tools:text="Title" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_margin="4dp"
-                android:hint="@string/content"
-                android:paddingBottom="8dp"
-                app:boxStrokeColor="?colorPrimary"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title_layout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/note_content"
-                    android:gravity="start"
-                    android:textAlignment="textStart"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/time_stamp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textLongMessage|textMultiLine" />
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="4dp"
+                    android:textAppearance="?textAppearanceCaption"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/title_layout"
+                    app:timeStampFromLong="@{System.currentTimeMillis()}"
+                    tools:text="@tools:sample/date/ddmmyy" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/content_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/time_stamp">
 
+                    <EditText
+                        android:id="@+id/note_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:autofillHints=""
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:gravity="top|start"
+                        android:hint="@string/content"
+                        android:inputType="textMultiLine"
+                        android:labelFor="@id/content_layout"
+                        tools:text="@tools:sample/lorem/random"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

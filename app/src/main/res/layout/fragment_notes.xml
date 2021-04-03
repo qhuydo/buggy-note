@@ -34,7 +34,7 @@
                 app:loadNotes="@{noteViewModel.noteList}"
                 app:spanCount="2"
                 tools:itemCount="3"
-                tools:listitem="@layout/item_note_in_list" />
+                tools:listitem="@layout/item_note" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

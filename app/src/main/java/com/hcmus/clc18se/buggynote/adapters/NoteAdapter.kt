@@ -6,7 +6,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
-import com.hcmus.clc18se.buggynote.databinding.ItemNoteInListBinding
+import com.hcmus.clc18se.buggynote.databinding.ItemNoteBinding
 import com.hcmus.clc18se.buggynote.utils.convertLongToDateString
 
 class NoteAdapter(private val onClickListener: OnClickListener = OnClickListener {}) :
@@ -28,7 +28,7 @@ class NoteAdapter(private val onClickListener: OnClickListener = OnClickListener
 
         fun bind(noteWithTags: NoteWithTags) {
             when (binding) {
-                is ItemNoteInListBinding -> {
+                is ItemNoteBinding -> {
                     binding.apply {
                         title.text = noteWithTags.note.title
                         noteContent.text = noteWithTags.note.noteContent
@@ -43,7 +43,7 @@ class NoteAdapter(private val onClickListener: OnClickListener = OnClickListener
             fun from(
                 parent: ViewGroup
             ): ViewHolder {
-                return ViewHolder(ItemNoteInListBinding.inflate(LayoutInflater.from(parent.context)))
+                return ViewHolder(ItemNoteBinding.inflate(LayoutInflater.from(parent.context)))
             }
         }
 

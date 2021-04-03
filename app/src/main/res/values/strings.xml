@@ -13,4 +13,6 @@
     <string name="title">Title</string>
     <string name="content">Content</string>
     <string name="save">Save</string>
+    <string name="create_new_tag">Create new tag</string>
+    <string name="exist_tag">The tag was existed</string>
 </resources>
