@@ -15,4 +15,6 @@
     <string name="save">Save</string>
     <string name="create_new_tag">Create new tag</string>
     <string name="exist_tag">The tag was existed</string>
+    <string name="last_edit">Last edited: %1$s</string>
+    <string name="add_new_tag">Add new tag</string>
 </resources>

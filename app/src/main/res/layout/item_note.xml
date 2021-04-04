@@ -20,21 +20,15 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceHeadline6"
+                android:maxLines="4"
                 tools:text="Title" />
 
-            <TextView
-                android:id="@+id/time_stamp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceCaption"
-                tools:text="@tools:sample/date/ddmmyy" />
-
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:textAppearance="?textAppearanceBody2"
                 android:id="@+id/note_content"
                 android:layout_width="match_parent"
@@ -42,6 +36,13 @@
                 android:maxLines="16"
                 tools:text="@tools:sample/lorem/random" />
 
+            <TextView
+                android:layout_gravity="end"
+                android:id="@+id/time_stamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceCaption"
+                tools:text="@tools:sample/date/ddmmyy" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

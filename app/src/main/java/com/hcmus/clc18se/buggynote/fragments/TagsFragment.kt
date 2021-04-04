@@ -87,16 +87,6 @@ class TagsFragment : Fragment() {
 
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-            duration = 300L
-        }
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-            duration = 300L
-        }
-    }
-
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -138,6 +128,12 @@ class TagsFragment : Fragment() {
             }
 
         }
+    }
+
+    override fun onDetach() {
+        val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
+        super.onDetach()
     }
 
     private fun setUpNavigation() {

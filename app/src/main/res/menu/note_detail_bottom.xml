@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_add_tag"
+        android:icon="@drawable/ic_outline_new_label_24"
+        android:title="@string/add_new_tag"
+        app:showAsAction="ifRoom" />
+
+</menu>

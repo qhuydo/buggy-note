@@ -18,5 +18,5 @@ data class Note(
         var noteContent: String = "",
 
         @ColumnInfo(name = "last_modify")
-        var lastModify: Long = System.currentTimeMillis()
+        var lastModify: Long = System.currentTimeMillis(),
 )

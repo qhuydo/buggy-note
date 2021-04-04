@@ -29,16 +29,6 @@ class AddNoteFragment : Fragment() {
         )
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-            duration = 300L
-        }
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-            duration = 300L
-        }
-    }
-
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -62,9 +52,9 @@ class AddNoteFragment : Fragment() {
         return when (item.itemId) {
             R.id.action_save -> {
                 val title =
-                        binding.constraintLayout.findViewById<EditText>(R.id.text_view_title).text.toString()
+                        binding.layout.findViewById<EditText>(R.id.text_view_title).text.toString()
                 val content =
-                        binding.constraintLayout.findViewById<EditText>(R.id.note_content).text.toString()
+                        binding.layout.findViewById<EditText>(R.id.note_content).text.toString()
 
                 viewModel.insertNewNote(Note(title = title, noteContent = content))
                 findNavController().popBackStack()
