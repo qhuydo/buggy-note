@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabaseDao
 import kotlinx.coroutines.*
+import timber.log.Timber
 
 class TagViewModel(val database: BuggyNoteDatabaseDao) : ViewModel() {
 
@@ -30,7 +31,7 @@ class TagViewModel(val database: BuggyNoteDatabaseDao) : ViewModel() {
             return false
         }
         val tag = Tag(name = tagContent)
-        database.insert(tag)
+        database.insertTag(tag)
         return true
     }
 
@@ -44,6 +45,41 @@ class TagViewModel(val database: BuggyNoteDatabaseDao) : ViewModel() {
                 }
                 return@async succeed
             }.await()
+        }
+    }
+
+    private suspend fun updateTagFromDatabase(tag: Tag): Boolean {
+        if (database.containsTag(tag.name)) {
+            return false
+        }
+        if (tag.name.trim().isEmpty()) {
+            return false
+        }
+
+        database.updateTag(tag)
+        return true
+    }
+
+    fun updateTag(tag: Tag): Boolean {
+        var succeed: Boolean
+
+        return runBlocking {
+            async {
+                succeed = updateTagFromDatabase(tag)
+                if (succeed) {
+                    loadTagFromDatabase()
+                }
+                return@async succeed
+
+            }.await()
+        }
+    }
+
+    fun deleteTag(tag: Tag) {
+        viewModelScope.launch {
+            val affectedColumn = database.deleteTag(tag)
+            Timber.i("tag table - $affectedColumn column(s) affected")
+            loadTagFromDatabase()
         }
     }
 }

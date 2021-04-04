@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteCrossRef
 import com.hcmus.clc18se.buggynote.data.Tag
 
-@Database(entities = [Note::class, Tag::class, NoteCrossRef::class], version = 2, exportSchema = false)
+@Database(entities = [Note::class, Tag::class, NoteCrossRef::class], version = 3, exportSchema = false)
 abstract class BuggyNoteDatabase : RoomDatabase() {
     abstract val buggyNoteDatabaseDao: BuggyNoteDatabaseDao
 
@@ -25,12 +27,33 @@ abstract class BuggyNoteDatabase : RoomDatabase() {
                             BuggyNoteDatabase::class.java,
                             "buggy_note_database"
                     )
+                            .addMigrations(MIGRATE_2_3)
                             .fallbackToDestructiveMigration()
                             .build()
                     INSTANCE = instance
 
                 }
                 return instance
+            }
+        }
+
+        private val MIGRATE_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_note_note_id` ON `note` (`note_id`)")
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `NoteCrossRef_new` (`note_id` INTEGER NOT NULL, 
+                        `tag_id` INTEGER NOT NULL, 
+                        PRIMARY KEY(`note_id`, `tag_id`), 
+                        FOREIGN KEY(`note_id`) REFERENCES `note`(`note_id`) ON UPDATE NO ACTION ON DELETE CASCADE , 
+                        FOREIGN KEY(`tag_id`) REFERENCES `tag`(`tag_id`) ON UPDATE NO ACTION ON DELETE CASCADE 
+                     )
+                """.trimIndent())
+
+                database.execSQL("INSERT OR IGNORE INTO NoteCrossRef_new SELECT * FROM NoteCrossRef")
+                database.execSQL("DROP TABLE NoteCrossRef")
+
+                database.execSQL("ALTER TABLE NoteCrossRef_new RENAME TO NoteCrossRef")
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_NoteCrossRef_tag_id` ON `NoteCrossRef` (`tag_id`)")
             }
         }
     }

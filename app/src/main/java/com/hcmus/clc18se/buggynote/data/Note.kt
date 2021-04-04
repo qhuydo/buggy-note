@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "note")
 data class Note(
         @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "note_id")
+        @ColumnInfo(name = "note_id", index = true)
         var id: Long = 0L,
 
         var title: String = "",
@@ -18,5 +18,5 @@ data class Note(
         var noteContent: String = "",
 
         @ColumnInfo(name = "last_modify")
-        var lastModify: Long =  System.currentTimeMillis()
+        var lastModify: Long = System.currentTimeMillis()
 )

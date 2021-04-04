@@ -3,13 +3,15 @@ package com.hcmus.clc18se.buggynote.viewmodels
 import android.app.Application
 import androidx.lifecycle.*
 import com.hcmus.clc18se.buggynote.data.Note
+import com.hcmus.clc18se.buggynote.data.NoteCrossRef
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabaseDao
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class NoteViewModel(
-    application: Application,
-    private val database: BuggyNoteDatabaseDao
+        application: Application,
+        private val database: BuggyNoteDatabaseDao
 ) : AndroidViewModel(application) {
 
     private var _noteList = MutableLiveData<List<NoteWithTags>>()
@@ -53,8 +55,8 @@ class NoteViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class NoteViewModelFactory(
-    val application: Application,
-    val database: BuggyNoteDatabaseDao
+        val application: Application,
+        val database: BuggyNoteDatabaseDao
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {

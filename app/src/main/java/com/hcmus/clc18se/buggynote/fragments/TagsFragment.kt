@@ -1,11 +1,12 @@
 package com.hcmus.clc18se.buggynote.fragments
 
 import android.content.Context
-import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,7 +19,7 @@ import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.ItemEditorFocusListener
 import com.hcmus.clc18se.buggynote.adapters.TagAdapter
-import com.hcmus.clc18se.buggynote.adapters.loadTags
+import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentTagsBinding
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModel
@@ -44,21 +45,44 @@ class TagsFragment : Fragment() {
 
     private val onItemEditorFocusListener = ItemEditorFocusListener { binding, hasFocus, tag ->
 
+        // TODO: refactor me
+
         var removeIcon = R.drawable.ic_outline_label_24
         var checkIcon = R.drawable.ic_baseline_mode_edit_24
 
         if (hasFocus) {
-            removeIcon = R.drawable.ic_outline_delete_24
+            removeIcon = R.drawable.ic_baseline_delete_24
             checkIcon = R.drawable.ic_baseline_done_24
 
-            // TODO: action for remove & done button
+
+            binding.checkButton.setOnClickListener {
+                val updatedTag = Tag(id = tag.id, name = binding.tagContent.text.toString())
+                val succeed = viewModel.updateTag(updatedTag)
+                if (!succeed) {
+                    Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show()
+                    binding.tagContent.setText(tag.name)
+                }
+            }
+
+            binding.removeButton.setOnClickListener {
+                val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
+                viewModel.deleteTag(tag)
+
+            }
+        } else {
+            binding.checkButton.isClickable = false
+            binding.removeButton.isClickable = false
         }
 
-        binding.checkButton.setImageDrawable(ResourcesCompat.getDrawable(resources, checkIcon, parentContext.theme))
-        binding.removeButton.setImageDrawable(ResourcesCompat.getDrawable(resources, removeIcon, parentContext.theme))
-
-        binding.checkButton.invalidate()
-        binding.removeButton.invalidate()
+        binding.checkButton.apply {
+            setImageDrawable(ResourcesCompat.getDrawable(resources, checkIcon, parentContext.theme))
+            invalidate()
+        }
+        binding.removeButton.apply {
+            setImageDrawable(ResourcesCompat.getDrawable(resources, removeIcon, parentContext.theme))
+            invalidate()
+        }
         binding.root.requestLayout()
 
     }
@@ -98,11 +122,11 @@ class TagsFragment : Fragment() {
 
         })
 
-        binding.addTagLayout.setOnFocusChangeListener { v, hasFocus ->
+        binding.addTagLayout.setOnFocusChangeListener { _, hasFocus ->
             binding.addTagIcon.visibility = if (hasFocus) View.VISIBLE else View.INVISIBLE
         }
 
-        binding.addTagDone.setOnClickListener { v ->
+        binding.addTagDone.setOnClickListener {
 
             val tagContent = binding.addTagContent.text.toString().trim()
             val succeed = viewModel.addNewTag(tagContent)
