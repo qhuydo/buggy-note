@@ -22,7 +22,7 @@ interface BuggyNoteDatabaseDao {
     suspend fun updateNote(note: Note)
 
     @Insert
-    suspend fun addNewNote(note: Note)
+    suspend fun addNewNote(note: Note): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addNoteCrossRef(vararg noteCrossRef: NoteCrossRef)

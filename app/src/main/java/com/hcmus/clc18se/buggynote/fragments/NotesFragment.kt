@@ -4,17 +4,21 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.NoteAdapter
 import com.hcmus.clc18se.buggynote.adapters.OnClickListener
+import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentNotesBinding
 import com.hcmus.clc18se.buggynote.utils.SpaceItemDecoration
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NotesFragment : Fragment() {
 
@@ -44,9 +48,15 @@ class NotesFragment : Fragment() {
         setHasOptionsMenu(true)
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(
-                NotesFragmentDirections.actionNavNotesToAddNoteFragment()
-            )
+//            findNavController().navigate(
+//                NotesFragmentDirections.actionNavNotesToAddNoteFragment()
+//            )
+
+            lifecycleScope.launch {
+                val id = viewModel.insertNewNote(Note(title = "", noteContent = ""))
+                viewModel.navigateToNoteDetails(id)
+            }
+
         }
 
         binding.apply {

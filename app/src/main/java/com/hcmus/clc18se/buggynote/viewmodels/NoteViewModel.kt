@@ -7,6 +7,7 @@ import com.hcmus.clc18se.buggynote.data.NoteCrossRef
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabaseDao
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class NoteViewModel(
@@ -36,11 +37,12 @@ class NoteViewModel(
         _noteList.value = database.getAllNoteWithTags()
     }
 
-    fun insertNewNote(note: Note) {
-        viewModelScope.launch {
-            database.addNewNote(note)
-            loadNoteFromDatabase()
-        }
+    suspend fun insertNewNote(note: Note): Long {
+
+        val insertedId = database.addNewNote(note)
+        loadNoteFromDatabase()
+
+        return insertedId
     }
 
     fun navigateToNoteDetails(id: Long) {
