@@ -2,9 +2,7 @@ package com.hcmus.clc18se.buggynote.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.Fragment
@@ -12,7 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.transition.MaterialSharedAxis
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.data.Note
@@ -83,9 +81,9 @@ class NoteDetailsFragment : Fragment() {
 
         // TODO: why am I not able to use data binding?
         val title =
-                binding.constraintLayout.findViewById<EditText>(R.id.text_view_title).text.toString()
+                binding.layout.findViewById<EditText>(R.id.text_view_title).text.toString()
         val content =
-                binding.constraintLayout.findViewById<EditText>(R.id.note_content).text.toString()
+                binding.layout.findViewById<EditText>(R.id.note_content).text.toString()
 
         val note = viewModel.getNoteWithTags().value!!
         CoroutineScope(Dispatchers.Default).launch {
@@ -118,6 +116,21 @@ class NoteDetailsFragment : Fragment() {
     private fun setUpNavigation() {
         val toolbar = binding.appBar.toolbar
         val parentActivity: BuggyNoteActivity = requireActivity() as BuggyNoteActivity
+
+        val bottomBar: BottomAppBar = binding.coordinatorLayout.findViewById(R.id.bottom_bar)
+
+        bottomBar.setOnMenuItemClickListener {
+            Timber.e(it.itemId.toString())
+            when (it.itemId) {
+                R.id.action_add_tag -> {
+                    findNavController().navigate(
+                            NoteDetailsFragmentDirections.actionNavNoteDetailsToTagSelectionFragment(arguments.noteId)
+                    )
+                    true
+                }
+                else -> true
+            }
+        }
 
         parentActivity.setSupportActionBar(toolbar)
         parentActivity.setupActionBarWithNavController(

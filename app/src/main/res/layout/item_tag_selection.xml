@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.hcmus.clc18se.buggynote.data.Tag" />
+
+        <variable
+            name="tag"
+            type="Tag" />
+    </data>
+
+    <LinearLayout
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="16dp"
+            android:src="@drawable/ic_outline_label_24"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tag_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?colorSurface"
+            android:focusable="true"
+            android:textAppearance="?textAppearanceListItem"
+            android:labelFor="@id/add_tag_layout"
+            android:paddingVertical="16dp"
+            android:text="@{tag.name}"
+            android:textColor="@color/black"
+            tools:text="@tools:sample/cities" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/tag_check_box"
+            android:layout_width="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:layout_height="match_parent"
+            android:checked="@{tag.selectState}"
+            android:paddingHorizontal="8dp" />
+    </LinearLayout>
+</layout>

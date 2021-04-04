@@ -31,13 +31,30 @@
     <fragment
         android:id="@+id/nav_add_note"
         android:name="com.hcmus.clc18se.buggynote.fragments.AddNoteFragment"
-        android:label="AddNoteFragment"
-        tools:layout="@layout/fragment_add_note" />
+        android:label=""
+        tools:layout="@layout/fragment_add_note">
+        <action
+            android:id="@+id/action_nav_add_note_to_tagSelectionFragment"
+            app:destination="@id/nav_tag_selection" />
+    </fragment>
+
     <fragment
         android:id="@+id/nav_note_details"
         android:name="com.hcmus.clc18se.buggynote.fragments.NoteDetailsFragment"
-        android:label="NoteDetailsFragment"
+        android:label=""
         tools:layout="@layout/fragment_note_details">
+        <argument
+            android:name="noteId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_nav_note_details_to_tagSelectionFragment"
+            app:destination="@id/nav_tag_selection" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_tag_selection"
+        android:name="com.hcmus.clc18se.buggynote.fragments.TagSelectionFragment"
+        android:label="">
         <argument
             android:name="noteId"
             app:argType="long" />

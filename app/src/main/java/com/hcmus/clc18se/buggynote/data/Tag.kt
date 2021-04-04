@@ -1,10 +1,7 @@
 package com.hcmus.clc18se.buggynote.data
 
 import androidx.recyclerview.widget.DiffUtil
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(tableName = "tag")
 data class Tag(
@@ -12,7 +9,10 @@ data class Tag(
         @ColumnInfo(name = "tag_id", index = true)
         var id: Long = 0,
 
-        var name: String = ""
+        var name: String = "",
+
+        @Ignore
+        var selectState: Boolean = false
 ) {
     companion object {
         val DiffCallBack = object : DiffUtil.ItemCallback<Tag>() {

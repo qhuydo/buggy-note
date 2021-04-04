@@ -24,8 +24,21 @@ interface BuggyNoteDatabaseDao {
     @Insert
     suspend fun addNewNote(note: Note)
 
-    @Insert
-    suspend fun addNoteWithTagCrossRef(vararg noteCrossRef: NoteCrossRef)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addNoteCrossRef(vararg noteCrossRef: NoteCrossRef)
+
+    @Transaction
+    suspend fun getAllTagWithSelectedState(noteId: Long): List<Tag> {
+        val tags = getAllTags()
+        tags.forEach { it.selectState = containsNoteCrossRef(noteId, it.id) }
+        return tags
+    }
+
+    @Query("select count(*) from notecrossref where note_id = :noteId and tag_id = :tagId")
+    suspend fun containsNoteCrossRef(noteId: Long, tagId: Long): Boolean
+
+    @Delete
+    suspend fun deleteNoteCrossRef(vararg noteCrossRef: NoteCrossRef)
 
     @Query("select * from notecrossref where note_id = :noteId")
     suspend fun getNoteCrossRef(noteId: Long): List<NoteCrossRef>
@@ -33,12 +46,13 @@ interface BuggyNoteDatabaseDao {
     @Query("select * from tag order by name asc")
     suspend fun getAllTags(): List<Tag>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTag(tag: Tag)
 
     @Update
     suspend fun updateTag(tag: Tag)
 
+    @Transaction
     @Delete
     suspend fun deleteTag(tag: Tag): Int
 
