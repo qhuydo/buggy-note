@@ -12,11 +12,15 @@
         tools:layout="@layout/fragment_notes">
         <action
             android:id="@+id/action_nav_notes_to_noteDetailsFragment"
-            app:destination="@id/nav_note_details"
+            app:destination="@id/navigation_note_details"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:popExitAnim="@anim/nav_default_pop_exit_anim">
+            <argument
+                android:name="noteId"
+                app:argType="long" />
+        </action>
     </fragment>
 
     <fragment
@@ -26,25 +30,29 @@
         tools:layout="@layout/fragment_tags" />
 
 
-    <fragment
-        android:id="@+id/nav_note_details"
-        android:name="com.hcmus.clc18se.buggynote.fragments.NoteDetailsFragment"
-        android:label=""
-        tools:layout="@layout/fragment_note_details">
-        <argument
-            android:name="noteId"
-            app:argType="long" />
-        <action
-            android:id="@+id/action_nav_note_details_to_tagSelectionFragment"
-            app:destination="@id/nav_tag_selection" />
-    </fragment>
+    <navigation
+        android:id="@+id/navigation_note_details"
+        app:startDestination="@id/nav_note_details">
+        <fragment
+            android:id="@+id/nav_note_details"
+            android:name="com.hcmus.clc18se.buggynote.fragments.NoteDetailsFragment"
+            android:label=""
+            tools:layout="@layout/fragment_note_details">
+            <argument
+                android:name="noteId"
+                app:argType="long" />
+            <action
+                android:id="@+id/action_nav_note_details_to_tagSelectionFragment"
+                app:destination="@id/nav_tag_selection" />
+        </fragment>
 
-    <fragment
-        android:id="@+id/nav_tag_selection"
-        android:name="com.hcmus.clc18se.buggynote.fragments.TagSelectionFragment"
-        android:label="">
-        <argument
-            android:name="noteId"
-            app:argType="long" />
-    </fragment>
+        <fragment
+            android:id="@+id/nav_tag_selection"
+            android:name="com.hcmus.clc18se.buggynote.fragments.TagSelectionFragment"
+            android:label="">
+            <argument
+                android:name="noteId"
+                app:argType="long" />
+        </fragment>
+    </navigation>
 </navigation>

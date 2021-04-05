@@ -8,26 +8,35 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
+import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.OnCheckedChangedListener
 import com.hcmus.clc18se.buggynote.adapters.TagSelectionAdapter
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentSelectTagBinding
+import com.hcmus.clc18se.buggynote.viewmodels.NoteDetailsViewModel
+import com.hcmus.clc18se.buggynote.viewmodels.NoteDetailsViewModelFactory
 import com.hcmus.clc18se.buggynote.viewmodels.TagSelectionViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.TagSelectionViewModelFactory
+import timber.log.Timber
+
 class TagSelectionFragment : Fragment() {
 
     private lateinit var binding: FragmentSelectTagBinding
 
     private val onCheckedChangedListener = OnCheckedChangedListener { _, isChecked, tag ->
-
+        if (tag.selectState == isChecked) {
+            return@OnCheckedChangedListener
+        }
         tag.selectState = isChecked
+        Timber.d("ping :<")
+
         if (isChecked) {
             tagSelectionViewModel.addSelectedTags(tag)
-        }
-        else {
+        } else {
             tagSelectionViewModel.removeSelectedTags(tag)
         }
     }
@@ -47,6 +56,13 @@ class TagSelectionFragment : Fragment() {
         )
     }
 
+    private val noteDetailViewModel: NoteDetailsViewModel by navGraphViewModels(R.id.navigation_note_details) {
+        NoteDetailsViewModelFactory(
+                arguments.noteId,
+                db
+        )
+    }
+
     private lateinit var adapter: TagSelectionAdapter
 
 
@@ -59,12 +75,14 @@ class TagSelectionFragment : Fragment() {
             viewModel = tagSelectionViewModel
         }
 
+        tagSelectionViewModel.changesOccurred.observe(viewLifecycleOwner) {
+            if (it) {
+                noteDetailViewModel.requestReloadingData()
+            }
+        }
+
         adapter = TagSelectionAdapter(onCheckedChangedListener)
         binding.tagList.adapter = adapter
-
-        tagSelectionViewModel.tags.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
 
         return binding.root
     }

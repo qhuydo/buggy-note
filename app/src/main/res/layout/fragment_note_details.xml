@@ -5,9 +5,15 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="noteDetailsViewModel"
             type="com.hcmus.clc18se.buggynote.viewmodels.NoteDetailsViewModel" />
+
+        <variable
+            name="chipOnClickListener"
+            type="View.OnClickListener" />
     </data>
 
 
@@ -24,6 +30,8 @@
             android:id="@+id/scroll_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="false"
+            android:focusable="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
@@ -54,7 +62,7 @@
                         android:autofillHints=""
                         android:gravity="start|top"
                         android:hint="@string/title"
-                        android:inputType="textMultiLine"
+                        android:inputType="textMultiLine|textNoSuggestions"
                         android:labelFor="@id/title_layout"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.title}"
                         android:textColor="@color/black"
@@ -81,13 +89,27 @@
                         android:focusableInTouchMode="true"
                         android:gravity="top|start"
                         android:hint="@string/content"
-                        android:inputType="textMultiLine"
+                        android:inputType="textMultiLine|textNoSuggestions"
                         android:labelFor="@id/content_layout"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.noteContent}"
                         tools:text="@tools:sample/lorem/random" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/tag_group"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:padding="0dp"
+                    android:paddingVertical="0dp"
+                    app:chipSpacingHorizontal="4dp"
+                    app:itemSpacing="0dp"
+                    app:lineSpacing="0dp"
+                    app:loadTagList="@{noteDetailsViewModel.noteWithTags.tags}"
+                    app:setOnClickToChips="@{chipOnClickListener}" />
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>

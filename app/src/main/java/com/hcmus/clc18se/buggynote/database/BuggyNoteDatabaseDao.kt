@@ -27,7 +27,6 @@ interface BuggyNoteDatabaseDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addNoteCrossRef(vararg noteCrossRef: NoteCrossRef)
 
-    @Transaction
     suspend fun getAllTagWithSelectedState(noteId: Long): List<Tag> {
         val tags = getAllTags()
         tags.forEach { it.selectState = containsNoteCrossRef(noteId, it.id) }

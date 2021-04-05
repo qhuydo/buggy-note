@@ -8,8 +8,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class TagSelectionViewModel(
-    private val noteId: Long = 0L,
-    dataSource: BuggyNoteDatabaseDao
+        private val noteId: Long = 0L,
+        dataSource: BuggyNoteDatabaseDao
 ) : ViewModel() {
 
     private val database = dataSource
@@ -18,21 +18,29 @@ class TagSelectionViewModel(
     val tags: LiveData<List<Tag>>
         get() = _tags
 
+
+    private var _changesOccurred = MutableLiveData(false)
+    val changesOccurred: LiveData<Boolean>
+        get() = _changesOccurred
+
     init {
         loadTags()
     }
 
     private fun loadTags() {
         viewModelScope.launch {
+            val begin = System.currentTimeMillis()
             loadTagFromDatabase()
+            val end = System.currentTimeMillis()
+            Timber.d("Time - ${end - begin}")
         }
-        //loadSelectedTags(noteId)
     }
 
     fun addSelectedTags(tag: Tag) {
         viewModelScope.launch {
             Timber.d("Add new column in notecrossref - (note_id, tag_id)=($noteId, ${tag.id})")
             database.addNoteCrossRef(NoteCrossRef(noteId, tag.id))
+            _changesOccurred.value = true
         }
     }
 
@@ -40,19 +48,21 @@ class TagSelectionViewModel(
         viewModelScope.launch {
             Timber.d("Remove column in notecrossref - (note_id, tag_id)=($noteId, ${tag.id})")
             database.deleteNoteCrossRef(NoteCrossRef(noteId, tag.id))
+            _changesOccurred.value = true
         }
     }
 
     private suspend fun loadTagFromDatabase() {
         _tags.value = database.getAllTagWithSelectedState(noteId)
+        //_tags.value = database.getAllTags()
     }
 
 }
 
 @Suppress("UNCHECKED_CAST")
 class TagSelectionViewModelFactory(
-    val id: Long,
-    val database: BuggyNoteDatabaseDao
+        val id: Long,
+        val database: BuggyNoteDatabaseDao
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TagSelectionViewModel::class.java)) {

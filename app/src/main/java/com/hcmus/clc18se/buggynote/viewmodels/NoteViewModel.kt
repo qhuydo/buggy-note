@@ -23,11 +23,16 @@ class NoteViewModel(
     val navigateToNoteDetails: LiveData<Long?>
         get() = _navigateToNoteDetails
 
+    private var _reloadDataRequest = MutableLiveData(false)
+    val reloadDataRequest: LiveData<Boolean>
+        get() = _reloadDataRequest
+
     init {
         loadNotes()
     }
 
     fun loadNotes() {
+        Timber.d("ping")
         viewModelScope.launch {
             loadNoteFromDatabase()
         }
@@ -51,6 +56,15 @@ class NoteViewModel(
 
     fun doneNavigatingToNoteDetails() {
         _navigateToNoteDetails.value = null
+    }
+
+    fun requestReloadingData() {
+        _reloadDataRequest.value = true
+    }
+
+    // TODO: get it a better name
+    fun doneRequestingLoadData() {
+        _reloadDataRequest.value = false
     }
 
 }

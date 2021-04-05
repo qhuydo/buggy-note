@@ -9,12 +9,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.transition.MaterialSharedAxis
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.ItemEditorFocusListener
@@ -22,6 +22,8 @@ import com.hcmus.clc18se.buggynote.adapters.TagAdapter
 import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentTagsBinding
+import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
+import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModelFactory
 
@@ -43,6 +45,13 @@ class TagsFragment : Fragment() {
         requireContext()
     }
 
+    private val noteViewModel: NoteViewModel by activityViewModels {
+        NoteViewModelFactory(
+                requireActivity().application,
+                BuggyNoteDatabase.getInstance(requireContext()).buggyNoteDatabaseDao
+        )
+    }
+
     private val onItemEditorFocusListener = ItemEditorFocusListener { binding, hasFocus, tag ->
 
         // TODO: refactor me
@@ -59,8 +68,12 @@ class TagsFragment : Fragment() {
                 val updatedTag = Tag(id = tag.id, name = binding.tagContent.text.toString())
                 val succeed = viewModel.updateTag(updatedTag)
                 if (!succeed) {
+                    // TODO: notify error
                     Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show()
                     binding.tagContent.setText(tag.name)
+                }
+                else {
+                    noteViewModel.requestReloadingData()
                 }
             }
 
@@ -68,7 +81,7 @@ class TagsFragment : Fragment() {
                 val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
                 imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
                 viewModel.deleteTag(tag)
-
+                noteViewModel.requestReloadingData()
             }
         } else {
             binding.checkButton.isClickable = false

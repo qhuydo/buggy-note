@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:loadTags="@{viewModel.tags}"
+            app:loadSelectableTags="@{viewModel.tags}"
             tools:itemCount="5"
             tools:listitem="@layout/item_tag_selection" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

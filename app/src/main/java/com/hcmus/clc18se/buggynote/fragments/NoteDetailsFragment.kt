@@ -7,8 +7,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
@@ -20,10 +21,7 @@ import com.hcmus.clc18se.buggynote.viewmodels.NoteDetailsViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteDetailsViewModelFactory
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 
@@ -39,13 +37,23 @@ class NoteDetailsFragment : Fragment() {
         NoteDetailsFragmentArgs.fromBundle(requireArguments())
     }
 
-    private val viewModel: NoteDetailsViewModel by viewModels {
+    private val viewModel: NoteDetailsViewModel by navGraphViewModels(R.id.navigation_note_details) {
         NoteDetailsViewModelFactory(
                 arguments.noteId,
                 db
         )
     }
-    private lateinit var noteViewModel: NoteViewModel
+
+    private val noteViewModel: NoteViewModel by activityViewModels {
+        NoteViewModelFactory(
+                requireActivity().application,
+                db
+        )
+    }
+
+    private val tagOnClickListener = View.OnClickListener {
+        viewModel.navigateToTagSelection()
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -53,23 +61,31 @@ class NoteDetailsFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
 
-        // what the hell am i doing
-        val noteViewModel: NoteViewModel by activityViewModels {
-            NoteViewModelFactory(
-                    requireActivity().application,
-                    db
-            )
-        }
-        this.noteViewModel = noteViewModel
-
         binding = FragmentNoteDetailsBinding.inflate(inflater, container, false)
 
         binding.apply {
             lifecycleOwner = this@NoteDetailsFragment
+            chipOnClickListener = tagOnClickListener
             noteDetailsViewModel = viewModel
         }
 
-        binding.appBar.toolbar.elevation = 0f
+        viewModel.reloadDataRequest.observe(viewLifecycleOwner) {
+            if (it) {
+                viewModel.reloadNote()
+                viewModel.doneRequestingLoadData()
+                noteViewModel.requestReloadingData()
+            }
+        }
+
+        viewModel.navigateToTagSelection.observe(viewLifecycleOwner) {
+            if (it != null) {
+                findNavController().navigate(
+                        NoteDetailsFragmentDirections.actionNavNoteDetailsToTagSelectionFragment(arguments.noteId)
+                )
+                viewModel.doneNavigatingToTagSelection()
+            }
+        }
+
         return binding.root
     }
 
@@ -85,24 +101,23 @@ class NoteDetailsFragment : Fragment() {
         val content =
                 binding.layout.findViewById<EditText>(R.id.note_content).text.toString()
 
-        val note = viewModel.getNoteWithTags().value!!
-        CoroutineScope(Dispatchers.Default).launch {
-            if (title != note.getTitle() || content != note.getNoteContent()) {
-                val newNote = Note(
-                        id = note.getId(),
-                        title = title,
-                        noteContent = content,
-                        lastModify = System.currentTimeMillis()
-                )
+        val note = viewModel.getNoteWithTags().value
+        note?.let {
+            lifecycleScope.launch {
+                if (title != note.getTitle() || content != note.getNoteContent()) {
+                    val newNote = Note(
+                            id = note.getId(),
+                            title = title,
+                            noteContent = content,
+                            lastModify = System.currentTimeMillis()
+                    )
 
-                Timber.d("Set new note content")
+                    Timber.d("Set new note content")
 
-                db.updateNote(newNote)
+                    db.updateNote(newNote)
 
-                withContext(Dispatchers.Main) {
                     viewModel.reloadNote()
-                    // TODO: replace this line with code with a more efficient way
-                    noteViewModel.loadNotes()
+                    noteViewModel.requestReloadingData()
                 }
             }
         }
@@ -111,6 +126,7 @@ class NoteDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
+        binding.appBar.toolbar.elevation = 0f
     }
 
     private fun setUpNavigation() {
@@ -120,12 +136,9 @@ class NoteDetailsFragment : Fragment() {
         val bottomBar: BottomAppBar = binding.coordinatorLayout.findViewById(R.id.bottom_bar)
 
         bottomBar.setOnMenuItemClickListener {
-            Timber.e(it.itemId.toString())
             when (it.itemId) {
                 R.id.action_add_tag -> {
-                    findNavController().navigate(
-                            NoteDetailsFragmentDirections.actionNavNoteDetailsToTagSelectionFragment(arguments.noteId)
-                    )
+                    viewModel.navigateToTagSelection()
                     true
                 }
                 else -> true

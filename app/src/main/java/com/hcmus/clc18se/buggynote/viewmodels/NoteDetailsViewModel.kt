@@ -18,6 +18,14 @@ class NoteDetailsViewModel(
     private var noteWithTags: LiveData<NoteWithTags> = database.getNoteFromId(noteId)
     fun getNoteWithTags() = noteWithTags
 
+    private var _reloadDataRequest = MutableLiveData(false)
+    val reloadDataRequest: LiveData<Boolean>
+        get() = _reloadDataRequest
+
+    private var _navigateToTagSelection = MutableLiveData<Long?>(null)
+    val navigateToTagSelection: LiveData<Long?>
+        get() = _navigateToTagSelection
+
     init {
         viewModelScope.launch {
             Timber.d("nNoteCrossRef column ${database.getNoteCrossRef(noteId).size}")
@@ -25,7 +33,24 @@ class NoteDetailsViewModel(
     }
 
     fun reloadNote() {
+        Timber.d("ping")
         noteWithTags = database.getNoteFromId(noteId)
+    }
+
+    fun requestReloadingData() {
+        _reloadDataRequest.value = true
+    }
+
+    // TODO: get it a better name
+    fun doneRequestingLoadData() {
+        _reloadDataRequest.value = false
+    }
+
+    fun navigateToTagSelection() {
+        _navigateToTagSelection.value = noteId
+    }
+    fun doneNavigatingToTagSelection() {
+        _navigateToTagSelection.value = null
     }
 }
 

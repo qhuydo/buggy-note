@@ -7,10 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.databinding.ItemNoteBinding
-import com.hcmus.clc18se.buggynote.utils.convertLongToDateString
 
 class NoteAdapter(private val onClickListener: OnClickListener = OnClickListener {}) :
-    ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
+        ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val noteWithTags = getItem(position)
@@ -30,9 +29,7 @@ class NoteAdapter(private val onClickListener: OnClickListener = OnClickListener
             when (binding) {
                 is ItemNoteBinding -> {
                     binding.apply {
-                        title.text = noteWithTags.note.title
-                        noteContent.text = noteWithTags.note.noteContent
-                        timeStamp.text = convertLongToDateString(noteWithTags.note.lastModify)
+                        note = noteWithTags
                     }
                 }
                 // TODO: binding grid item
@@ -40,9 +37,7 @@ class NoteAdapter(private val onClickListener: OnClickListener = OnClickListener
         }
 
         companion object {
-            fun from(
-                parent: ViewGroup
-            ): ViewHolder {
+            fun from(parent: ViewGroup): ViewHolder {
                 return ViewHolder(ItemNoteBinding.inflate(LayoutInflater.from(parent.context)))
             }
         }

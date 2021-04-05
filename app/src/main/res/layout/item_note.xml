@@ -3,46 +3,76 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="note"
+            type="com.hcmus.clc18se.buggynote.data.NoteWithTags" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="chipOnClickListener"
+            type="View.OnClickListener" />
+    </data>
+
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:checkable="true"
         android:clickable="true"
         android:focusable="true"
         app:cardElevation="0dp"
         app:strokeColor="@drawable/stroke_color"
-        android:layout_margin="8dp"
         app:strokeWidth="1dp">
 
         <LinearLayout
-            android:padding="8dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="@{note.title}"
                 android:textAppearance="?textAppearanceHeadline6"
-                android:maxLines="4"
                 tools:text="Title" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:textAppearance="?textAppearanceBody2"
                 android:id="@+id/note_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="16"
+                android:maxLines="10"
+                android:text="@{note.noteContent}"
+                android:textAppearance="?textAppearanceBody2"
                 tools:text="@tools:sample/lorem/random" />
 
             <TextView
-                android:layout_gravity="end"
                 android:id="@+id/time_stamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:textAppearance="?textAppearanceCaption"
+                app:timeStampFromLong="@{note.note.lastModify}"
                 tools:text="@tools:sample/date/ddmmyy" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/tag_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                android:paddingVertical="0dp"
+                app:chipLimit="@{3}"
+                app:chipSpacingHorizontal="4dp"
+                app:itemSpacing="0dp"
+                app:lineSpacing="0dp"
+                app:loadTagList="@{note.tags}"
+                app:setOnClickToChips="@{chipOnClickListener}" />
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
