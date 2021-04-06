@@ -26,6 +26,7 @@ import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModelFactory
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class NotesFragment : Fragment() {
 
@@ -59,7 +60,7 @@ class NotesFragment : Fragment() {
         if (tag.selectState != isChecked) {
             tag.selectState = isChecked
 
-            tagViewModel.tags.value?.let { noteViewModel.filterByTags(it) }
+            tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
         }
     }
 
@@ -146,14 +147,29 @@ class NotesFragment : Fragment() {
         // TODO: fix this inefficient
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
-                return false
+                Timber.d("newText: $newText")
+                if (newText != null) {
+                    tagViewModel.tags.value?.let { noteViewModel.filterByTagsWithKeyword(it, newText) }
+                } else {
+                    tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
+                }
+                return true
             }
 
             override fun onQueryTextSubmit(query: String?): Boolean {
-
+                if (query != null) {
+                    tagViewModel.tags.value?.let { noteViewModel.filterByTagsWithKeyword(it, query) }
+                    return true
+                }
                 return false
             }
         })
+
+        searchView.setOnCloseListener {
+            Timber.d("searchView.setOnCloseListener called")
+            tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
+            true
+        }
 
         super.onCreateOptionsMenu(menu, inflater)
     }

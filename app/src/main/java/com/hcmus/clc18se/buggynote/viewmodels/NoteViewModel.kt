@@ -8,6 +8,7 @@ import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabaseDao
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 
 class NoteViewModel(
         application: Application,
@@ -70,11 +71,13 @@ class NoteViewModel(
      * Filter notes by a list of tags
      * the filtering will not occurred if every element of the list has selectState == true
      */
-    fun filterByTags(tags: List<Tag>) {
+    fun filterByTagsFromDatabase(tags: List<Tag>) {
+        // TODO: refactor me
         viewModelScope.launch {
             Timber.d("Ping")
             if (tags.any { it.selectState }) {
                 val start = System.currentTimeMillis()
+
                 val tagIds = tags.filter { it.selectState }.map { it.id }
 
                 _noteList.value = database.filterNoteByTagList(tagIds)
@@ -86,6 +89,32 @@ class NoteViewModel(
                 loadNotes()
             }
         }
+    }
+
+    fun filterByTagsWithKeyword(tags: List<Tag>, keyword: String) {
+        // TODO: refactor me
+        viewModelScope.launch {
+            Timber.d("Ping")
+            val start = System.currentTimeMillis()
+            val searchKey = keyword.toLowerCase(Locale.ROOT)
+            if (tags.any { it.selectState }) {
+
+                val tagIds = tags.filter { it.selectState }.map { it.id }
+                _noteList.value = database.filterNoteByTagList(tagIds).filter {
+                    it.note.noteContent.contains(searchKey, true)
+                            || it.note.title.contains(searchKey, true)
+                }
+
+            } else {
+                _noteList.value = database.getAllNoteWithTags().filter {
+                    it.note.noteContent.contains(searchKey, true)
+                            || it.note.title.contains(searchKey, true)
+                }
+            }
+            val end = System.currentTimeMillis()
+            Timber.d("filter time: ${end - start}")
+        }
+
     }
 
 }
@@ -102,4 +131,3 @@ class NoteViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-
