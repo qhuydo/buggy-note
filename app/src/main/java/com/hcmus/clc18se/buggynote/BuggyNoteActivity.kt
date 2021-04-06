@@ -2,9 +2,6 @@ package com.hcmus.clc18se.buggynote
 
 import android.os.Bundle
 import android.os.Handler
-import android.view.Gravity
-import android.view.MenuItem
-import android.view.View
 import com.google.android.material.navigation.NavigationView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -24,8 +21,6 @@ class BuggyNoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     internal lateinit var appBarConfiguration: AppBarConfiguration
-
-    private var clickedItem = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

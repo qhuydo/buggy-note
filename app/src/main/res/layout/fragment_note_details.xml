@@ -18,6 +18,7 @@
 
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:background="?colorSurface"
         android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -65,7 +66,7 @@
                         android:inputType="textMultiLine|textNoSuggestions"
                         android:labelFor="@id/title_layout"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.title}"
-                        android:textColor="@color/black"
+                        android:textColor="?colorOnSurface"
                         tools:text="Title" />
                 </com.google.android.material.textfield.TextInputLayout>
 

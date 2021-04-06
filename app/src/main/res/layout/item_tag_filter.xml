@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="tag"
+            type="com.hcmus.clc18se.buggynote.data.Tag" />
+    </data>
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/tag_filter"
+        style="@style/Widget.MaterialComponents.Chip.Filter"
+        android:checked="@{tag.selectState}"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{tag.name}"
+        android:textAppearance="?textAppearanceCaption"
+        tools:text="@tools:sample/cities" />
+
+</layout>

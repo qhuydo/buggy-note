@@ -35,7 +35,7 @@ class TagsFragment : Fragment() {
         TagAdapter(onItemEditorFocusListener)
     }
 
-    private val viewModel: TagViewModel by viewModels {
+    private val tagViewModel: TagViewModel by activityViewModels {
         TagViewModelFactory(
                 BuggyNoteDatabase.getInstance(requireContext()).buggyNoteDatabaseDao
         )
@@ -66,13 +66,12 @@ class TagsFragment : Fragment() {
 
             binding.checkButton.setOnClickListener {
                 val updatedTag = Tag(id = tag.id, name = binding.tagContent.text.toString())
-                val succeed = viewModel.updateTag(updatedTag)
+                val succeed = tagViewModel.updateTag(updatedTag)
                 if (!succeed) {
                     // TODO: notify error
                     Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show()
                     binding.tagContent.setText(tag.name)
-                }
-                else {
+                } else {
                     noteViewModel.requestReloadingData()
                 }
             }
@@ -80,7 +79,7 @@ class TagsFragment : Fragment() {
             binding.removeButton.setOnClickListener {
                 val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
                 imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
-                viewModel.deleteTag(tag)
+                tagViewModel.deleteTag(tag)
                 noteViewModel.requestReloadingData()
             }
         } else {
@@ -109,9 +108,13 @@ class TagsFragment : Fragment() {
 
         binding.apply {
             lifecycleOwner = this@TagsFragment
+            tagViewModel = this@TagsFragment.tagViewModel
             tagList.adapter = adapter
-            tagViewModel = viewModel
         }
+
+        tagViewModel.tags.observe(viewLifecycleOwner, {
+            adapter.notifyDataSetChanged()
+        })
 
         return binding.root
     }
@@ -120,10 +123,6 @@ class TagsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
 
-        viewModel.tags.observe(viewLifecycleOwner, {
-            adapter.notifyDataSetChanged()
-
-        })
 
         binding.addTagLayout.setOnFocusChangeListener { _, hasFocus ->
             binding.addTagIcon.visibility = if (hasFocus) View.VISIBLE else View.INVISIBLE
@@ -132,7 +131,7 @@ class TagsFragment : Fragment() {
         binding.addTagDone.setOnClickListener {
 
             val tagContent = binding.addTagContent.text.toString().trim()
-            val succeed = viewModel.addNewTag(tagContent)
+            val succeed = tagViewModel.addNewTag(tagContent)
 
             binding.addTagLayout.apply {
                 error = if (succeed) null else getString(R.string.exist_tag)

@@ -57,4 +57,8 @@ interface BuggyNoteDatabaseDao {
 
     @Query("select count(*) from tag where name = :content")
     suspend fun containsTag(content: String): Boolean
+
+    @Transaction
+    @Query("select * from note where note_id in (select note_id from notecrossref where tag_id in (:tagIds))")
+    suspend fun filterNoteByTagList(tagIds: List<Long>): List<NoteWithTags>
 }

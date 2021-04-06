@@ -8,34 +8,62 @@
         <variable
             name="noteViewModel"
             type="com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel" />
+
+        <variable
+            name="tagViewModel"
+            type="com.hcmus.clc18se.buggynote.viewmodels.TagViewModel" />
+
+
+        <import type="java.util.List" />
+
+        <import type="com.hcmus.clc18se.buggynote.data.Tag" />
+
+        <variable
+            name="selectedTags"
+            type="List&lt;Tag>" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?colorSurface"
         tools:context=".fragments.NotesFragment">
 
         <include
             android:id="@+id/app_bar"
             layout="@layout/app_bar_main" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tag_filter_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:loadFilterTags="@{tagViewModel.tags}"
+                tools:itemCount="5"
+                tools:listitem="@layout/item_tag_filter" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/note_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_marginHorizontal="@dimen/item_note_margin"
                 android:layout_marginVertical="@dimen/item_note_margin"
+                android:layout_weight="1"
                 app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                 app:loadNotes="@{noteViewModel.noteList}"
                 app:spanCount="2"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_note" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,6 +72,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
+            app:layout_anchor="@id/note_list"
+            app:layout_anchorGravity="bottom|end"
             app:srcCompat="@drawable/ic_baseline_mode_edit_24"
             tools:ignore="ContentDescription" />
 

@@ -3,11 +3,10 @@ package com.hcmus.clc18se.buggynote.viewmodels
 import android.app.Application
 import androidx.lifecycle.*
 import com.hcmus.clc18se.buggynote.data.Note
-import com.hcmus.clc18se.buggynote.data.NoteCrossRef
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
+import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabaseDao
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class NoteViewModel(
@@ -65,6 +64,28 @@ class NoteViewModel(
     // TODO: get it a better name
     fun doneRequestingLoadData() {
         _reloadDataRequest.value = false
+    }
+
+    /**
+     * Filter notes by a list of tags
+     * the filtering will not occurred if every element of the list has selectState == true
+     */
+    fun filterByTags(tags: List<Tag>) {
+        viewModelScope.launch {
+            Timber.d("Ping")
+            if (tags.any { it.selectState }) {
+                val start = System.currentTimeMillis()
+                val tagIds = tags.filter { it.selectState }.map { it.id }
+
+                _noteList.value = database.filterNoteByTagList(tagIds)
+
+                val end = System.currentTimeMillis()
+                Timber.d("filter time: ${end - start}")
+            } else {
+                Timber.d("Reloading note from database")
+                loadNotes()
+            }
+        }
     }
 
 }

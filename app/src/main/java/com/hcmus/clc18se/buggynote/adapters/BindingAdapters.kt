@@ -37,6 +37,15 @@ fun loadSelectableTags(recyclerView: RecyclerView, tags: List<Tag>?) {
     }
 }
 
+@BindingAdapter("loadFilterTags")
+fun loadFilterTags(recyclerView: RecyclerView, tags: List<Tag>?) {
+    tags.let {
+        val adapter = recyclerView.adapter as TagFilterAdapter
+        adapter.submitList(tags)
+    }
+}
+
+
 @BindingAdapter("timeStampFromLong")
 fun setTimeStampFromLong(textView: TextView, value: Long) {
     val text = convertLongToDateString(value)

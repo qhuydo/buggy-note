@@ -62,7 +62,7 @@
                             android:hint="@string/create_new_tag"
                             android:inputType="text"
                             android:labelFor="@id/add_tag_layout"
-                            android:textColor="@color/black"
+                            android:textColor="?colorOnSurface"
                             android:id="@+id/add_tag_content"
                             tools:text="Label" />
 

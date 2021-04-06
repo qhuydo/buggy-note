@@ -13,10 +13,10 @@
         <action
             android:id="@+id/action_nav_notes_to_noteDetailsFragment"
             app:destination="@id/navigation_note_details"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim">
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out">
             <argument
                 android:name="noteId"
                 app:argType="long" />
@@ -43,7 +43,11 @@
                 app:argType="long" />
             <action
                 android:id="@+id/action_nav_note_details_to_tagSelectionFragment"
-                app:destination="@id/nav_tag_selection" />
+                app:destination="@id/nav_tag_selection"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out" />
         </fragment>
 
         <fragment
