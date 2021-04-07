@@ -59,4 +59,15 @@
                 app:argType="long" />
         </fragment>
     </navigation>
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.hcmus.clc18se.buggynote.fragments.SettingsFragment"
+        android:label="@string/settings" />
+
+    <!--Global action-->
+    <action
+        android:id="@+id/open_settings_fragment"
+        app:destination="@id/nav_settings" />
+
 </navigation>

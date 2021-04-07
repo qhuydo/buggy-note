@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
+import androidx.preference.PreferenceManager
 import com.hcmus.clc18se.buggynote.databinding.ActivityMainBinding
 
 class BuggyNoteActivity : AppCompatActivity() {
@@ -29,6 +30,9 @@ class BuggyNoteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
@@ -36,9 +40,9 @@ class BuggyNoteActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
 
         appBarConfiguration = AppBarConfiguration(
-                setOf(
-                        R.id.nav_notes, R.id.nav_tags
-                ), drawerLayout
+            setOf(
+                R.id.nav_notes, R.id.nav_tags
+            ), drawerLayout
         )
 
         val navView: NavigationView = binding.navView
@@ -50,7 +54,8 @@ class BuggyNoteActivity : AppCompatActivity() {
             Handler().postDelayed({
                 when (item.itemId) {
                     else -> NavigationUI.onNavDestinationSelected(
-                            item, navController) || onOptionsItemSelected(item)
+                        item, navController
+                    ) || onOptionsItemSelected(item)
                 }
             }, 280)
         }

@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/display">
+
+        <ListPreference
+            android:entries="@array/note_list_view_type_entries"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/show_note_list_as"
+            app:defaultValue="0"
+            app:entryValues="@array/note_list_view_type_value"
+            app:isPreferenceVisible="true"
+            app:key="@string/note_list_view_type_key"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

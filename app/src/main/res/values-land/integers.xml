@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="note_item_span_count_list">1</integer>
+    <integer name="note_item_span_count_grid">3</integer>
+
+    <integer name="tag_item_span_count">1</integer>
+</resources>

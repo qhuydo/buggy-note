@@ -1,7 +1,6 @@
 package com.hcmus.clc18se.buggynote.fragments
 
 import android.os.Bundle
-import android.system.Os.accept
 import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -11,6 +10,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.afollestad.materialcab.attached.AttachedCab
 import com.afollestad.materialcab.attached.destroy
 import com.afollestad.materialcab.attached.isActive
@@ -19,16 +20,14 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
-import com.hcmus.clc18se.buggynote.adapters.ItemOnCheckedChangeListener
-import com.hcmus.clc18se.buggynote.adapters.NoteAdapter
-import com.hcmus.clc18se.buggynote.adapters.OnClickHandler
-import com.hcmus.clc18se.buggynote.adapters.TagFilterAdapter
+import com.hcmus.clc18se.buggynote.adapters.*
 import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentNotesBinding
 import com.hcmus.clc18se.buggynote.utils.SpaceItemDecoration
 import com.hcmus.clc18se.buggynote.utils.getColorAttribute
+import com.hcmus.clc18se.buggynote.utils.getSpanCountForNoteList
 import com.hcmus.clc18se.buggynote.utils.tintAllIcons
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
@@ -38,6 +37,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class NotesFragment : Fragment() {
+
+    private val preferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
 
     private lateinit var binding: FragmentNotesBinding
 
@@ -83,9 +84,9 @@ class NotesFragment : Fragment() {
     var mainCab: AttachedCab? = null
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         binding = FragmentNotesBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
@@ -107,12 +108,14 @@ class NotesFragment : Fragment() {
 
             noteList.adapter = adapter
             noteList.addItemDecoration(
-                    SpaceItemDecoration(resources.getDimension(R.dimen.item_note_margin).toInt())
+                SpaceItemDecoration(resources.getDimension(R.dimen.item_note_margin).toInt())
             )
+            val layoutManager = noteList.layoutManager as StaggeredGridLayoutManager
+            layoutManager.spanCount = requireContext().getSpanCountForNoteList(preferences)
 
             tagFilterList.adapter = filterTagAdapter
             tagFilterList.addItemDecoration(
-                    SpaceItemDecoration(resources.getDimension(R.dimen.item_tag_margin).toInt())
+                SpaceItemDecoration(resources.getDimension(R.dimen.item_tag_margin).toInt())
             )
         }
 
@@ -135,7 +138,7 @@ class NotesFragment : Fragment() {
             if (it != null) {
 
                 findNavController().navigate(
-                        NotesFragmentDirections.actionNavNotesToNoteDetailsFragment(it)
+                    NotesFragmentDirections.actionNavNotesToNoteDetailsFragment(it)
                 )
                 noteViewModel.doneNavigatingToNoteDetails()
             }
@@ -152,15 +155,23 @@ class NotesFragment : Fragment() {
 
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        val noteListDisplayType =
+            preferences.getString(getString(R.string.note_list_view_type_key), "0")
+
+        val noteListDisplayItem = menu.findItem(R.id.note_list_item_view_type)
+        when (noteListDisplayType) {
+            "0" -> noteListDisplayItem.setIcon(R.drawable.ic_baseline_list_alt_24)
+            else -> noteListDisplayItem.setIcon(R.drawable.ic_baseline_grid_view_24)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main, menu)
 
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
-
-//        val searchViewParams = searchView.layoutParams as AppBarLayout.LayoutParams
-//        searchViewParams.setMargins(0, 0, 0, 0)
-//        searchView.layoutParams = searchViewParams
 
         // TODO: fix this inefficient
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -169,8 +180,8 @@ class NotesFragment : Fragment() {
                 if (newText != null) {
                     tagViewModel.tags.value?.let {
                         noteViewModel.filterByTagsWithKeyword(
-                                it,
-                                newText
+                            it,
+                            newText
                         )
                     }
                 } else {
@@ -183,8 +194,8 @@ class NotesFragment : Fragment() {
                 if (query != null) {
                     tagViewModel.tags.value?.let {
                         noteViewModel.filterByTagsWithKeyword(
-                                it,
-                                query
+                            it,
+                            query
                         )
                     }
                     return true
@@ -203,12 +214,45 @@ class NotesFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_search -> {
+        return when (item.itemId) {
+
+            R.id.note_list_item_view_type -> {
+                onItemTypeOptionClicked()
+                val noteListDisplayType =
+                    preferences.getString(getString(R.string.note_list_view_type_key), "0")
+
+                when (noteListDisplayType) {
+                    "0" -> item.setIcon(R.drawable.ic_baseline_list_alt_24)
+                    else -> item.setIcon(R.drawable.ic_baseline_grid_view_24)
+                }
+                true
             }
 
+            else -> false
         }
-        return super.onOptionsItemSelected(item)
+    }
+
+    private fun onItemTypeOptionClicked() {
+        val currentItemView =
+            preferences.getString(getString(R.string.note_list_view_type_key), "0")
+        val nextItemView = if (currentItemView == "0") "1" else "0"
+
+        preferences.edit()
+            .putString(getString(R.string.note_list_view_type_key), nextItemView)
+            .apply()
+
+        refreshNoteList()
+    }
+
+    private fun refreshNoteList() {
+        binding.noteList.adapter = null
+        binding.noteList.adapter = adapter
+
+        val layoutManager = binding.noteList.layoutManager as StaggeredGridLayoutManager
+        layoutManager.spanCount = requireContext().getSpanCountForNoteList(preferences)
+
+        binding.noteList.loadNotes(noteViewModel.noteList.value)
+        adapter.notifyDataSetChanged()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -222,8 +266,8 @@ class NotesFragment : Fragment() {
 
         parentActivity.setSupportActionBar(toolbar)
         parentActivity.setupActionBarWithNavController(
-                findNavController(),
-                parentActivity.appBarConfiguration
+            findNavController(),
+            parentActivity.appBarConfiguration
         )
     }
 
@@ -238,7 +282,7 @@ class NotesFragment : Fragment() {
             // searchView.addView(itemImageView)
             (searchView.getChildAt(0) as LinearLayout).addView(itemImageView)
             (searchView.getChildAt(0) as LinearLayout).gravity =
-                    Gravity.CENTER_VERTICAL or Gravity.END
+                Gravity.CENTER_VERTICAL or Gravity.END
 
             val searchParams = searchView.layoutParams as? AppBarLayout.LayoutParams
             searchParams?.let {
@@ -317,15 +361,15 @@ class NotesFragment : Fragment() {
                 }
 
                 MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Warning")
-                        .setMessage("Do you really want to delete this?")
-                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
-                        .setPositiveButton(resources.getString(R.string.remove)) { _, _ ->
+                    .setTitle("Warning")
+                    .setMessage("Do you really want to delete this?")
+                    .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
+                    .setPositiveButton(resources.getString(R.string.remove)) { _, _ ->
 
-                            noteViewModel.removeNote(*adapter.getSelectedItems().toTypedArray())
-                            mainCab?.destroy()
-                        }
-                        .show()
+                        noteViewModel.removeNote(*adapter.getSelectedItems().toTypedArray())
+                        mainCab?.destroy()
+                    }
+                    .show()
                 true
             }
             R.id.action_select_all -> {
