@@ -25,6 +25,7 @@ class TagFilterAdapter(private val onCheckedChangedListener: ItemOnCheckedChange
 
         fun bind(tag: Tag) {
             binding.tag = tag
+            binding.executePendingBindings()
         }
 
         companion object {

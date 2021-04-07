@@ -23,6 +23,7 @@ class TagAdapter(private val onItemEditorFocusListener: ItemEditorFocusListener)
 
         fun bind(tag: Tag) {
             binding.tag = tag
+            binding.executePendingBindings()
         }
 
         fun setOnFocusListenerForEditor(onFocusEditorFocusListener: ItemEditorFocusListener, tag: Tag) {

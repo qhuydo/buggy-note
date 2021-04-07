@@ -56,6 +56,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$rootProject.roomVersion"
 
     implementation "com.jakewharton.timber:timber:$rootProject.timberVersion"
+    implementation 'com.afollestad:material-cab:2.0.1'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

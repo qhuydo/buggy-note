@@ -11,8 +11,8 @@ import timber.log.Timber
 import java.util.*
 
 class NoteViewModel(
-        application: Application,
-        private val database: BuggyNoteDatabaseDao
+    application: Application,
+    private val database: BuggyNoteDatabaseDao
 ) : AndroidViewModel(application) {
 
     private var _noteList = MutableLiveData<List<NoteWithTags>>()
@@ -67,6 +67,14 @@ class NoteViewModel(
         _reloadDataRequest.value = false
     }
 
+    fun removeNote(vararg notes: NoteWithTags) {
+        viewModelScope.launch {
+            val nCol = database.removeNote(*notes.map { it.note }.toTypedArray())
+            Timber.d("Remove note - $nCol affected")
+            loadNoteFromDatabase()
+        }
+    }
+
     /**
      * Filter notes by a list of tags
      * the filtering will not occurred if every element of the list has selectState == true
@@ -96,20 +104,18 @@ class NoteViewModel(
         viewModelScope.launch {
             Timber.d("Ping")
             val start = System.currentTimeMillis()
-            val searchKey = keyword.toLowerCase(Locale.ROOT)
+//            val searchKey = keyword.toLowerCase(Locale.ROOT)
             if (tags.any { it.selectState }) {
 
                 val tagIds = tags.filter { it.selectState }.map { it.id }
-                _noteList.value = database.filterNoteByTagList(tagIds).filter {
-                    it.note.noteContent.contains(searchKey, true)
-                            || it.note.title.contains(searchKey, true)
-                }
+//                _noteList.value = database.filterNoteByTagList(tagIds).filter {
+//                    it.note.noteContent.contains(searchKey, true)
+//                            || it.note.title.contains(searchKey, true)
+//                }
+                _noteList.value = database.filterNoteByKeyWordAndTags(keyword, tagIds)
 
             } else {
-                _noteList.value = database.getAllNoteWithTags().filter {
-                    it.note.noteContent.contains(searchKey, true)
-                            || it.note.title.contains(searchKey, true)
-                }
+                _noteList.value = database.filterNoteByKeyWord(keyword)
             }
             val end = System.currentTimeMillis()
             Timber.d("filter time: ${end - start}")
@@ -121,8 +127,8 @@ class NoteViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class NoteViewModelFactory(
-        val application: Application,
-        val database: BuggyNoteDatabaseDao
+    val application: Application,
+    val database: BuggyNoteDatabaseDao
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {

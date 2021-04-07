@@ -1,7 +1,12 @@
 package com.hcmus.clc18se.buggynote
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import com.google.android.material.navigation.NavigationView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity

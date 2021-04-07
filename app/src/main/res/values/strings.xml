@@ -18,4 +18,13 @@
     <string name="last_edit">Last edited: %1$s</string>
     <string name="add_new_tag">Add new tag</string>
     <string name="add_a_tag">Add a tag</string>
+    <string name="remove">Remove</string>
+    <string name="cancel">@android:string/cancel</string>
+
+    <string-array name="emoticons">
+        <item>(─‿‿─)</item>
+        <item>(っ◔◡◔)っ ❤</item>
+        <item>≧◔◡◔≦</item>
+        <item>≧◉◡◉≦</item>
+    </string-array>
 </resources>

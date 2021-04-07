@@ -1,6 +1,7 @@
 package com.hcmus.clc18se.buggynote.fragments
 
 import android.os.Bundle
+import android.system.Os.accept
 import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -10,17 +11,25 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.afollestad.materialcab.attached.AttachedCab
+import com.afollestad.materialcab.attached.destroy
+import com.afollestad.materialcab.attached.isActive
+import com.afollestad.materialcab.createCab
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.ItemOnCheckedChangeListener
 import com.hcmus.clc18se.buggynote.adapters.NoteAdapter
-import com.hcmus.clc18se.buggynote.adapters.OnClickListener
+import com.hcmus.clc18se.buggynote.adapters.OnClickHandler
 import com.hcmus.clc18se.buggynote.adapters.TagFilterAdapter
 import com.hcmus.clc18se.buggynote.data.Note
+import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentNotesBinding
 import com.hcmus.clc18se.buggynote.utils.SpaceItemDecoration
+import com.hcmus.clc18se.buggynote.utils.getColorAttribute
+import com.hcmus.clc18se.buggynote.utils.tintAllIcons
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModel
@@ -52,8 +61,15 @@ class NotesFragment : Fragment() {
         TagFilterAdapter(onTagCheckedChangeListener)
     }
 
-    private val onNoteItemClickListener = OnClickListener { noteWithTags ->
-        noteViewModel.navigateToNoteDetails(noteWithTags.note.id)
+    private val onNoteItemClickListener = object : OnClickHandler {
+        override fun onClick(note: NoteWithTags) {
+            noteViewModel.navigateToNoteDetails(note.getId())
+        }
+
+        override fun onMultipleSelect(note: NoteWithTags): Boolean {
+            invalidateCab()
+            return true
+        }
     }
 
     private val onTagCheckedChangeListener = ItemOnCheckedChangeListener { isChecked, tag ->
@@ -63,6 +79,8 @@ class NotesFragment : Fragment() {
             tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
         }
     }
+
+    var mainCab: AttachedCab? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -149,7 +167,12 @@ class NotesFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 Timber.d("newText: $newText")
                 if (newText != null) {
-                    tagViewModel.tags.value?.let { noteViewModel.filterByTagsWithKeyword(it, newText) }
+                    tagViewModel.tags.value?.let {
+                        noteViewModel.filterByTagsWithKeyword(
+                                it,
+                                newText
+                        )
+                    }
                 } else {
                     tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
                 }
@@ -158,7 +181,12 @@ class NotesFragment : Fragment() {
 
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
-                    tagViewModel.tags.value?.let { noteViewModel.filterByTagsWithKeyword(it, query) }
+                    tagViewModel.tags.value?.let {
+                        noteViewModel.filterByTagsWithKeyword(
+                                it,
+                                query
+                        )
+                    }
                     return true
                 }
                 return false
@@ -177,8 +205,6 @@ class NotesFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_search -> {
-
-
             }
 
         }
@@ -211,7 +237,8 @@ class NotesFragment : Fragment() {
 
             // searchView.addView(itemImageView)
             (searchView.getChildAt(0) as LinearLayout).addView(itemImageView)
-            (searchView.getChildAt(0) as LinearLayout).gravity = Gravity.CENTER_VERTICAL or Gravity.END
+            (searchView.getChildAt(0) as LinearLayout).gravity =
+                    Gravity.CENTER_VERTICAL or Gravity.END
 
             val searchParams = searchView.layoutParams as? AppBarLayout.LayoutParams
             searchParams?.let {
@@ -227,5 +254,90 @@ class NotesFragment : Fragment() {
             searchView.requestLayout()
 
         }
+    }
+
+    fun invalidateCab() {
+        if (adapter.numberOfSelectedItems() == 0) {
+            mainCab?.destroy()
+            // mainCab = null
+            return
+        }
+
+        if (mainCab.isActive()) {
+            mainCab?.apply {
+                title(literal = "${adapter.numberOfSelectedItems()}")
+            }
+        } else {
+            val colorSurface = getColorAttribute(requireContext(), R.attr.colorSurface)
+            val colorOnSurface = getColorAttribute(requireContext(), R.attr.colorOnSurface)
+
+            mainCab = createCab(R.id.cab_stub) {
+                title(literal = "${adapter.numberOfSelectedItems()}")
+                menu(R.menu.main_context)
+                popupTheme(R.style.ThemeOverlay_AppCompat_Light)
+                titleColor(literal = colorOnSurface)
+                subtitleColor(literal = colorOnSurface)
+                backgroundColor(literal = colorSurface)
+
+                slideDown()
+
+                onCreate { _, menu -> onCabCreated(menu) }
+                onSelection { onCabItemSelected(it) }
+                onDestroy {
+                    adapter.finishSelection()
+                    // mainCab = null
+                    true
+                }
+            }
+        }
+    }
+
+    private fun onCabCreated(menu: Menu): Boolean {
+        // Makes the icons in the overflow menu visible
+        val colorOnSurface = getColorAttribute(requireContext(), R.attr.colorOnSurface)
+
+        menu.tintAllIcons(colorOnSurface)
+        if (menu.javaClass.simpleName == "MenuBuilder") {
+            try {
+                val field = menu.javaClass.getDeclaredField("mOptionalIconsVisible")
+                field.isAccessible = true
+                field.setBoolean(menu, true)
+            } catch (ignored: Exception) {
+                ignored.printStackTrace()
+            }
+        }
+        return true // allow creation
+    }
+
+    private fun onCabItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_remove_note -> {
+                if (adapter.getSelectedItems().isEmpty()) {
+                    return true
+                }
+
+                MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Warning")
+                        .setMessage("Do you really want to delete this?")
+                        .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                        }
+                        .setPositiveButton(resources.getString(R.string.remove)) { dialog, which ->
+                            // Respond to positive button press
+                            noteViewModel.removeNote(*adapter.getSelectedItems().toTypedArray())
+                            mainCab?.destroy()
+                        }
+                        .show()
+                true
+            }
+            R.id.action_select_all -> {
+                adapter.toggleSelectAll()
+                mainCab?.apply {
+                    title(literal = "${adapter.numberOfSelectedItems()}")
+                }
+                true
+            }
+            else -> false
+        }
+
     }
 }

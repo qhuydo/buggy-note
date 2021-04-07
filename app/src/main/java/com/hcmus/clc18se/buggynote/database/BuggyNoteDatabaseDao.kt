@@ -18,6 +18,10 @@ interface BuggyNoteDatabaseDao {
     @Query("select * from note where note_id = :id")
     fun getNoteFromId(id: Long): LiveData<NoteWithTags>
 
+    @Transaction
+    @Delete
+    suspend fun removeNote(vararg note: Note): Int
+
     @Update
     suspend fun updateNote(note: Note)
 
@@ -63,6 +67,17 @@ interface BuggyNoteDatabaseDao {
     suspend fun filterNoteByTagList(tagIds: List<Long>): List<NoteWithTags>
 
     @Transaction
-    @Query("select * from note where note_content like :keyword or title like :keyword")
+    @Query(
+        "select * from note where " +
+                "(note_content like '%' || :keyword || '%' or title like '%' || :keyword || '%') " +
+                "and (note_id in (select note_id from notecrossref where tag_id in (:tagIds)))"
+    )
+    suspend fun filterNoteByKeyWordAndTags(keyword: String, tagIds: List<Long>): List<NoteWithTags>
+
+    @Transaction
+    @Query(
+        "select * from note where " +
+                "(note_content like '%' || :keyword || '%' or title like '%' || :keyword || '%') "
+    )
     suspend fun filterNoteByKeyWord(keyword: String): List<NoteWithTags>
 }
