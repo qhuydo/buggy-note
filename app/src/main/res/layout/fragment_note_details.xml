@@ -66,7 +66,9 @@
                         android:inputType="textMultiLine|textNoSuggestions"
                         android:labelFor="@id/title_layout"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.title}"
+                        android:textAlignment="gravity"
                         android:textColor="?colorOnSurface"
+                        app:noteTitleFormat="@{noteDetailsViewModel.noteWithTags}"
                         tools:text="Title" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -88,11 +90,13 @@
                         android:autofillHints=""
                         android:focusable="true"
                         android:focusableInTouchMode="true"
-                        android:gravity="top|start"
+                        android:gravity="start"
                         android:hint="@string/content"
                         android:inputType="textMultiLine|textNoSuggestions"
                         android:labelFor="@id/content_layout"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.noteContent}"
+                        android:textAlignment="gravity"
+                        app:noteContentFormat="@{noteDetailsViewModel.noteWithTags}"
                         tools:text="@tools:sample/lorem/random" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -111,6 +115,20 @@
                     app:lineSpacing="0dp"
                     app:loadTagList="@{noteDetailsViewModel.noteWithTags.tags}"
                     app:setOnClickToChips="@{chipOnClickListener}" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/time_stamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:gravity="center"
+                    android:textAppearance="?textAppearanceCaption"
+                    app:drawableStartCompat="@drawable/ic_baseline_access_time_24"
+                    app:timeStampFromLong="@{noteDetailsViewModel.noteWithTags.note.lastModify}"
+                    tools:text="@tools:sample/date/ddmmyy" />
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
@@ -123,21 +141,7 @@
             app:elevation="0dp"
             app:hideOnScroll="true"
             app:layout_scrollFlags="snap|enterAlways"
-            app:menu="@menu/note_detail_bottom">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/time_stamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                android:gravity="center"
-                android:textAppearance="?textAppearanceCaption"
-                app:drawableStartCompat="@drawable/ic_baseline_access_time_24"
-                app:timeStampFromLong="@{noteDetailsViewModel.noteWithTags.note.lastModify}"
-                tools:text="@tools:sample/date/ddmmyy" />
-
-        </com.google.android.material.bottomappbar.BottomAppBar>
+            app:menu="@menu/note_detail_bottom" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

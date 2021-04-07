@@ -319,10 +319,9 @@ class NotesFragment : Fragment() {
                 MaterialAlertDialogBuilder(requireContext())
                         .setTitle("Warning")
                         .setMessage("Do you really want to delete this?")
-                        .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
-                        }
-                        .setPositiveButton(resources.getString(R.string.remove)) { dialog, which ->
-                            // Respond to positive button press
+                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
+                        .setPositiveButton(resources.getString(R.string.remove)) { _, _ ->
+
                             noteViewModel.removeNote(*adapter.getSelectedItems().toTypedArray())
                             mainCab?.destroy()
                         }

@@ -1,9 +1,9 @@
 package com.hcmus.clc18se.buggynote.adapters
 
-import android.annotation.SuppressLint
-import android.view.Gravity
+import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +13,9 @@ import com.google.android.material.chip.ChipGroup
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.data.Tag
+import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_MONOSPACE
+import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_SANS_SERIF
+import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_SERIF
 import com.hcmus.clc18se.buggynote.utils.convertLongToDateString
 
 @BindingAdapter("loadNotes")
@@ -96,7 +99,7 @@ fun ChipGroup.setTags(tags: List<Tag>?, limit: Int?, onClickListener: View.OnCli
 
 @BindingAdapter("placeholderVisibility")
 fun <T> ViewGroup.setViewHolderVisibility(list: List<T>?) {
-    if (list == null || list.isEmpty()) {
+    if (list != null && list.isEmpty()) {
         this.visibility = View.VISIBLE
     } else {
         this.visibility = View.GONE
@@ -107,4 +110,48 @@ fun <T> ViewGroup.setViewHolderVisibility(list: List<T>?) {
 fun TextView.setPlaceHolderEmoticon(nothing: Int?) {
     this.text = this.context.resources.getStringArray(R.array.emoticons).random()
 
+}
+
+
+@BindingAdapter("noteContentFormat")
+fun TextView.setNoteContentFormat(noteWithTags: NoteWithTags?) {
+    noteWithTags?.let {
+
+        val formatter = it.getContentFormat()
+
+        gravity = formatter.gravity
+
+        val typeface = when (formatter.typefaceType) {
+            TYPEFACE_SERIF -> Typeface.SERIF
+            TYPEFACE_SANS_SERIF -> Typeface.SANS_SERIF
+            TYPEFACE_MONOSPACE -> Typeface.MONOSPACE
+            else -> null
+        }
+
+        setTypeface(typeface, formatter.typefaceStyle)
+
+        invalidate()
+        requestLayout()
+    }
+}
+
+@BindingAdapter("noteTitleFormat")
+fun TextView.setNoteTitleFormat(noteWithTags: NoteWithTags?) {
+    noteWithTags?.let {
+
+        val formatter = it.getTitleFormat()
+
+        val typeface = when (formatter.typefaceType) {
+            TYPEFACE_SERIF -> Typeface.SERIF
+            TYPEFACE_SANS_SERIF -> Typeface.SANS_SERIF
+            TYPEFACE_MONOSPACE -> Typeface.MONOSPACE
+            else -> null
+        }
+
+        gravity = formatter.gravity
+        setTypeface(typeface, formatter.typefaceStyle)
+
+        invalidate()
+        requestLayout()
+    }
 }

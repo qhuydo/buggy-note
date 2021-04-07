@@ -40,6 +40,7 @@
                 android:maxLines="2"
                 android:text="@{note.title}"
                 android:textAppearance="?textAppearanceHeadline6"
+                app:noteTitleFormat="@{note}"
                 tools:text="Title" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -48,7 +49,9 @@
                 android:layout_height="wrap_content"
                 android:maxLines="10"
                 android:text="@{note.noteContent}"
+                android:textAlignment="gravity"
                 android:textAppearance="?textAppearanceBody2"
+                app:noteContentFormat="@{note}"
                 tools:text="@tools:sample/lorem/random" />
 
             <com.google.android.material.textview.MaterialTextView

@@ -4,6 +4,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
+import com.hcmus.clc18se.buggynote.utils.TextFormatter
+import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.DEFAULT_FORMAT_STRING
 
 data class NoteWithTags(
         @Embedded
@@ -27,6 +29,20 @@ data class NoteWithTags(
 
     fun getId(): Long {
         return note.id
+    }
+
+    fun getTitleFormat(): TextFormatter {
+        if (note.titleFormat.isEmpty()){
+            note.titleFormat = DEFAULT_FORMAT_STRING
+        }
+        return TextFormatter.parseFormat(note.titleFormat)
+    }
+
+   fun getContentFormat(): TextFormatter {
+       if (note.contentFormat.isEmpty()){
+           note.titleFormat = DEFAULT_FORMAT_STRING
+       }
+        return TextFormatter.parseFormat(note.contentFormat)
     }
 
     companion object {

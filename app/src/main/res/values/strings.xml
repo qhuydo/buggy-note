@@ -21,4 +21,9 @@
     <string name="remove">Remove</string>
     <string name="cancel">@android:string/cancel</string>
     <string name="nothing_here">Nothing here</string>
+    <string name="set_all_caps">Set all caps</string>
+    <string name="format_bold">Format Bold</string>
+    <string name="format_italic">Format italic</string>
+    <string name="text_alignment">Text Alignment</string>
+    <string name="set_font_type">Set font type</string>
 </resources>

@@ -1,22 +1,24 @@
 package com.hcmus.clc18se.buggynote.fragments
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.afollestad.materialcab.attached.destroy
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
-import com.hcmus.clc18se.buggynote.data.Note
+import com.hcmus.clc18se.buggynote.adapters.setNoteContentFormat
+import com.hcmus.clc18se.buggynote.adapters.setNoteTitleFormat
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentNoteDetailsBinding
 import com.hcmus.clc18se.buggynote.viewmodels.NoteDetailsViewModel
@@ -25,7 +27,6 @@ import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
 
 class NoteDetailsFragment : Fragment() {
 
@@ -71,6 +72,12 @@ class NoteDetailsFragment : Fragment() {
             noteDetailsViewModel = viewModel
         }
 
+        initObservers()
+
+        return binding.root
+    }
+
+    private fun initObservers() {
         viewModel.reloadDataRequest.observe(viewLifecycleOwner) {
             if (it) {
                 viewModel.reloadNote()
@@ -94,8 +101,6 @@ class NoteDetailsFragment : Fragment() {
                 requireActivity().onBackPressed()
             }
         }
-
-        return binding.root
     }
 
     override fun onPause() {
@@ -103,10 +108,7 @@ class NoteDetailsFragment : Fragment() {
 
         val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
-
-        if (viewModel.deleteRequest.value != true) {
-            saveNote()
-        }
+        saveNote()
     }
 
     private fun saveNote() {
@@ -116,22 +118,18 @@ class NoteDetailsFragment : Fragment() {
         val content =
                 binding.layout.findViewById<EditText>(R.id.note_content).text.toString()
 
-        val note = viewModel.getNoteWithTags().value
-        note?.let {
+        val noteWithTags = viewModel.getNoteWithTags().value
+        noteWithTags?.let {
             lifecycleScope.launch {
-                if (title != note.getTitle() || content != note.getNoteContent()) {
-                    val newNote = Note(
-                            id = note.getId(),
-                            title = title,
-                            noteContent = content,
-                            lastModify = System.currentTimeMillis()
-                    )
+                if (title != noteWithTags.getTitle()
+                        || content != noteWithTags.getNoteContent()
+                ) {
+                    noteWithTags.note.title = title
+                    noteWithTags.note.noteContent = content
 
                     Timber.d("Set new note content")
 
-                    db.updateNote(newNote)
-
-                    viewModel.reloadNote()
+                    db.updateNote(noteWithTags.note)
                     noteViewModel.requestReloadingData()
                 }
             }
@@ -150,33 +148,75 @@ class NoteDetailsFragment : Fragment() {
 
         val bottomBar: BottomAppBar = binding.coordinatorLayout.findViewById(R.id.bottom_bar)
 
-        bottomBar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.action_add_tag -> {
-                    viewModel.navigateToTagSelection()
-                    true
-                }
-                R.id.action_remove_note -> {
-                    MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("Warning")
-                            .setMessage("Do you really want to remove this note?")
-                            .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
-                            }
-                            .setPositiveButton(resources.getString(R.string.remove)) { dialog, which ->
-                                // Respond to positive button press
-                                viewModel.deleteMe()
-                            }
-                            .show()
-                    true
-                }
-                else -> false
-            }
-        }
-
+        bottomBar.setOnMenuItemClickListener(bottomBarOnItemClickListener)
         parentActivity.setSupportActionBar(toolbar)
         parentActivity.setupActionBarWithNavController(
                 findNavController(),
                 parentActivity.appBarConfiguration
         )
+    }
+
+    private val bottomBarOnItemClickListener = Toolbar.OnMenuItemClickListener { it ->
+        when (it.itemId) {
+            R.id.action_add_tag -> {
+                viewModel.navigateToTagSelection()
+                true
+            }
+            R.id.action_remove_note -> {
+                MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Warning")
+                        .setMessage("Do you really want to remove this note?")
+                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
+                        .setPositiveButton(resources.getString(R.string.remove)) { _, _ -> viewModel.deleteMe() }
+                        .show()
+                true
+            }
+
+            R.id.action_set_bold,
+            R.id.action_set_italic,
+            R.id.action_set_font_type,
+            R.id.action_alignment -> {
+                actionFormat(it.itemId)
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    private fun actionFormat(itemId: Int) {
+        val targetId = getActionFormatTarget()
+        val noteWithTags = viewModel.getNoteWithTags().value
+
+        noteWithTags?.let { note ->
+            val formatter = if (targetId == R.id.text_view_title) note.getTitleFormat() else note.getContentFormat()
+            when (itemId) {
+                R.id.action_set_bold -> formatter.toggleBold()
+                R.id.action_set_italic -> formatter.toggleItalic()
+                R.id.action_alignment -> formatter.toggleAlignment()
+                R.id.action_set_font_type -> formatter.toggleFontType()
+            }
+
+
+            if (targetId == R.id.text_view_title) {
+                viewModel.setNoteTitleFormat(formatter)
+                val title = binding.layout.findViewById<EditText>(R.id.text_view_title)
+                title.setNoteTitleFormat(note)
+            } else {
+                val content = binding.layout.findViewById<EditText>(R.id.note_content)
+                viewModel.setNoteContentFormat(formatter)
+                content.setNoteContentFormat(note)
+            }
+
+        }
+    }
+
+    private fun getActionFormatTarget(): Int {
+        val title = binding.layout.findViewById<EditText>(R.id.text_view_title)
+
+        if (title.isFocused) {
+            return R.id.text_view_title
+        }
+        return R.id.note_content
     }
 }

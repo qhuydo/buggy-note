@@ -3,8 +3,10 @@ package com.hcmus.clc18se.buggynote.viewmodels
 import android.os.Build
 import android.os.Debug
 import androidx.lifecycle.*
+import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabaseDao
+import com.hcmus.clc18se.buggynote.utils.TextFormatter
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -64,6 +66,30 @@ class NoteDetailsViewModel(
                 val nCol = database.removeNote(it.note)
                 _deleteRequest.value = true
                 Timber.d("Remove note - $nCol affected")
+            }
+        }
+    }
+
+    fun setNoteTitleFormat(formatter: TextFormatter) {
+        viewModelScope.launch {
+
+            Timber.d("ping")
+
+            noteWithTags.value?.let {
+                it.note.titleFormat = formatter.toString()
+                // database.updateNote(it.note)
+            }
+        }
+    }
+
+    fun setNoteContentFormat(formatter: TextFormatter) {
+        viewModelScope.launch {
+            noteWithTags.value?.let {
+
+                Timber.d("ping")
+
+                it.note.contentFormat = formatter.toString()
+                // database.updateNote(it.note)
             }
         }
     }
