@@ -26,6 +26,10 @@ class NoteDetailsViewModel(
     val navigateToTagSelection: LiveData<Long?>
         get() = _navigateToTagSelection
 
+    private var _deleteRequest = MutableLiveData(false)
+    val deleteRequest: LiveData<Boolean>
+        get() = _deleteRequest
+
     init {
         viewModelScope.launch {
             Timber.d("nNoteCrossRef column ${database.getNoteCrossRef(noteId).size}")
@@ -49,8 +53,19 @@ class NoteDetailsViewModel(
     fun navigateToTagSelection() {
         _navigateToTagSelection.value = noteId
     }
+
     fun doneNavigatingToTagSelection() {
         _navigateToTagSelection.value = null
+    }
+
+    fun deleteMe() {
+        viewModelScope.launch {
+            noteWithTags.value?.let {
+                val nCol = database.removeNote(it.note)
+                _deleteRequest.value = true
+                Timber.d("Remove note - $nCol affected")
+            }
+        }
     }
 }
 

@@ -1,6 +1,9 @@
 package com.hcmus.clc18se.buggynote.adapters
 
+import android.annotation.SuppressLint
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -49,7 +52,8 @@ fun loadFilterTags(recyclerView: RecyclerView, tags: List<Tag>?) {
 @BindingAdapter("timeStampFromLong")
 fun setTimeStampFromLong(textView: TextView, value: Long) {
     val text = convertLongToDateString(value)
-    textView.text = textView.context.resources.getString(R.string.last_edit, text)
+    // textView.text = textView.context.resources.getString(R.string.last_edit, text)
+    textView.text = "  $text"
 }
 
 
@@ -87,4 +91,20 @@ fun ChipGroup.setTags(tags: List<Tag>?, limit: Int?, onClickListener: View.OnCli
             }
         }
     }
+}
+
+
+@BindingAdapter("placeholderVisibility")
+fun <T> ViewGroup.setViewHolderVisibility(list: List<T>?) {
+    if (list == null || list.isEmpty()) {
+        this.visibility = View.VISIBLE
+    } else {
+        this.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("placeHolderEmoticon")
+fun TextView.setPlaceHolderEmoticon(nothing: Int?) {
+    this.text = this.context.resources.getStringArray(R.array.emoticons).random()
+
 }

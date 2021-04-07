@@ -51,12 +51,13 @@
                 android:textAppearance="?textAppearanceBody2"
                 tools:text="@tools:sample/lorem/random" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/time_stamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
+                android:gravity="center"
                 android:textAppearance="?textAppearanceCaption"
+                app:drawableStartCompat="@drawable/ic_baseline_access_time_24"
                 app:timeStampFromLong="@{note.note.lastModify}"
                 tools:text="@tools:sample/date/ddmmyy" />
 

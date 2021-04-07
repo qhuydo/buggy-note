@@ -18,10 +18,10 @@
 
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:background="?colorSurface"
         android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?colorSurface">
 
         <include
             android:id="@+id/app_bar"
@@ -41,7 +41,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="8dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="56dp"
+                android:layout_marginBottom="32dp"
                 android:orientation="vertical"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -100,8 +100,8 @@
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/tag_group"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="16dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:clickable="false"
                     android:focusable="false"
                     android:padding="0dp"
@@ -131,7 +131,9 @@
                 android:layout_height="wrap_content"
                 android:clickable="false"
                 android:focusable="false"
+                android:gravity="center"
                 android:textAppearance="?textAppearanceCaption"
+                app:drawableStartCompat="@drawable/ic_baseline_access_time_24"
                 app:timeStampFromLong="@{noteDetailsViewModel.noteWithTags.note.lastModify}"
                 tools:text="@tools:sample/date/ddmmyy" />
 

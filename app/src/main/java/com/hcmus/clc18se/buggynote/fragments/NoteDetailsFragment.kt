@@ -11,7 +11,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.afollestad.materialcab.attached.destroy
 import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.data.Note
@@ -86,6 +88,13 @@ class NoteDetailsFragment : Fragment() {
             }
         }
 
+        viewModel.deleteRequest.observe(viewLifecycleOwner) {
+            if (it == true) {
+                noteViewModel.requestReloadingData()
+                requireActivity().onBackPressed()
+            }
+        }
+
         return binding.root
     }
 
@@ -95,6 +104,12 @@ class NoteDetailsFragment : Fragment() {
         val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
 
+        if (viewModel.deleteRequest.value != true) {
+            saveNote()
+        }
+    }
+
+    private fun saveNote() {
         // TODO: why am I not able to use data binding?
         val title =
                 binding.layout.findViewById<EditText>(R.id.text_view_title).text.toString()
@@ -141,7 +156,20 @@ class NoteDetailsFragment : Fragment() {
                     viewModel.navigateToTagSelection()
                     true
                 }
-                else -> true
+                R.id.action_remove_note -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("Warning")
+                            .setMessage("Do you really want to remove this note?")
+                            .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                            }
+                            .setPositiveButton(resources.getString(R.string.remove)) { dialog, which ->
+                                // Respond to positive button press
+                                viewModel.deleteMe()
+                            }
+                            .show()
+                    true
+                }
+                else -> false
             }
         }
 

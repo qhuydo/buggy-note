@@ -8,4 +8,10 @@
         android:title="@string/add_new_tag"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_remove_note"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="@string/remove"
+        app:showAsAction="never" />
+
 </menu>

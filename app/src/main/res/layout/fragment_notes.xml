@@ -36,6 +36,33 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:placeholderVisibility="@{noteViewModel.noteList}"
+            tools:visibility="gone">
+
+            <TextView
+                android:id="@+id/placeholder_emoticon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:placeHolderEmoticon="@{0}"
+                android:textAppearance="?textAppearanceHeadline2"
+                android:textColor="?colorOnSurface"
+                tools:text="(っ◔◡◔)っ ❤" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nothing_here"
+                android:textAppearance="?textAppearanceHeadline6" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
