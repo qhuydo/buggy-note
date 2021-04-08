@@ -31,4 +31,6 @@
     <string name="show_note_list_as">Show note list as</string>
 
     <string name="note_list_view_type_key" translatable="false">note_list_view_type_key</string>
+    <string name="remove_from_device">Remove from device</string>
+    <string name="remove_confirmation">Do you really want to delete this?</string>
 </resources>

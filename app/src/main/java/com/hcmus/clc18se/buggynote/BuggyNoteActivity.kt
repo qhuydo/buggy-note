@@ -11,10 +11,12 @@ import com.google.android.material.navigation.NavigationView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import androidx.preference.PreferenceManager
 import com.hcmus.clc18se.buggynote.databinding.ActivityMainBinding
+import com.hcmus.clc18se.buggynote.utils.OnBackPressed
 
 class BuggyNoteActivity : AppCompatActivity() {
 
@@ -39,11 +41,7 @@ class BuggyNoteActivity : AppCompatActivity() {
 
         drawerLayout = binding.drawerLayout
 
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_notes, R.id.nav_tags
-            ), drawerLayout
-        )
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_notes, R.id.nav_tags), drawerLayout)
 
         val navView: NavigationView = binding.navView
         navView.setupWithNavController(navController)
@@ -54,22 +52,41 @@ class BuggyNoteActivity : AppCompatActivity() {
             Handler().postDelayed({
                 when (item.itemId) {
                     else -> NavigationUI.onNavDestinationSelected(
-                        item, navController
+                            item, navController
                     ) || onOptionsItemSelected(item)
                 }
             }, 280)
         }
+
+        navController.addOnDestinationChangedListener(onDestinationChangedListener)
     }
 
     override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
+
+        // get the current fragment
+        val currentFragment = navHostFragment.childFragmentManager.fragments[0] as? OnBackPressed
+        val defaultBackPress = currentFragment?.onBackPress()?.not() ?: true
+
+        if (defaultBackPress) {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                super.onBackPressed()
+            }
         }
+
+    }
+
+    override fun onDestroy() {
+        navController.removeOnDestinationChangedListener(onDestinationChangedListener)
+        super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private val onDestinationChangedListener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
+
     }
 }

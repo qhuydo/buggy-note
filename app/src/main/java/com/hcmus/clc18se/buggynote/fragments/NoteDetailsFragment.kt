@@ -42,15 +42,15 @@ class NoteDetailsFragment : Fragment() {
 
     private val viewModel: NoteDetailsViewModel by navGraphViewModels(R.id.navigation_note_details) {
         NoteDetailsViewModelFactory(
-            arguments.noteId,
-            db
+                arguments.noteId,
+                db
         )
     }
 
     private val noteViewModel: NoteViewModel by activityViewModels {
         NoteViewModelFactory(
-            requireActivity().application,
-            db
+                requireActivity().application,
+                db
         )
     }
 
@@ -59,9 +59,9 @@ class NoteDetailsFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
 
         binding = FragmentNoteDetailsBinding.inflate(inflater, container, false)
@@ -89,9 +89,9 @@ class NoteDetailsFragment : Fragment() {
         viewModel.navigateToTagSelection.observe(viewLifecycleOwner) {
             if (it != null) {
                 findNavController().navigate(
-                    NoteDetailsFragmentDirections.actionNavNoteDetailsToTagSelectionFragment(
-                        arguments.noteId
-                    )
+                        NoteDetailsFragmentDirections.actionNavNoteDetailsToTagSelectionFragment(
+                                arguments.noteId
+                        )
                 )
                 viewModel.doneNavigatingToTagSelection()
             }
@@ -109,7 +109,7 @@ class NoteDetailsFragment : Fragment() {
         super.onPause()
 
         val imm: InputMethodManager? =
-            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
         saveNote()
     }
@@ -117,16 +117,16 @@ class NoteDetailsFragment : Fragment() {
     private fun saveNote(require: Boolean = false) {
         // TODO: why am I not able to use data binding?
         val title =
-            binding.layout.findViewById<EditText>(R.id.text_view_title).text.toString()
+                binding.layout.findViewById<EditText>(R.id.text_view_title).text.toString()
         val content =
-            binding.layout.findViewById<EditText>(R.id.note_content).text.toString()
+                binding.layout.findViewById<EditText>(R.id.note_content).text.toString()
 
         val noteWithTags = viewModel.getNoteWithTags().value
         noteWithTags?.let {
             lifecycleScope.launch {
                 if (title != noteWithTags.getTitle()
-                    || content != noteWithTags.getNoteContent()
-                    || require
+                        || content != noteWithTags.getNoteContent()
+                        || require
                 ) {
                     noteWithTags.note.title = title
                     noteWithTags.note.noteContent = content
@@ -155,8 +155,8 @@ class NoteDetailsFragment : Fragment() {
         bottomBar.setOnMenuItemClickListener(bottomBarOnItemClickListener)
         parentActivity.setSupportActionBar(toolbar)
         parentActivity.setupActionBarWithNavController(
-            findNavController(),
-            parentActivity.appBarConfiguration
+                findNavController(),
+                parentActivity.appBarConfiguration
         )
     }
 
@@ -168,11 +168,10 @@ class NoteDetailsFragment : Fragment() {
             }
             R.id.action_remove_note -> {
                 MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Warning")
-                    .setMessage("Do you really want to remove this note?")
-                    .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
-                    .setPositiveButton(resources.getString(R.string.remove)) { _, _ -> viewModel.deleteMe() }
-                    .show()
+                        .setTitle(getString(R.string.remove_from_device))
+                        .setMessage(getString(R.string.remove_confirmation)).setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
+                        .setPositiveButton(resources.getString(R.string.remove)) { _, _ -> viewModel.deleteMe() }
+                        .show()
                 true
             }
 
@@ -194,7 +193,7 @@ class NoteDetailsFragment : Fragment() {
 
         noteWithTags?.let { note ->
             val formatter =
-                if (targetId == R.id.text_view_title) note.getTitleFormat() else note.getContentFormat()
+                    if (targetId == R.id.text_view_title) note.getTitleFormat() else note.getContentFormat()
             when (itemId) {
                 R.id.action_set_bold -> formatter.toggleBold()
                 R.id.action_set_italic -> formatter.toggleItalic()
