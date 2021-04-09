@@ -4,33 +4,26 @@
 
     <item
         android:id="@+id/action_set_font_type"
-        app:showAsAction="always"
         android:icon="@drawable/ic_outline_font_download_24"
-        android:title="@string/set_font_type"/>
+        android:title="@string/set_font_type"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_alignment"
-        app:showAsAction="always"
         android:icon="@drawable/ic_baseline_format_align_left_24"
-        android:title="@string/text_alignment"/>
+        android:title="@string/text_alignment"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_set_bold"
-        app:showAsAction="always"
         android:icon="@drawable/ic_baseline_format_bold_24"
-        android:title="@string/format_bold"/>
+        android:title="@string/format_bold"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_set_italic"
-        app:showAsAction="always"
         android:icon="@drawable/ic_baseline_format_italic_24"
-        android:title="@string/format_italic"/>
-
-    <item
-        android:visible="false"
-        android:id="@+id/action_set_all_caps"
-        android:icon="@drawable/ic_baseline_keyboard_capslock_24"
-        android:title="@string/set_all_caps"
+        android:title="@string/format_italic"
         app:showAsAction="always" />
 
     <item

@@ -4,13 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Checkable
 import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.databinding.ItemNoteBinding
+import java.util.*
 
 class NoteAdapter(private val onClickHandler: OnClickHandler) :
-    ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
+        ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
 
     private var multiSelect = false
     private var selectedItems = mutableListOf<NoteWithTags>()
@@ -52,6 +54,25 @@ class NoteAdapter(private val onClickHandler: OnClickHandler) :
         multiSelect = false
         selectedItems.clear()
         notifyDataSetChanged()
+    }
+
+    /**
+     * Rearrange item in the note list when ItemTouchHelper wants to move the dragged item
+     * from its old position to the new position.
+     */
+    fun onItemMove(fromPosition: Int, toPosition: Int) {
+        val items = currentList.toMutableList()
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(items, i, i + 1)
+            }
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(items, i, i - 1)
+            }
+        }
+        submitList(items)
+        onClickHandler.onPostReordered(items)
     }
 
 
@@ -109,7 +130,31 @@ class NoteAdapter(private val onClickHandler: OnClickHandler) :
     }
 }
 
+// TODO: change my name
 interface OnClickHandler {
     fun onClick(note: NoteWithTags)
     fun onMultipleSelect(note: NoteWithTags): Boolean
+    fun onPostReordered(notes: List<NoteWithTags>)
+}
+
+class NoteItemTouchHelperCallBack(private val noteAdapter: NoteAdapter) : ItemTouchHelper.SimpleCallback(
+        ItemTouchHelper.UP or ItemTouchHelper.DOWN
+                or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
+        0
+) {
+    override fun isLongPressDragEnabled(): Boolean {
+        // The drag action occurs when only one item in the note list has been selected.
+        return noteAdapter.numberOfSelectedItems() <= 1
+    }
+
+    override fun isItemViewSwipeEnabled(): Boolean {
+        return false
+    }
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
+    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        noteAdapter.onItemMove(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
+        return true
+    }
 }

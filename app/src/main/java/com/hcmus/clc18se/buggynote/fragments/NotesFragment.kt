@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.afollestad.materialcab.attached.AttachedCab
 import com.afollestad.materialcab.attached.destroy
@@ -65,6 +66,10 @@ class NotesFragment : Fragment(), OnBackPressed {
             invalidateCab()
             return true
         }
+
+        override fun onPostReordered(notes: List<NoteWithTags>) {
+            noteViewModel.reorderNotes(notes)
+        }
     }
 
     private val onTagCheckedChangeListener = ItemOnCheckedChangeListener { isChecked, tag ->
@@ -95,6 +100,7 @@ class NotesFragment : Fragment(), OnBackPressed {
         }
 
         binding.apply {
+            // TODO: refactor me
             lifecycleOwner = this@NotesFragment
 
             noteViewModel = this@NotesFragment.noteViewModel
@@ -106,6 +112,10 @@ class NotesFragment : Fragment(), OnBackPressed {
             )
             val layoutManager = noteList.layoutManager as StaggeredGridLayoutManager
             layoutManager.spanCount = requireContext().getSpanCountForNoteList(preferences)
+
+            val callback = NoteItemTouchHelperCallBack(adapter)
+            val itemTouchHelper =  ItemTouchHelper(callback)
+            itemTouchHelper.attachToRecyclerView(binding.noteList)
 
             tagFilterList.adapter = filterTagAdapter
             tagFilterList.addItemDecoration(
@@ -298,6 +308,7 @@ class NotesFragment : Fragment(), OnBackPressed {
                 onSelection { onCabItemSelected(it) }
                 onDestroy {
                     adapter.finishSelection()
+                    mainCab = null
                     true
                 }
             }

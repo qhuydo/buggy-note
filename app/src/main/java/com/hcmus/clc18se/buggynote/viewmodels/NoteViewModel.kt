@@ -11,8 +11,8 @@ import timber.log.Timber
 import java.util.*
 
 class NoteViewModel(
-    application: Application,
-    private val database: BuggyNoteDatabaseDao
+        application: Application,
+        private val database: BuggyNoteDatabaseDao
 ) : AndroidViewModel(application) {
 
     private var _noteList = MutableLiveData<List<NoteWithTags>>()
@@ -99,19 +99,26 @@ class NoteViewModel(
         }
     }
 
+    fun reorderNotes(notes: List<NoteWithTags>) {
+        // TODO: refactor me
+        // TODO: improve performance
+        viewModelScope.launch {
+            Timber.d("ping")
+            notes.forEachIndexed {index: Int, note: NoteWithTags -> note.note.order = index }
+            val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
+            Timber.d("$nCols cols affected")
+        }
+    }
+
     fun filterByTagsWithKeyword(tags: List<Tag>, keyword: String) {
         // TODO: refactor me
         viewModelScope.launch {
             Timber.d("Ping")
             val start = System.currentTimeMillis()
-//            val searchKey = keyword.toLowerCase(Locale.ROOT)
+
             if (tags.any { it.selectState }) {
 
                 val tagIds = tags.filter { it.selectState }.map { it.id }
-//                _noteList.value = database.filterNoteByTagList(tagIds).filter {
-//                    it.note.noteContent.contains(searchKey, true)
-//                            || it.note.title.contains(searchKey, true)
-//                }
                 _noteList.value = database.filterNoteByKeyWordAndTags(keyword, tagIds)
 
             } else {
@@ -127,8 +134,8 @@ class NoteViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class NoteViewModelFactory(
-    val application: Application,
-    val database: BuggyNoteDatabaseDao
+        val application: Application,
+        val database: BuggyNoteDatabaseDao
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
