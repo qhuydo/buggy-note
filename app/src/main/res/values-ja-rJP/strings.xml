@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">設定</string>
+    <string name="menu_notes">ノートリスト</string>
+    <string name="menu_tags">タグ</string>
+    <string name="item_view">リストの表示形式</string>
+    <string name="title">タイトル</string>
+    <string name="content">内容</string>
+    <string name="save">保存</string>
+    <string name="create_new_tag">新しいタグを作成</string>
+    <string name="exist_tag">タグは既に存在しています</string>
+    <string name="last_edit">最終論集: %1$s</string>
+    <string name="add_new_tag">タグを追加</string>
+    <string name="remove">削除</string>
+    <string name="format_bold">太字</string>
+    <string name="format_italic">斜体</string>
+    <string name="text_alignment">配置</string>
+    <string name="set_font_type">フォントのスタイル</string>
+    <string name="settings">設定</string>
+    <string name="display">表示</string>
+    <string name="show_note_list_as">ノートリストの表示形式</string>
+    <string name="remove_from_device">デバイスから削除</string>
+    <string name="remove_confirmation">デバイスから完全に削除してもよろしいですか。</string>
+</resources>

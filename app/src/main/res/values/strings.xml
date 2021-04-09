@@ -1,10 +1,5 @@
 <resources>
-    <string name="app_name">buggy note</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="app_name" translatable="false">buggy note</string>
     <string name="action_settings">Settings</string>
 
     <string name="menu_notes">Notes</string>
@@ -17,11 +12,9 @@
     <string name="exist_tag">The tag was existed</string>
     <string name="last_edit">Last edited: %1$s</string>
     <string name="add_new_tag">Add new tag</string>
-    <string name="add_a_tag">Add a tag</string>
     <string name="remove">Remove</string>
-    <string name="cancel">@android:string/cancel</string>
+    <string name="cancel" translatable="false">@android:string/cancel</string>
     <string name="nothing_here">Nothing here</string>
-    <string name="set_all_caps">Set all caps</string>
     <string name="format_bold">Format Bold</string>
     <string name="format_italic">Format italic</string>
     <string name="text_alignment">Text Alignment</string>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Cài đặt</string>
+    <string name="menu_notes">Ghi chú</string>
+    <string name="menu_tags">Nhãn</string>
+    <string name="item_view">Danh sách hiển thị</string>
+    <string name="title">Tiêu đề</string>
+    <string name="content">Nội dung</string>
+    <string name="save">Lưu</string>
+    <string name="create_new_tag">Tạo nhãn mới</string>
+    <string name="exist_tag">Nhãn đã tồn tại</string>
+    <string name="last_edit">Sửa đổi lần cuối: %1$s</string>
+    <string name="add_new_tag">Thêm nhãn</string>
+    <string name="remove">Xóa</string>
+    <string name="nothing_here">Không có gì ở đây</string>
+    <string name="format_bold">In đậm</string>
+    <string name="format_italic">In nghiêng</string>
+    <string name="text_alignment">Căn lề</string>
+    <string name="set_font_type">Kiểu phông</string>
+    <string name="settings">Cài đặt</string>
+    <string name="display">Hiển thị</string>
+    <string name="show_note_list_as">Xem danh sách ghi chú dưới dạng</string>
+    <string name="remove_from_device">Xóa khỏi thiết bị</string>
+    <string name="remove_confirmation">Bạn có muốn xóa khỏi thiết bị?</string>
+</resources>
