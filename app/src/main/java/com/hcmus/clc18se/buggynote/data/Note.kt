@@ -25,5 +25,8 @@ data class Note(
         var titleFormat: String = DEFAULT_FORMAT_STRING,
 
         @ColumnInfo(name = "content_format", defaultValue = DEFAULT_FORMAT_STRING)
-        var contentFormat: String = DEFAULT_FORMAT_STRING
+        var contentFormat: String = DEFAULT_FORMAT_STRING,
+
+        @ColumnInfo(defaultValue = "0")
+        var order: Int = 0
 )

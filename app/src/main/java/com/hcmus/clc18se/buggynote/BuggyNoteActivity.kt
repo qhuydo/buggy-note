@@ -1,12 +1,8 @@
 package com.hcmus.clc18se.buggynote
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.view.ActionMode
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.os.Looper
 import com.google.android.material.navigation.NavigationView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +13,7 @@ import androidx.navigation.ui.*
 import androidx.preference.PreferenceManager
 import com.hcmus.clc18se.buggynote.databinding.ActivityMainBinding
 import com.hcmus.clc18se.buggynote.utils.OnBackPressed
+import timber.log.Timber
 
 class BuggyNoteActivity : AppCompatActivity() {
 
@@ -49,7 +46,7 @@ class BuggyNoteActivity : AppCompatActivity() {
         navView.setNavigationItemSelectedListener { item ->
             drawerLayout.closeDrawer(GravityCompat.START)
 
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 when (item.itemId) {
                     else -> NavigationUI.onNavDestinationSelected(
                             item, navController
@@ -66,6 +63,7 @@ class BuggyNoteActivity : AppCompatActivity() {
         // get the current fragment
         val currentFragment = navHostFragment.childFragmentManager.fragments[0] as? OnBackPressed
         val defaultBackPress = currentFragment?.onBackPress()?.not() ?: true
+        Timber.d(defaultBackPress.toString())
 
         if (defaultBackPress) {
             if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {

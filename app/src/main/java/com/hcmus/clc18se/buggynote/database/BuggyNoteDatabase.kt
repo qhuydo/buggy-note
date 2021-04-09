@@ -10,7 +10,7 @@ import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteCrossRef
 import com.hcmus.clc18se.buggynote.data.Tag
 
-@Database(entities = [Note::class, Tag::class, NoteCrossRef::class], version = 4, exportSchema = false)
+@Database(entities = [Note::class, Tag::class, NoteCrossRef::class], version = 5, exportSchema = false)
 abstract class BuggyNoteDatabase : RoomDatabase() {
     abstract val buggyNoteDatabaseDao: BuggyNoteDatabaseDao
 
@@ -29,6 +29,7 @@ abstract class BuggyNoteDatabase : RoomDatabase() {
                     )
                             .addMigrations(MIGRATE_2_3)
                             .addMigrations(MIGRATE_3_4)
+                            .addMigrations(MIGRATE_4_5)
                             .fallbackToDestructiveMigration()
                             .build()
                     INSTANCE = instance
@@ -63,6 +64,14 @@ abstract class BuggyNoteDatabase : RoomDatabase() {
                 // `title_format` TEXT NOT NULL DEFAULT '8388611|0|0', `content_format` TEXT NOT NULL DEFAULT '8388611|0|0'
                 database.execSQL("ALTER TABLE note ADD COLUMN `title_format` TEXT NOT NULL DEFAULT '8388611|0|0'")
                 database.execSQL("ALTER TABLE note ADD COLUMN `content_format` TEXT NOT NULL DEFAULT '8388611|0|0'")
+            }
+        }
+
+        private val MIGRATE_4_5 = object : Migration(4, 5)  {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("DROP TABLE IF EXISTS `index_note_note_id`")
+                database.execSQL("ALTER TABLE note ADD COLUMN  `order` INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_note_note_id` ON `note` (`note_id`)")
             }
         }
     }
