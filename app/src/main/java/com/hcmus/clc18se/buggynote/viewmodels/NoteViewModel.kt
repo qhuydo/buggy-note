@@ -8,7 +8,6 @@ import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabaseDao
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 
 class NoteViewModel(
         application: Application,
@@ -26,6 +25,10 @@ class NoteViewModel(
     private var _reloadDataRequest = MutableLiveData(false)
     val reloadDataRequest: LiveData<Boolean>
         get() = _reloadDataRequest
+
+    private var _orderChanged = MutableLiveData(false)
+    val orderChanged: LiveData<Boolean>
+        get() = _orderChanged
 
     init {
         loadNotes()
@@ -99,15 +102,17 @@ class NoteViewModel(
         }
     }
 
-    fun reorderNotes(notes: List<NoteWithTags>) {
+    suspend fun reorderNotes(notes: List<NoteWithTags>) {
         // TODO: refactor me
         // TODO: improve performance
-        viewModelScope.launch {
-            Timber.d("ping")
-            notes.forEachIndexed {index: Int, note: NoteWithTags -> note.note.order = index }
-            val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
-            Timber.d("$nCols cols affected")
-        }
+
+        _orderChanged.value = true
+        Timber.d("reorderNotes")
+        notes.forEachIndexed { index: Int, note: NoteWithTags -> note.note.order = index }
+        val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
+        Timber.d("$nCols cols affected")
+        loadNoteFromDatabase()
+        _orderChanged.value = false
     }
 
     fun filterByTagsWithKeyword(tags: List<Tag>, keyword: String) {
@@ -128,6 +133,10 @@ class NoteViewModel(
             Timber.d("filter time: ${end - start}")
         }
 
+    }
+
+    fun requestReordering() {
+        _orderChanged.value = true
     }
 
 }

@@ -68,8 +68,8 @@
                         android:text="@{noteDetailsViewModel.noteWithTags.note.title}"
                         android:textAlignment="gravity"
                         android:textColor="?colorOnSurface"
-                        app:noteTitleFormat="@{noteDetailsViewModel.noteWithTags}"
                         tools:text="Title" />
+<!--                        app:noteTitleFormat="@{noteDetailsViewModel.noteWithTags}"-->
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -96,8 +96,8 @@
                         android:labelFor="@id/content_layout"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.noteContent}"
                         android:textAlignment="gravity"
-                        app:noteContentFormat="@{noteDetailsViewModel.noteWithTags}"
                         tools:text="@tools:sample/lorem/random" />
+<!--                        app:noteContentFormat="@{noteDetailsViewModel.noteWithTags}"-->
 
                 </com.google.android.material.textfield.TextInputLayout>
 

@@ -1,5 +1,6 @@
 package com.hcmus.clc18se.buggynote.fragments
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
@@ -28,7 +29,7 @@ import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModelFactory
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import timber.log.Timber
 
 class NotesFragment : Fragment(), OnBackPressed {
@@ -68,12 +69,15 @@ class NotesFragment : Fragment(), OnBackPressed {
         }
 
         override fun onPostReordered(notes: List<NoteWithTags>) {
-            noteViewModel.reorderNotes(notes)
+            noteViewModel.requestReordering()
         }
+
     }
 
     private val onTagCheckedChangeListener = ItemOnCheckedChangeListener { isChecked, tag ->
         if (tag.selectState != isChecked) {
+            adapter.finishSelection()
+            mainCab?.destroy()
             tag.selectState = isChecked
 
             tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
@@ -114,7 +118,7 @@ class NotesFragment : Fragment(), OnBackPressed {
             layoutManager.spanCount = requireContext().getSpanCountForNoteList(preferences)
 
             val callback = NoteItemTouchHelperCallBack(adapter)
-            val itemTouchHelper =  ItemTouchHelper(callback)
+            val itemTouchHelper = ItemTouchHelper(callback)
             itemTouchHelper.attachToRecyclerView(binding.noteList)
 
             tagFilterList.adapter = filterTagAdapter
@@ -161,6 +165,20 @@ class NotesFragment : Fragment(), OnBackPressed {
             }
         }
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            if (noteViewModel.orderChanged.value == true) {
+                noteViewModel.reorderNotes(adapter.currentList)
+            }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {

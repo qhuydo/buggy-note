@@ -15,10 +15,10 @@ class NoteAdapter(private val onClickHandler: OnClickHandler) :
         ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
 
     private var multiSelect = false
-    private var selectedItems = mutableListOf<NoteWithTags>()
+    private var selectedItems = mutableSetOf<Long>()
 
     internal fun getSelectedItems(): List<NoteWithTags> {
-        return selectedItems
+        return currentList.filter { it.getId() in selectedItems }
     }
 
     fun numberOfSelectedItems(): Int {
@@ -29,7 +29,7 @@ class NoteAdapter(private val onClickHandler: OnClickHandler) :
         if (currentList.size == selectedItems.size) {
             selectedItems.clear()
         } else {
-            selectedItems = currentList.toMutableList()
+            selectedItems.addAll(currentList.map { it.getId() })
         }
         notifyDataSetChanged()
     }
@@ -37,13 +37,13 @@ class NoteAdapter(private val onClickHandler: OnClickHandler) :
     // helper function that adds/removes an item to the list depending on the app's state
     private fun selectItem(holder: ViewHolder, item: NoteWithTags) {
 
-        if (selectedItems.contains(item)) {
-            selectedItems.remove(item)
+        if (selectedItems.contains(item.getId())) {
+            selectedItems.remove(item.getId())
             if (holder.itemView is Checkable) {
                 holder.itemView.isChecked = false
             }
         } else {
-            selectedItems.add(item)
+            selectedItems.add(item.getId())
             if (holder.itemView is Checkable) {
                 holder.itemView.isChecked = true
             }
@@ -61,14 +61,20 @@ class NoteAdapter(private val onClickHandler: OnClickHandler) :
      * from its old position to the new position.
      */
     fun onItemMove(fromPosition: Int, toPosition: Int) {
+        if (fromPosition == RecyclerView.NO_POSITION || toPosition == RecyclerView.NO_POSITION) {
+            //Timber.d("NO")
+            return
+        }
         val items = currentList.toMutableList()
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
                 Collections.swap(items, i, i + 1)
+                //notifyItemMoved(i, i + 1)
             }
         } else {
             for (i in fromPosition downTo toPosition + 1) {
                 Collections.swap(items, i, i - 1)
+                //notifyItemMoved(i, i - 1)
             }
         }
         submitList(items)
@@ -99,7 +105,7 @@ class NoteAdapter(private val onClickHandler: OnClickHandler) :
         }
 
         if (holder.itemView is Checkable) {
-            holder.itemView.isChecked = selectedItems.contains(noteWithTags)
+            holder.itemView.isChecked = selectedItems.contains(noteWithTags.getId())
         }
     }
 
@@ -126,7 +132,6 @@ class NoteAdapter(private val onClickHandler: OnClickHandler) :
                 return ViewHolder(ItemNoteBinding.inflate(LayoutInflater.from(parent.context)))
             }
         }
-
     }
 }
 
@@ -154,7 +159,7 @@ class NoteItemTouchHelperCallBack(private val noteAdapter: NoteAdapter) : ItemTo
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
 
     override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-        noteAdapter.onItemMove(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
+        noteAdapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
         return true
     }
 }
