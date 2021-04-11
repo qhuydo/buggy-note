@@ -35,13 +35,13 @@ class NoteViewModel(
     }
 
     fun loadNotes() {
-        Timber.d("ping")
+        Timber.d("loadNotes - ping")
         viewModelScope.launch {
             loadNoteFromDatabase()
         }
     }
 
-    private suspend fun loadNoteFromDatabase() {
+    suspend fun loadNoteFromDatabase() {
         _noteList.value = database.getAllNoteWithTags()
     }
 
@@ -88,7 +88,6 @@ class NoteViewModel(
             Timber.d("Ping")
             if (tags.any { it.selectState }) {
                 val start = System.currentTimeMillis()
-
                 val tagIds = tags.filter { it.selectState }.map { it.id }
 
                 _noteList.value = database.filterNoteByTagList(tagIds)
@@ -111,7 +110,6 @@ class NoteViewModel(
         notes.forEachIndexed { index: Int, note: NoteWithTags -> note.note.order = index }
         val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
         Timber.d("$nCols cols affected")
-        loadNoteFromDatabase()
         _orderChanged.value = false
     }
 

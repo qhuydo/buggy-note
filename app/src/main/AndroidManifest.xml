@@ -11,6 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BuggyNote">
         <activity
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:name="com.hcmus.clc18se.buggynote.BuggyNoteActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize"

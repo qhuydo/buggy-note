@@ -1,7 +1,6 @@
 package com.hcmus.clc18se.buggynote.fragments
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
@@ -160,7 +159,7 @@ class NoteDetailsFragment : Fragment() {
         )
     }
 
-    private val bottomBarOnItemClickListener = Toolbar.OnMenuItemClickListener { it ->
+    private val bottomBarOnItemClickListener = Toolbar.OnMenuItemClickListener {
         when (it.itemId) {
             R.id.action_add_tag -> {
                 viewModel.navigateToTagSelection()

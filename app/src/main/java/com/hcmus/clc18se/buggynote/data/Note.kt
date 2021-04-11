@@ -1,9 +1,7 @@
 package com.hcmus.clc18se.buggynote.data
 
-import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.DEFAULT_FORMAT_STRING
 

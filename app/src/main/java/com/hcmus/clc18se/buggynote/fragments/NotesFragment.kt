@@ -46,16 +46,15 @@ class NotesFragment : Fragment(), OnBackPressed {
         NoteViewModelFactory(requireActivity().application, db)
     }
 
-    private val tagViewModel: TagViewModel by activityViewModels {
-        TagViewModelFactory(db)
-    }
+    private val tagViewModel: TagViewModel by activityViewModels { TagViewModelFactory(db) }
 
-    private val adapter by lazy {
-        NoteAdapter(onNoteItemClickListener)
-    }
+    private val adapter by lazy { NoteAdapter(onNoteItemClickListener) }
 
-    private val filterTagAdapter by lazy {
-        TagFilterAdapter(onTagCheckedChangeListener)
+    private val filterTagAdapter by lazy { TagFilterAdapter(onTagCheckedChangeListener) }
+
+    private val noteListTouchHelper by lazy {
+        val callback = NoteItemTouchHelperCallBack(adapter)
+        ItemTouchHelper(callback)
     }
 
     private val onNoteItemClickListener = object : OnClickHandler {
@@ -78,8 +77,16 @@ class NotesFragment : Fragment(), OnBackPressed {
         if (tag.selectState != isChecked) {
             adapter.finishSelection()
             mainCab?.destroy()
-            tag.selectState = isChecked
 
+            runBlocking {
+                if (noteViewModel.orderChanged.value == true &&
+                        tagViewModel.tags.value?.all { !it.selectState } == true
+                ) {
+                    noteViewModel.reorderNotes(adapter.currentList)
+                }
+            }
+
+            tag.selectState = isChecked
             tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
         }
     }
@@ -111,15 +118,10 @@ class NotesFragment : Fragment(), OnBackPressed {
             tagViewModel = this@NotesFragment.tagViewModel
 
             noteList.adapter = adapter
-            noteList.addItemDecoration(
-                    SpaceItemDecoration(resources.getDimension(R.dimen.item_note_margin).toInt())
-            )
-            val layoutManager = noteList.layoutManager as StaggeredGridLayoutManager
-            layoutManager.spanCount = requireContext().getSpanCountForNoteList(preferences)
+            noteList.addItemDecoration(SpaceItemDecoration(resources.getDimension(R.dimen.item_note_margin).toInt()))
 
-            val callback = NoteItemTouchHelperCallBack(adapter)
-            val itemTouchHelper = ItemTouchHelper(callback)
-            itemTouchHelper.attachToRecyclerView(binding.noteList)
+            noteList.setUpLayoutManagerForNoteList(preferences)
+            noteListTouchHelper.attachToRecyclerView(binding.noteList)
 
             tagFilterList.adapter = filterTagAdapter
             tagFilterList.addItemDecoration(
@@ -171,8 +173,11 @@ class NotesFragment : Fragment(), OnBackPressed {
         super.onPause()
 
         CoroutineScope(Dispatchers.Main).launch {
-            if (noteViewModel.orderChanged.value == true) {
+            if (noteViewModel.orderChanged.value == true &&
+                    tagViewModel.tags.value?.all { !it.selectState } == true
+            ) {
                 noteViewModel.reorderNotes(adapter.currentList)
+                noteViewModel.loadNoteFromDatabase()
             }
         }
     }
@@ -183,8 +188,7 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        val noteListDisplayType =
-                preferences.getString(getString(R.string.note_list_view_type_key), "0")
+        val noteListDisplayType = preferences.getString(getString(R.string.note_list_view_type_key), "0")
 
         val noteListDisplayItem = menu.findItem(R.id.note_list_item_view_type)
         when (noteListDisplayType) {
@@ -198,6 +202,24 @@ class NotesFragment : Fragment(), OnBackPressed {
 
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
+
+//        searchView.setOnSearchClickListener {
+//            noteListTouchHelper.attachToRecyclerView(null)
+//        }
+        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                Timber.d("searchItem.onMenuItemActionCollapse called")
+                tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
+                noteListTouchHelper.attachToRecyclerView(binding.noteList)
+                return true
+            }
+
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                Timber.d("searchItem.onMenuItemActionExpand called")
+                noteListTouchHelper.attachToRecyclerView(null)
+                return true
+            }
+        })
 
         // TODO: fix this inefficient
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -228,13 +250,15 @@ class NotesFragment : Fragment(), OnBackPressed {
                 }
                 return false
             }
+
         })
 
-        searchView.setOnCloseListener {
-            Timber.d("searchView.setOnCloseListener called")
-            tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
-            true
-        }
+//        searchView.setOnCloseListener {
+//            Timber.d("searchView.setOnCloseListener called")
+//            tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
+//            noteListTouchHelper.attachToRecyclerView(binding.noteList)
+//            true
+//        }
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -244,10 +268,8 @@ class NotesFragment : Fragment(), OnBackPressed {
 
             R.id.note_list_item_view_type -> {
                 onItemTypeOptionClicked()
-                val noteListDisplayType =
-                        preferences.getString(getString(R.string.note_list_view_type_key), "0")
 
-                when (noteListDisplayType) {
+                when (preferences.getString(getString(R.string.note_list_view_type_key), "0")) {
                     "0" -> item.setIcon(R.drawable.ic_baseline_list_alt_24)
                     else -> item.setIcon(R.drawable.ic_baseline_grid_view_24)
                 }
@@ -271,14 +293,16 @@ class NotesFragment : Fragment(), OnBackPressed {
     }
 
     private fun refreshNoteList() {
-        binding.noteList.adapter = null
-        binding.noteList.adapter = adapter
 
-        val layoutManager = binding.noteList.layoutManager as StaggeredGridLayoutManager
-        layoutManager.spanCount = requireContext().getSpanCountForNoteList(preferences)
+        binding.apply {
+            noteList.adapter = null
+            noteList.adapter = adapter
+            noteList.setUpLayoutManagerForNoteList(preferences)
+            noteList.loadNotes(this@NotesFragment.noteViewModel.noteList.value)
+        }
 
-        binding.noteList.loadNotes(noteViewModel.noteList.value)
         adapter.notifyDataSetChanged()
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -40,8 +40,8 @@
                 android:maxLines="2"
                 android:text="@{note.title}"
                 android:textAppearance="?textAppearanceHeadline6"
+                app:noteTitleFormat="@{note}"
                 tools:text="Title" />
-<!--                app:noteTitleFormat="@{note}"-->
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/note_content"
@@ -51,8 +51,8 @@
                 android:text="@{note.noteContent}"
                 android:textAlignment="gravity"
                 android:textAppearance="?textAppearanceBody2"
+                app:noteContentFormat="@{note}"
                 tools:text="@tools:sample/lorem/random" />
-<!--                app:noteContentFormat="@{note}"-->
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/time_stamp"

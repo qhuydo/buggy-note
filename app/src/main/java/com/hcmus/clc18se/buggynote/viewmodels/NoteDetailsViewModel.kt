@@ -1,9 +1,6 @@
 package com.hcmus.clc18se.buggynote.viewmodels
 
-import android.os.Build
-import android.os.Debug
 import androidx.lifecycle.*
-import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabaseDao
 import com.hcmus.clc18se.buggynote.utils.TextFormatter

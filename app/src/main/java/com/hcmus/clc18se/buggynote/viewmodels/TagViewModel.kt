@@ -16,7 +16,7 @@ class TagViewModel(val database: BuggyNoteDatabaseDao) : ViewModel() {
         loadTags()
     }
 
-    fun loadTags() {
+    private fun loadTags() {
         viewModelScope.launch {
             loadTagFromDatabase()
         }
