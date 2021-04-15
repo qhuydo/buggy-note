@@ -129,6 +129,7 @@ class NoteDetailsFragment : Fragment() {
                 ) {
                     noteWithTags.note.title = title
                     noteWithTags.note.noteContent = content
+                    noteWithTags.note.lastModify = System.currentTimeMillis()
 
                     Timber.d("Set new note content")
 
@@ -210,7 +211,6 @@ class NoteDetailsFragment : Fragment() {
                 content.setNoteContentFormat(note)
                 noteWithTags.note.contentFormat = formatter.toString()
             }
-
             saveNote(true)
         }
     }

@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.afollestad.materialcab.attached.AttachedCab
 import com.afollestad.materialcab.attached.destroy
 import com.afollestad.materialcab.attached.isActive
@@ -184,6 +183,7 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+        binding.noteList.setUpLayoutManagerForNoteList(preferences)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
