@@ -84,7 +84,7 @@ class BuggyNoteActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private val onDestinationChangedListener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
+    private val onDestinationChangedListener = NavController.OnDestinationChangedListener { _, _, _ ->
 
     }
 }

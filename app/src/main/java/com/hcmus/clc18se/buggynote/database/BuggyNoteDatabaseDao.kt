@@ -7,11 +7,13 @@ import com.hcmus.clc18se.buggynote.data.NoteCrossRef
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.data.Tag
 
+private const val DEFAULT_SORT_ORDER = "is_pinned desc,`order` asc, note_id desc"
+
 @Dao
 interface BuggyNoteDatabaseDao {
 
     @Transaction
-    @Query("select * from note order by `order` asc, note_id desc")
+    @Query("select * from note order by $DEFAULT_SORT_ORDER")
     suspend fun getAllNoteWithTags(): List<NoteWithTags>
 
     @Transaction
@@ -63,9 +65,11 @@ interface BuggyNoteDatabaseDao {
     suspend fun containsTag(content: String): Boolean
 
     @Transaction
-    @Query("select * from note where note_id in (" +
-            "select note_id from notecrossref where tag_id in (:tagIds)" +
-            ") order by `order` asc, note_id desc")
+    @Query(
+        "select * from note where note_id in (" +
+                "select note_id from notecrossref where tag_id in (:tagIds)" +
+                ") order by $DEFAULT_SORT_ORDER"
+    )
     suspend fun filterNoteByTagList(tagIds: List<Long>): List<NoteWithTags>
 
     @Transaction
@@ -73,7 +77,7 @@ interface BuggyNoteDatabaseDao {
         "select * from note where " +
                 "(note_content like '%' || :keyword || '%' or title like '%' || :keyword || '%') " +
                 "and (note_id in (select note_id from notecrossref where tag_id in (:tagIds))) " +
-                "order by `order` asc, note_id desc"
+                "order by $DEFAULT_SORT_ORDER"
     )
     suspend fun filterNoteByKeyWordAndTags(keyword: String, tagIds: List<Long>): List<NoteWithTags>
 
@@ -81,7 +85,7 @@ interface BuggyNoteDatabaseDao {
     @Query(
         "select * from note where " +
                 "(note_content like '%' || :keyword || '%' or title like '%' || :keyword || '%') " +
-                "order by `order` asc, note_id desc"
+                "order by $DEFAULT_SORT_ORDER"
     )
     suspend fun filterNoteByKeyWord(keyword: String): List<NoteWithTags>
 }

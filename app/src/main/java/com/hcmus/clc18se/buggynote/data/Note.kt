@@ -26,5 +26,8 @@ data class Note(
         var contentFormat: String = DEFAULT_FORMAT_STRING,
 
         @ColumnInfo(defaultValue = "0")
-        var order: Int = 0
+        var order: Int = 0,
+
+        @ColumnInfo(name = "is_pinned", defaultValue = "0")
+        var isPinned: Boolean = false
 )
