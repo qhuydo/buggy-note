@@ -39,9 +39,7 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     private lateinit var binding: FragmentNotesBinding
 
-    private val db by lazy {
-        BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao
-    }
+    private val db by lazy { BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao }
 
     private val noteViewModel: NoteViewModel by activityViewModels {
         NoteViewModelFactory(requireActivity().application, db)
@@ -227,7 +225,7 @@ class NotesFragment : Fragment(), OnBackPressed {
     override fun onPause() {
         super.onPause()
 
-        CoroutineScope(Dispatchers.Main).launch {
+        lifecycleScope.launch {
             if (noteViewModel.orderChanged.value == true &&
                 tagViewModel.tags.value?.all { !it.selectState } == true
             ) {
@@ -367,7 +365,14 @@ class NotesFragment : Fragment(), OnBackPressed {
         )
     }
 
-    fun invalidateCab() {
+    /**
+     * Update the mainCab states when the note list is in multi selection mode
+     *
+     * Create a new cab object when an item from the note is long clicked to enable multi selection mode.
+     * Update the cab title when changing the selection
+     * Destroy the cab when the note list is no longer in multi selection mode.
+     */
+    private fun invalidateCab() {
         if (pinnedNoteAdapter.numberOfSelectedItems() == 0
             && unPinnedNoteAdapter.numberOfSelectedItems() == 0
         ) {
@@ -386,28 +391,52 @@ class NotesFragment : Fragment(), OnBackPressed {
                 title(literal = "$numberOfSelectedItems")
             }
         } else {
-            val colorSurface = getColorAttribute(requireContext(), R.attr.colorSurface)
-            val colorOnSurface = getColorAttribute(requireContext(), R.attr.colorOnSurface)
+            createCab()
+        }
+        updateCabMenuItem()
+    }
 
-            mainCab = createCab(R.id.cab_stub) {
-                title(literal = "$numberOfSelectedItems")
-                menu(R.menu.main_context)
-                popupTheme(R.style.ThemeOverlay_AppCompat_Light)
-                titleColor(literal = colorOnSurface)
-                subtitleColor(literal = colorOnSurface)
-                backgroundColor(literal = colorSurface)
+    private fun createCab() {
+        val colorSurface = getColorAttribute(requireContext(), R.attr.colorSurface)
+        val colorOnSurface = getColorAttribute(requireContext(), R.attr.colorOnSurface)
 
-                slideDown()
+        mainCab = createCab(R.id.cab_stub) {
+            title(literal = "1")
+            menu(R.menu.main_context)
+            popupTheme(R.style.ThemeOverlay_AppCompat_Light)
+            titleColor(literal = colorOnSurface)
+            subtitleColor(literal = colorOnSurface)
+            backgroundColor(literal = colorSurface)
 
-                onCreate { _, menu -> onCabCreated(menu) }
-                onSelection { onCabItemSelected(it) }
-                onDestroy {
-                    pinnedNoteAdapter.finishSelection()
-                    unPinnedNoteAdapter.finishSelection()
-                    mainCab = null
-                    true
-                }
+            slideDown()
+
+            onCreate { _, menu -> onCabCreated(menu) }
+            onSelection { onCabItemSelected(it) }
+            onDestroy {
+                pinnedNoteAdapter.finishSelection()
+                unPinnedNoteAdapter.finishSelection()
+                mainCab = null
+                true
             }
+        }
+    }
+
+    private fun updateCabMenuItem() = mainCab?.let {
+        val selectedUnpinnedNotes = unPinnedNoteAdapter.getSelectedItems()
+
+        val itemPin = it.getMenu().findItem(R.id.action_toggle_pin)
+        itemPin?.let { item ->
+
+            val pinRes = if (selectedUnpinnedNotes.isEmpty()) {
+                R.drawable.ic_outline_push_pin_24 to requireContext().getString(R.string.unpin_selected_notes)
+            } else {
+                R.drawable.ic_baseline_push_pin_24 to requireContext().getString(R.string.pin_selected_notes)
+            }
+            item.setIcon(pinRes.first)
+            item.title = pinRes.second
+
+            val colorOnSurface = getColorAttribute(requireContext(), R.attr.colorOnSurface)
+            item.icon.tint(colorOnSurface)
         }
     }
 
@@ -444,11 +473,10 @@ class NotesFragment : Fragment(), OnBackPressed {
                     .setPositiveButton(resources.getString(R.string.remove)) { _, _ ->
 
                         noteViewModel.removeNote(
-                            *pinnedNoteAdapter.getSelectedItems().toTypedArray()
-                        )
-                        noteViewModel.removeNote(
+                            *pinnedNoteAdapter.getSelectedItems().toTypedArray(),
                             *unPinnedNoteAdapter.getSelectedItems().toTypedArray()
                         )
+
                         mainCab?.destroy()
                     }
                     .show()
@@ -472,9 +500,37 @@ class NotesFragment : Fragment(), OnBackPressed {
                 mainCab?.apply {
                     title(literal = "$numberOfSelectedItems")
                 }
+                updateCabMenuItem()
+                true
+            }
+            R.id.action_toggle_pin -> {
+                onActionTogglePin()
                 true
             }
             else -> false
+        }
+    }
+
+    private fun onActionTogglePin() {
+        val selectedPinnedNotes = pinnedNoteAdapter.getSelectedItems()
+        val selectedUnpinnedNotes = unPinnedNoteAdapter.getSelectedItems()
+        val actionPinAll = selectedUnpinnedNotes.isNotEmpty()
+
+        if (selectedPinnedNotes.isEmpty() && selectedUnpinnedNotes.isEmpty()) {
+            return
+        }
+
+        lifecycleScope.launch {
+
+            noteViewModel.togglePin(
+                actionPinAll,
+                *selectedPinnedNotes.toTypedArray(),
+                *selectedUnpinnedNotes.toTypedArray()
+            )
+            noteViewModel.requestReloadingData()
+            withContext(Dispatchers.Main) {
+                mainCab.destroy()
+            }
         }
     }
 
@@ -489,4 +545,5 @@ class NotesFragment : Fragment(), OnBackPressed {
             return true
         } ?: return false
     }
+
 }

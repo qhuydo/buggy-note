@@ -29,4 +29,6 @@
     <string name="pinned">Pinned</string>
     <string name="others">others</string>
     <string name="action_pin">Pin the note</string>
+    <string name="pin_selected_notes">Pin selected notes</string>
+    <string name="unpin_selected_notes">Unpin selected notes</string>
 </resources>

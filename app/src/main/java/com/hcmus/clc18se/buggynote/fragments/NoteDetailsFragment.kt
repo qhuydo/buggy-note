@@ -6,7 +6,6 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -239,7 +238,7 @@ class NoteDetailsFragment : Fragment() {
         this.menu = menu
     }
 
-    fun updateMenu() {
+    private fun updateMenu() {
         menu?.let { onPrepareOptionsMenu(it) }
     }
 

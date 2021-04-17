@@ -3,10 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_toggle_pin"
+        android:icon="@drawable/ic_baseline_push_pin_24"
+        android:title="@string/pin_selected_notes"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_remove_note"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="@string/remove"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_select_all"

@@ -150,6 +150,14 @@ class NoteViewModel(
         _orderChanged.value = true
     }
 
+    suspend fun togglePin(isPinned: Boolean, vararg notes: NoteWithTags) {
+        Timber.d("change is_pinned flags, new value: $isPinned")
+        notes.forEachIndexed { index: Int, note: NoteWithTags -> note.note.isPinned = isPinned }
+        val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
+        Timber.d("$nCols cols affected")
+        _reloadDataRequest.value = true
+    }
+
 }
 
 @Suppress("UNCHECKED_CAST")
