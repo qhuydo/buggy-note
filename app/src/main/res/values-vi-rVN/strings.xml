@@ -22,4 +22,6 @@
     <string name="show_note_list_as">Xem danh sách ghi chú dưới dạng</string>
     <string name="remove_from_device">Xóa khỏi thiết bị</string>
     <string name="remove_confirmation">Bạn có muốn xóa khỏi thiết bị?</string>
+    <string name="pinned">Đã ghim</string>
+    <string name="others">Ghi chú khác</string>
 </resources>

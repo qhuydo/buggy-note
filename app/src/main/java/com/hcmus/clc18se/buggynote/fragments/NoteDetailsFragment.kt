@@ -6,6 +6,7 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -57,6 +58,8 @@ class NoteDetailsFragment : Fragment() {
         viewModel.navigateToTagSelection()
     }
 
+    private var menu: Menu? = null
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -67,8 +70,8 @@ class NoteDetailsFragment : Fragment() {
 
         binding.apply {
             lifecycleOwner = this@NoteDetailsFragment
-            chipOnClickListener = tagOnClickListener
             noteDetailsViewModel = viewModel
+            chipOnClickListener = tagOnClickListener
         }
 
         initObservers()
@@ -77,11 +80,14 @@ class NoteDetailsFragment : Fragment() {
     }
 
     private fun initObservers() {
+        viewModel.getNoteWithTags().observe(viewLifecycleOwner) {
+            updateMenu()
+        }
         viewModel.reloadDataRequest.observe(viewLifecycleOwner) {
             if (it) {
                 viewModel.reloadNote()
-                viewModel.doneRequestingLoadData()
                 noteViewModel.requestReloadingData()
+                viewModel.doneRequestingLoadData()
             }
         }
 
@@ -142,15 +148,18 @@ class NoteDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpNavigation()
         binding.appBar.toolbar.elevation = 0f
+        setUpNavigation()
     }
 
     private fun setUpNavigation() {
+        setHasOptionsMenu(true)
+
         val toolbar = binding.appBar.toolbar
         val parentActivity: BuggyNoteActivity = requireActivity() as BuggyNoteActivity
 
         val bottomBar: BottomAppBar = binding.coordinatorLayout.findViewById(R.id.bottom_bar)
+
 
         bottomBar.setOnMenuItemClickListener(bottomBarOnItemClickListener)
         parentActivity.setSupportActionBar(toolbar)
@@ -222,5 +231,48 @@ class NoteDetailsFragment : Fragment() {
             return R.id.text_view_title
         }
         return R.id.note_content
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.note_detail, menu)
+        this.menu = menu
+    }
+
+    fun updateMenu() {
+        menu?.let { onPrepareOptionsMenu(it) }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val pinnedItem = menu.findItem(R.id.action_pin)
+        Timber.d("OnPrepare")
+        val note = viewModel.getNoteWithTags().value
+        val pinIcon = when (note?.isPinned()) {
+            true -> {
+                R.drawable.ic_baseline_push_pin_24
+            }
+            else -> R.drawable.ic_outline_push_pin_24
+        }
+        pinnedItem.setIcon(pinIcon)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_pin -> {
+                val note = viewModel.getNoteWithTags().value
+                val pinIcon = when (note?.isPinned()) {
+                    true -> {
+                        R.drawable.ic_baseline_push_pin_24
+                    }
+                    else -> R.drawable.ic_outline_push_pin_24
+                }
+                item.setIcon(pinIcon)
+
+                viewModel.togglePin()
+                saveNote(true)
+                true
+            }
+            else -> false
+        }
     }
 }

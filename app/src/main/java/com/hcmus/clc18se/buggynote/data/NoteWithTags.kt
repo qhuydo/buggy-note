@@ -32,18 +32,20 @@ data class NoteWithTags(
     }
 
     fun getTitleFormat(): TextFormatter {
-        if (note.titleFormat.isEmpty()){
+        if (note.titleFormat.isEmpty()) {
             note.titleFormat = DEFAULT_FORMAT_STRING
         }
         return TextFormatter.parseFormat(note.titleFormat)
     }
 
-   fun getContentFormat(): TextFormatter {
-       if (note.contentFormat.isEmpty()){
-           note.titleFormat = DEFAULT_FORMAT_STRING
-       }
+    fun getContentFormat(): TextFormatter {
+        if (note.contentFormat.isEmpty()) {
+            note.titleFormat = DEFAULT_FORMAT_STRING
+        }
         return TextFormatter.parseFormat(note.contentFormat)
     }
+
+    fun isPinned() = note.isPinned
 
     companion object {
         val DiffCallBack = object : DiffUtil.ItemCallback<NoteWithTags>() {

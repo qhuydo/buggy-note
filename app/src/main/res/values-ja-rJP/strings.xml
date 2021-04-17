@@ -21,4 +21,6 @@
     <string name="show_note_list_as">ノートリストの表示形式</string>
     <string name="remove_from_device">デバイスから削除</string>
     <string name="remove_confirmation">デバイスから完全に削除してもよろしいですか。</string>
+    <string name="pinned">固定済み</string>
+    <string name="others">その他</string>
 </resources>

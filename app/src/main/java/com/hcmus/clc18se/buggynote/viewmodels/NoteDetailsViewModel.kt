@@ -67,6 +67,12 @@ class NoteDetailsViewModel(
         }
     }
 
+    fun togglePin() {
+        noteWithTags.value?.let {
+            it.note.isPinned = it.note.isPinned.not()
+        }
+    }
+
     fun setNoteTitleFormat(formatter: TextFormatter) {
         viewModelScope.launch {
 
