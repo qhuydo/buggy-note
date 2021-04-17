@@ -60,6 +60,11 @@ class NotesFragment : Fragment(), OnBackPressed {
         ItemTouchHelper(callback)
     }
 
+    // Adapter of the note list, contains 4 adapters in the following order
+    //  0. DummyHeaderAdapter - header of the pinned note list
+    //  1. NoteAdapter - presents list of pinned notes
+    //  2. DummyHeaderAdapter - header of the unpinned note list
+    //  3. NoteAdapter - presents list of unpinned notes
     private val concatAdapter by lazy {
         val config = ConcatAdapter.Config.Builder()
             .setIsolateViewTypes(false)
@@ -341,12 +346,8 @@ class NotesFragment : Fragment(), OnBackPressed {
             Timber.d("refreshNoteList")
             noteList.adapter = null
             initNoteAdapter(noteList, concatAdapter, noteListTouchHelper)
-            noteList.loadNotes(
-                this@NotesFragment.noteViewModel.pinnedNotes.value,
-                this@NotesFragment.noteViewModel.unpinnedNotes.value
-            )
         }
-
+        noteViewModel.requestReordering()
         concatAdapter.notifyDataSetChanged()
     }
 
