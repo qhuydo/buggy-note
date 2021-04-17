@@ -1,10 +1,13 @@
 package com.hcmus.clc18se.buggynote.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ListAdapter
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
@@ -16,13 +19,25 @@ import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_MONOSP
 import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_SANS_SERIF
 import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_SERIF
 import com.hcmus.clc18se.buggynote.utils.convertLongToDateString
+import timber.log.Timber
 
-@BindingAdapter("loadNotes")
-fun RecyclerView.loadNotes(notes: List<NoteWithTags>?) {
-    notes?.let {
-        if (this.adapter is NoteAdapter) {
-            (adapter as NoteAdapter).submitList(notes)
-        }
+@BindingAdapter(value = ["pinnedNotes", "unpinnedNotes"], requireAll = false)
+fun RecyclerView.loadNotes(pinnedNotes: List<NoteWithTags>?, unpinnedNotes: List<NoteWithTags>?) {
+    if (this.adapter !is ConcatAdapter) {
+        Timber.w("Use the concat adapter to load 2 note lists")
+        return
+    }
+
+    val adapters = (this.adapter as ConcatAdapter).adapters
+    if (adapters.isEmpty()) {
+        Timber.w("ConcatAdapter does not contain any NoteAdapter")
+        return
+    }
+
+    pinnedNotes?.takeIf { it.isNotEmpty() }.let { (adapters[PINNED_POSITION] as NoteAdapter).submitList(it) }
+
+    unpinnedNotes?.let {
+        (adapters[UNPINNED_POSITION] as NoteAdapter).submitList(it)
     }
 }
 
@@ -51,13 +66,13 @@ fun loadFilterTags(recyclerView: RecyclerView, tags: List<Tag>?) {
 }
 
 
+@SuppressLint("SetTextI18n")
 @BindingAdapter("timeStampFromLong")
 fun setTimeStampFromLong(textView: TextView, value: Long) {
     val text = convertLongToDateString(value)
     // textView.text = textView.context.resources.getString(R.string.last_edit, text)
     textView.text = "  $text"
 }
-
 
 @BindingAdapter(value = ["loadTagList", "chipLimit", "setOnClickToChips"], requireAll = false)
 fun ChipGroup.setTags(tags: List<Tag>?, limit: Int?, onClickListener: View.OnClickListener?) {
@@ -76,7 +91,12 @@ fun ChipGroup.setTags(tags: List<Tag>?, limit: Int?, onClickListener: View.OnCli
             }
 
             val chip = Chip(this.context)
-            val chipDrawable = ChipDrawable.createFromAttributes(this.context, null, 0, R.style.Theme_BuggyNote_Tag)
+            val chipDrawable = ChipDrawable.createFromAttributes(
+                this.context,
+                null,
+                0,
+                R.style.Theme_BuggyNote_Tag
+            )
             chip.setChipDrawable(chipDrawable)
             chip.setTextAppearanceResource(R.style.TextAppearance_AppCompat_Caption)
 
@@ -106,9 +126,8 @@ fun <T> ViewGroup.setViewHolderVisibility(list: List<T>?) {
 }
 
 @BindingAdapter("placeHolderEmoticon")
-fun TextView.setPlaceHolderEmoticon(nothing: Int?) {
+fun TextView.setPlaceHolderEmoticon(nothing: Nothing?) {
     this.text = this.context.resources.getStringArray(R.array.emoticons).random()
-
 }
 
 

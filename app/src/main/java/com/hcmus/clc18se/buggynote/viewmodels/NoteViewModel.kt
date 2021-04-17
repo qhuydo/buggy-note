@@ -1,6 +1,7 @@
 package com.hcmus.clc18se.buggynote.viewmodels
 
 import android.app.Application
+import android.view.View
 import androidx.lifecycle.*
 import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
@@ -17,6 +18,18 @@ class NoteViewModel(
     private var _noteList = MutableLiveData<List<NoteWithTags>>()
     val noteList: LiveData<List<NoteWithTags>>
         get() = _noteList
+
+    val unpinnedNotes = Transformations.map(_noteList) {
+        it.filter { noteWithTags -> !noteWithTags.isPinned() }
+    }
+
+    val pinnedNotes = Transformations.map(_noteList) {
+        it.filter { noteWithTags -> noteWithTags.isPinned() }
+    }
+
+    val headerLabelVisibility = Transformations.map(pinnedNotes){
+        if (it.isEmpty()) View.GONE else View.VISIBLE
+    }
 
     private var _navigateToNoteDetails = MutableLiveData<Long?>()
     val navigateToNoteDetails: LiveData<Long?>

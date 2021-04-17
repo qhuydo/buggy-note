@@ -29,7 +29,7 @@
 
             <TextView
                 android:id="@+id/placeholder_emoticon"
-                app:placeHolderEmoticon="@{0}"
+                app:placeHolderEmoticon="@{null}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"

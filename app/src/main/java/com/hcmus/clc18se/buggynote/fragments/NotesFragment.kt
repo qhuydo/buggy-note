@@ -10,7 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialcab.attached.AttachedCab
 import com.afollestad.materialcab.attached.destroy
 import com.afollestad.materialcab.attached.isActive
@@ -47,13 +49,37 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     private val tagViewModel: TagViewModel by activityViewModels { TagViewModelFactory(db) }
 
-    private val adapter by lazy { NoteAdapter(onNoteItemClickListener) }
+    private val pinnedNoteAdapter by lazy { NoteAdapter(onNoteItemClickListener, PIN_TAG) }
+
+    private val unPinnedNoteAdapter by lazy { NoteAdapter(onNoteItemClickListener, UNPIN_TAG) }
 
     private val filterTagAdapter by lazy { TagFilterAdapter(onTagCheckedChangeListener) }
 
     private val noteListTouchHelper by lazy {
-        val callback = NoteItemTouchHelperCallBack(adapter)
+        val callback = NoteItemTouchHelperCallBack(pinnedNoteAdapter, unPinnedNoteAdapter)
         ItemTouchHelper(callback)
+    }
+
+    private val concatAdapter by lazy {
+        val config = ConcatAdapter.Config.Builder()
+            .setIsolateViewTypes(false)
+            .build()
+
+        ConcatAdapter(
+            config,
+            DummyHeaderAdapter(
+                getString(R.string.pinned),
+                R.drawable.ic_outline_push_pin_24,
+                noteViewModel.headerLabelVisibility
+            ),
+            pinnedNoteAdapter,
+            DummyHeaderAdapter(
+                getString(R.string.others),
+                null,
+                noteViewModel.headerLabelVisibility
+            ),
+            unPinnedNoteAdapter,
+        )
     }
 
     private val onNoteItemClickListener = object : OnClickHandler {
@@ -69,19 +95,21 @@ class NotesFragment : Fragment(), OnBackPressed {
         override fun onPostReordered(notes: List<NoteWithTags>) {
             noteViewModel.requestReordering()
         }
-
     }
 
     private val onTagCheckedChangeListener = ItemOnCheckedChangeListener { isChecked, tag ->
         if (tag.selectState != isChecked) {
-            adapter.finishSelection()
+            pinnedNoteAdapter.finishSelection()
+            unPinnedNoteAdapter.finishSelection()
+
             mainCab?.destroy()
 
             runBlocking {
                 if (noteViewModel.orderChanged.value == true &&
-                        tagViewModel.tags.value?.all { !it.selectState } == true
+                    tagViewModel.tags.value?.all { !it.selectState } == true
                 ) {
-                    noteViewModel.reorderNotes(adapter.currentList)
+                    noteViewModel.reorderNotes(pinnedNoteAdapter.currentList)
+                    noteViewModel.reorderNotes(unPinnedNoteAdapter.currentList)
                 }
             }
 
@@ -93,9 +121,9 @@ class NotesFragment : Fragment(), OnBackPressed {
     private var mainCab: AttachedCab? = null
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         binding = FragmentNotesBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
@@ -106,37 +134,58 @@ class NotesFragment : Fragment(), OnBackPressed {
                 val id = noteViewModel.insertNewNote(Note(title = "", noteContent = ""))
                 noteViewModel.navigateToNoteDetails(id)
             }
-
         }
 
         binding.apply {
-            // TODO: refactor me
             lifecycleOwner = this@NotesFragment
-
             noteViewModel = this@NotesFragment.noteViewModel
             tagViewModel = this@NotesFragment.tagViewModel
-
-            noteList.adapter = adapter
-            noteList.addItemDecoration(SpaceItemDecoration(resources.getDimension(R.dimen.item_note_margin).toInt()))
-
-            noteList.setUpLayoutManagerForNoteList(preferences)
-            noteListTouchHelper.attachToRecyclerView(binding.noteList)
-
-            tagFilterList.adapter = filterTagAdapter
-            tagFilterList.addItemDecoration(
-                    SpaceItemDecoration(resources.getDimension(R.dimen.item_tag_margin).toInt())
-            )
         }
 
+        initRecyclerViews()
         initObservers()
 
         return binding.root
     }
 
+    private fun initNoteAdapter(
+        recyclerView: RecyclerView,
+        adapter: RecyclerView.Adapter<*>,
+        touchHelper: ItemTouchHelper,
+        addItemDecoration: Boolean = false
+    ) {
+        recyclerView.setUpLayoutManagerForNoteList(preferences)
+        recyclerView.adapter = adapter
+        if (addItemDecoration) {
+            recyclerView.addItemDecoration(
+                SpaceItemDecoration(
+                    resources.getDimension(R.dimen.item_note_margin).toInt()
+                )
+            )
+        }
+        touchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun initRecyclerViews() {
+        binding.apply {
+            initNoteAdapter(noteList, concatAdapter, noteListTouchHelper, true)
+
+            tagFilterList.adapter = filterTagAdapter
+            tagFilterList.addItemDecoration(
+                SpaceItemDecoration(resources.getDimension(R.dimen.item_tag_margin).toInt())
+            )
+        }
+
+    }
+
     private fun initObservers() {
 
         noteViewModel.noteList.observe(viewLifecycleOwner) {
-            adapter.notifyDataSetChanged()
+            concatAdapter.notifyDataSetChanged()
+        }
+
+        noteViewModel.headerLabelVisibility.observe(viewLifecycleOwner) {
+            concatAdapter.notifyDataSetChanged()
         }
 
         tagViewModel.tags.observe(viewLifecycleOwner) {
@@ -147,7 +196,7 @@ class NotesFragment : Fragment(), OnBackPressed {
             if (it != null) {
 
                 findNavController().navigate(
-                        NotesFragmentDirections.actionNavNotesToNoteDetailsFragment(it)
+                    NotesFragmentDirections.actionNavNotesToNoteDetailsFragment(it)
                 )
                 noteViewModel.doneNavigatingToNoteDetails()
             }
@@ -161,8 +210,10 @@ class NotesFragment : Fragment(), OnBackPressed {
                     noteViewModel.loadNotes()
                 }
                 noteViewModel.doneRequestingLoadData()
-                binding.noteList.invalidate()
-                binding.noteList.requestLayout()
+                binding.apply {
+                    noteList.invalidate()
+                    noteList.requestLayout()
+                }
             }
         }
 
@@ -173,9 +224,10 @@ class NotesFragment : Fragment(), OnBackPressed {
 
         CoroutineScope(Dispatchers.Main).launch {
             if (noteViewModel.orderChanged.value == true &&
-                    tagViewModel.tags.value?.all { !it.selectState } == true
+                tagViewModel.tags.value?.all { !it.selectState } == true
             ) {
-                noteViewModel.reorderNotes(adapter.currentList)
+                noteViewModel.reorderNotes(pinnedNoteAdapter.currentList)
+                noteViewModel.reorderNotes(unPinnedNoteAdapter.currentList)
                 noteViewModel.loadNoteFromDatabase()
             }
         }
@@ -188,7 +240,8 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        val noteListDisplayType = preferences.getString(getString(R.string.note_list_view_type_key), "0")
+        val noteListDisplayType =
+            preferences.getString(getString(R.string.note_list_view_type_key), "0")
 
         val noteListDisplayItem = menu.findItem(R.id.note_list_item_view_type)
         when (noteListDisplayType) {
@@ -203,9 +256,6 @@ class NotesFragment : Fragment(), OnBackPressed {
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
 
-//        searchView.setOnSearchClickListener {
-//            noteListTouchHelper.attachToRecyclerView(null)
-//        }
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 Timber.d("searchItem.onMenuItemActionCollapse called")
@@ -228,8 +278,8 @@ class NotesFragment : Fragment(), OnBackPressed {
                 if (newText != null) {
                     tagViewModel.tags.value?.let {
                         noteViewModel.filterByTagsWithKeyword(
-                                it,
-                                newText
+                            it,
+                            newText
                         )
                     }
                 } else {
@@ -242,8 +292,8 @@ class NotesFragment : Fragment(), OnBackPressed {
                 if (query != null) {
                     tagViewModel.tags.value?.let {
                         noteViewModel.filterByTagsWithKeyword(
-                                it,
-                                query
+                            it,
+                            query
                         )
                     }
                     return true
@@ -252,13 +302,6 @@ class NotesFragment : Fragment(), OnBackPressed {
             }
 
         })
-
-//        searchView.setOnCloseListener {
-//            Timber.d("searchView.setOnCloseListener called")
-//            tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
-//            noteListTouchHelper.attachToRecyclerView(binding.noteList)
-//            true
-//        }
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -282,12 +325,12 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     private fun onItemTypeOptionClicked() {
         val currentItemView =
-                preferences.getString(getString(R.string.note_list_view_type_key), "0")
+            preferences.getString(getString(R.string.note_list_view_type_key), "0")
         val nextItemView = if (currentItemView == "0") "1" else "0"
 
         preferences.edit()
-                .putString(getString(R.string.note_list_view_type_key), nextItemView)
-                .apply()
+            .putString(getString(R.string.note_list_view_type_key), nextItemView)
+            .apply()
 
         refreshNoteList()
     }
@@ -295,14 +338,16 @@ class NotesFragment : Fragment(), OnBackPressed {
     private fun refreshNoteList() {
 
         binding.apply {
+            Timber.d("refreshNoteList")
             noteList.adapter = null
-            noteList.adapter = adapter
-            noteList.setUpLayoutManagerForNoteList(preferences)
-            noteList.loadNotes(this@NotesFragment.noteViewModel.noteList.value)
+            initNoteAdapter(noteList, concatAdapter, noteListTouchHelper)
+            noteList.loadNotes(
+                this@NotesFragment.noteViewModel.pinnedNotes.value,
+                this@NotesFragment.noteViewModel.unpinnedNotes.value
+            )
         }
 
-        adapter.notifyDataSetChanged()
-
+        concatAdapter.notifyDataSetChanged()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -316,28 +361,35 @@ class NotesFragment : Fragment(), OnBackPressed {
 
         parentActivity.setSupportActionBar(toolbar)
         parentActivity.setupActionBarWithNavController(
-                findNavController(),
-                parentActivity.appBarConfiguration
+            findNavController(),
+            parentActivity.appBarConfiguration
         )
     }
 
     fun invalidateCab() {
-        if (adapter.numberOfSelectedItems() == 0) {
+        if (pinnedNoteAdapter.numberOfSelectedItems() == 0
+            && unPinnedNoteAdapter.numberOfSelectedItems() == 0
+        ) {
             mainCab?.destroy()
-            // mainCab = null
             return
         }
 
+        val numberOfSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
+                unPinnedNoteAdapter.numberOfSelectedItems()
+
+        pinnedNoteAdapter.enableSelection()
+        unPinnedNoteAdapter.enableSelection()
+
         if (mainCab.isActive()) {
             mainCab?.apply {
-                title(literal = "${adapter.numberOfSelectedItems()}")
+                title(literal = "$numberOfSelectedItems")
             }
         } else {
             val colorSurface = getColorAttribute(requireContext(), R.attr.colorSurface)
             val colorOnSurface = getColorAttribute(requireContext(), R.attr.colorOnSurface)
 
             mainCab = createCab(R.id.cab_stub) {
-                title(literal = "${adapter.numberOfSelectedItems()}")
+                title(literal = "$numberOfSelectedItems")
                 menu(R.menu.main_context)
                 popupTheme(R.style.ThemeOverlay_AppCompat_Light)
                 titleColor(literal = colorOnSurface)
@@ -349,7 +401,8 @@ class NotesFragment : Fragment(), OnBackPressed {
                 onCreate { _, menu -> onCabCreated(menu) }
                 onSelection { onCabItemSelected(it) }
                 onDestroy {
-                    adapter.finishSelection()
+                    pinnedNoteAdapter.finishSelection()
+                    unPinnedNoteAdapter.finishSelection()
                     mainCab = null
                     true
                 }
@@ -377,26 +430,46 @@ class NotesFragment : Fragment(), OnBackPressed {
     private fun onCabItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_remove_note -> {
-                if (adapter.getSelectedItems().isEmpty()) {
+                if (pinnedNoteAdapter.getSelectedItems().isEmpty()
+                    && unPinnedNoteAdapter.getSelectedItems().isEmpty()
+                ) {
                     return true
                 }
 
                 MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(getString(R.string.remove_from_device))
-                        .setMessage(getString(R.string.remove_confirmation))
-                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
-                        .setPositiveButton(resources.getString(R.string.remove)) { _, _ ->
+                    .setTitle(getString(R.string.remove_from_device))
+                    .setMessage(getString(R.string.remove_confirmation))
+                    .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
+                    .setPositiveButton(resources.getString(R.string.remove)) { _, _ ->
 
-                            noteViewModel.removeNote(*adapter.getSelectedItems().toTypedArray())
-                            mainCab?.destroy()
-                        }
-                        .show()
+                        noteViewModel.removeNote(
+                            *pinnedNoteAdapter.getSelectedItems().toTypedArray()
+                        )
+                        noteViewModel.removeNote(
+                            *unPinnedNoteAdapter.getSelectedItems().toTypedArray()
+                        )
+                        mainCab?.destroy()
+                    }
+                    .show()
                 true
             }
             R.id.action_select_all -> {
-                adapter.toggleSelectAll()
+                var numberOfSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
+                        unPinnedNoteAdapter.numberOfSelectedItems()
+
+                if (numberOfSelectedItems == noteViewModel.noteList.value?.size) {
+                    pinnedNoteAdapter.unSelectAll()
+                    unPinnedNoteAdapter.unSelectAll()
+                } else {
+                    pinnedNoteAdapter.selectAll()
+                    unPinnedNoteAdapter.selectAll()
+                }
+
+                numberOfSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
+                        unPinnedNoteAdapter.numberOfSelectedItems()
+
                 mainCab?.apply {
-                    title(literal = "${adapter.numberOfSelectedItems()}")
+                    title(literal = "$numberOfSelectedItems")
                 }
                 true
             }
