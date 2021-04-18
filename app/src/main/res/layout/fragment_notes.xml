@@ -34,12 +34,12 @@
             layout="@layout/app_bar_main" />
 
         <LinearLayout
+            placeholderVisibility="@{noteViewModel.noteList}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:placeholderVisibility="@{noteViewModel.noteList}"
             tools:visibility="gone">
 
             <TextView
@@ -86,11 +86,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/item_note_margin"
                 android:layout_marginVertical="@dimen/item_note_margin"
-                android:layoutAnimation="@anim/layout_animator"
                 app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                 app:spanCount="2"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_note" />
+            <!--                android:layoutAnimation="@anim/layout_animator"-->
         </LinearLayout>
 
 

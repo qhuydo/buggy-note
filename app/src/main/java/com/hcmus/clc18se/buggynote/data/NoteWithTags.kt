@@ -47,6 +47,8 @@ data class NoteWithTags(
 
     fun isPinned() = note.isPinned
 
+    fun isArchived() = note.isArchived
+
     companion object {
         val DiffCallBack = object : DiffUtil.ItemCallback<NoteWithTags>() {
             override fun areContentsTheSame(oldItem: NoteWithTags, newItem: NoteWithTags): Boolean {

@@ -38,7 +38,8 @@ class BuggyNoteActivity : AppCompatActivity() {
 
         drawerLayout = binding.drawerLayout
 
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_notes, R.id.nav_tags), drawerLayout)
+        appBarConfiguration = AppBarConfiguration(setOf(
+                R.id.nav_notes, R.id.nav_tags, R.id.nav_archive), drawerLayout)
 
         val navView: NavigationView = binding.navView
         navView.setupWithNavController(navController)

@@ -20,15 +20,23 @@ class NoteViewModel(
         get() = _noteList
 
     val unpinnedNotes = Transformations.map(_noteList) {
-        it.filter { noteWithTags -> !noteWithTags.isPinned() }
+        it.filter { noteWithTags -> !noteWithTags.isPinned() && !noteWithTags.isArchived()}
     }
 
     val pinnedNotes = Transformations.map(_noteList) {
-        it.filter { noteWithTags -> noteWithTags.isPinned() }
+        it.filter { noteWithTags -> noteWithTags.isPinned() && !noteWithTags.isArchived()}
+    }
+    val archivedNotes = Transformations.map(_noteList) {
+        it.filter { noteWithTags -> noteWithTags.isArchived() }
     }
 
-    val headerLabelVisibility = Transformations.map(pinnedNotes){
+    val headerLabelVisibility = Transformations.map(pinnedNotes) {
         if (it.isEmpty()) View.GONE else View.VISIBLE
+    }
+
+    val noteListVisibility = Transformations.map(_noteList) {
+        if (it.any { noteWithTags -> !noteWithTags.isArchived() }) View.INVISIBLE else View.VISIBLE
+
     }
 
     private var _navigateToNoteDetails = MutableLiveData<Long?>()
@@ -152,10 +160,28 @@ class NoteViewModel(
 
     suspend fun togglePin(isPinned: Boolean, vararg notes: NoteWithTags) {
         Timber.d("change is_pinned flags, new value: $isPinned")
-        notes.forEachIndexed { index: Int, note: NoteWithTags -> note.note.isPinned = isPinned }
+        notes.forEach { note: NoteWithTags -> note.note.isPinned = isPinned }
         val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
         Timber.d("$nCols cols affected")
         _reloadDataRequest.value = true
+    }
+
+    private fun updateArchiveStatus(isArchived: Boolean, vararg notes: NoteWithTags) {
+        viewModelScope.launch {
+            Timber.d("change is_archived flags, new value: $isArchived")
+            notes.forEach { note: NoteWithTags -> note.note.isArchived = isArchived }
+            val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
+            Timber.d("$nCols cols affected")
+            _reloadDataRequest.value = true
+        }
+    }
+
+    fun moveToArchive(vararg notes: NoteWithTags) {
+        updateArchiveStatus( true, *notes)
+    }
+
+    fun moveToNoteList(vararg notes: NoteWithTags) {
+        updateArchiveStatus( false, *notes)
     }
 
 }

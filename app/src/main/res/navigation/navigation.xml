@@ -70,4 +70,21 @@
         android:id="@+id/open_settings_fragment"
         app:destination="@id/nav_settings" />
 
+    <fragment
+        android:id="@+id/nav_archive"
+        android:name="com.hcmus.clc18se.buggynote.fragments.ArchivedFragment"
+        android:label="@string/archive">
+        <action
+            android:id="@+id/action_nav_notes_to_noteDetailsFragment"
+            app:destination="@id/navigation_note_details"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out">
+            <argument
+                android:name="noteId"
+                app:argType="long" />
+        </action>
+    </fragment>
+
 </navigation>

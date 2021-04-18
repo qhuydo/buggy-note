@@ -21,10 +21,11 @@ const val UNPINNED_POSITION = 3
 
 const val PIN_TAG = "PIN"
 const val UNPIN_TAG = "UNPIN"
+const val ARCHIVE_TAG = "ARCHIVE"
 
 class NoteAdapter(
-    private val onClickHandler: OnClickHandler,
-    val tag: String
+        private val noteAdapterCallbacks: NoteAdapterCallbacks,
+        val tag: String
 ) : ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
 
     private var multiSelect = false
@@ -74,6 +75,11 @@ class NoteAdapter(
         multiSelect = true
     }
 
+    fun onItemSwipe(position: Int) {
+        // currentList.get(position).note.isPinned = false
+        noteAdapterCallbacks.onItemSwiped(getItem(position))
+    }
+
     /**
      * Rearrange item in the note list when ItemTouchHelper wants to move the dragged item
      * from its old position to the new position.
@@ -81,8 +87,8 @@ class NoteAdapter(
     fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
         Timber.d("$fromPosition to $toPosition")
         if (fromPosition == RecyclerView.NO_POSITION
-            || toPosition == RecyclerView.NO_POSITION
-            || toPosition >= currentList.size
+                || toPosition == RecyclerView.NO_POSITION
+                || toPosition >= currentList.size
         ) {
             return false
         }
@@ -97,7 +103,7 @@ class NoteAdapter(
             }
         }
         submitList(items)
-        onClickHandler.onPostReordered(items)
+        noteAdapterCallbacks.onPostReordered(items)
         return true
     }
 
@@ -111,9 +117,9 @@ class NoteAdapter(
         holder.itemView.setOnClickListener {
             if (multiSelect) {
                 selectItem(holder, noteWithTags)
-                onClickHandler.onMultipleSelect(noteWithTags)
+                noteAdapterCallbacks.onMultipleSelect(noteWithTags)
             } else {
-                onClickHandler.onClick(noteWithTags)
+                noteAdapterCallbacks.onClick(noteWithTags)
             }
         }
 
@@ -121,7 +127,7 @@ class NoteAdapter(
             if (!multiSelect) {
                 multiSelect = true
                 selectItem(holder, noteWithTags)
-                onClickHandler.onMultipleSelect(noteWithTags)
+                noteAdapterCallbacks.onMultipleSelect(noteWithTags)
             }
             return@setOnLongClickListener true
         }
@@ -136,8 +142,8 @@ class NoteAdapter(
     }
 
     class ViewHolder(
-        private val binding: ViewDataBinding,
-        var tag: String
+            private val binding: ViewDataBinding,
+            var tag: String
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(noteWithTags: NoteWithTags) {
             when (binding) {
@@ -153,8 +159,8 @@ class NoteAdapter(
         companion object {
             fun from(parent: ViewGroup, tag: String): ViewHolder {
                 return ViewHolder(
-                    ItemNoteBinding.inflate(LayoutInflater.from(parent.context)),
-                    tag
+                        ItemNoteBinding.inflate(LayoutInflater.from(parent.context)),
+                        tag
                 )
             }
         }
@@ -162,38 +168,44 @@ class NoteAdapter(
 }
 
 // TODO: change my name
-interface OnClickHandler {
+interface NoteAdapterCallbacks {
     fun onClick(note: NoteWithTags)
     fun onMultipleSelect(note: NoteWithTags): Boolean
     fun onPostReordered(notes: List<NoteWithTags>)
+    fun onItemSwiped(note: NoteWithTags) {}
 }
 
 class NoteItemTouchHelperCallBack(private vararg val adapters: NoteAdapter) :
-    ItemTouchHelper.SimpleCallback(
-        ItemTouchHelper.UP or ItemTouchHelper.DOWN
-                or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
-        0
-    ) {
+        ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN
+                        or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
     override fun isLongPressDragEnabled(): Boolean {
         // The drag action occurs only when at most one item in the note list has been selected.
         return adapters.sumBy { it.numberOfSelectedItems() } <= 1
     }
 
     override fun isItemViewSwipeEnabled(): Boolean {
-        return false
+        return !adapters.any { it.tag == ARCHIVE_TAG }
     }
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        (viewHolder as? NoteAdapter.ViewHolder)?.let { vh ->
+            Timber.d(vh.tag)
+            adapters.firstOrNull { it.tag == vh.tag }?.onItemSwipe(vh.bindingAdapterPosition)
+        }
+    }
 
     override fun onMove(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
     ): Boolean {
         (viewHolder as? NoteAdapter.ViewHolder)?.let { vh ->
             Timber.d(vh.tag)
             return adapters.firstOrNull { it.tag == vh.tag }?.onItemMove(
-                viewHolder.bindingAdapterPosition, target.bindingAdapterPosition
+                    viewHolder.bindingAdapterPosition, target.bindingAdapterPosition
             ) ?: false
         } ?: return false
     }

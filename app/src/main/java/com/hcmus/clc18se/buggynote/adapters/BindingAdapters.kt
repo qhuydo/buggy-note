@@ -21,6 +21,15 @@ import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_SERIF
 import com.hcmus.clc18se.buggynote.utils.convertLongToDateString
 import timber.log.Timber
 
+@BindingAdapter("loadNotes")
+fun RecyclerView.loadNotesFromNoteAdapter(notes: List<NoteWithTags>?) {
+    notes?.let {
+        if (this.adapter is NoteAdapter) {
+            (adapter as NoteAdapter).submitList(notes)
+        }
+    }
+}
+
 @BindingAdapter(value = ["pinnedNotes", "unpinnedNotes"], requireAll = false)
 fun RecyclerView.loadNotes(pinnedNotes: List<NoteWithTags>?, unpinnedNotes: List<NoteWithTags>?) {
     if (this.adapter !is ConcatAdapter) {
