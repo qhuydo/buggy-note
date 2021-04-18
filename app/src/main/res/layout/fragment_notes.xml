@@ -86,6 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/item_note_margin"
                 android:layout_marginVertical="@dimen/item_note_margin"
+                android:layoutAnimation="@anim/layout_animator"
                 app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                 app:spanCount="2"
                 tools:itemCount="3"

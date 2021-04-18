@@ -29,5 +29,8 @@ data class Note(
         var order: Int = 0,
 
         @ColumnInfo(name = "is_pinned", defaultValue = "0")
-        var isPinned: Boolean = false
+        var isPinned: Boolean = false,
+
+        @ColumnInfo(name= "is_archived", defaultValue = "0")
+        var isArchived: Boolean = false,
 )

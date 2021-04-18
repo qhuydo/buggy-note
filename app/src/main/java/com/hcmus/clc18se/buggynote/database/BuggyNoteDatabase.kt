@@ -10,7 +10,7 @@ import com.hcmus.clc18se.buggynote.data.Note
 import com.hcmus.clc18se.buggynote.data.NoteCrossRef
 import com.hcmus.clc18se.buggynote.data.Tag
 
-@Database(entities = [Note::class, Tag::class, NoteCrossRef::class], version = 6, exportSchema = false)
+@Database(entities = [Note::class, Tag::class, NoteCrossRef::class], version = 7)
 abstract class BuggyNoteDatabase : RoomDatabase() {
     abstract val buggyNoteDatabaseDao: BuggyNoteDatabaseDao
 
@@ -31,6 +31,7 @@ abstract class BuggyNoteDatabase : RoomDatabase() {
                             .addMigrations(MIGRATE_3_4)
                             .addMigrations(MIGRATE_4_5)
                             .addMigrations(MIGRATE_5_6)
+                            .addMigrations(MIGRATE_6_7)
                             .fallbackToDestructiveMigration()
                             .build()
                     INSTANCE = instance
@@ -79,6 +80,11 @@ abstract class BuggyNoteDatabase : RoomDatabase() {
         private val MIGRATE_5_6 = object: Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE note ADD COLUMN `is_pinned` INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        private val MIGRATE_6_7 = object: Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE note ADD COLUMN `is_archived` INTEGER NOT NULL DEFAULT 0")
             }
         }
     }
