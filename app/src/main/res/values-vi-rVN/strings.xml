@@ -27,4 +27,7 @@
     <string name="action_pin">Ghim ghi chú</string>
     <string name="pin_selected_notes">Ghim ghi chú</string>
     <string name="unpin_selected_notes">Gỡ ghim ghi chú</string>
+    <string name="undo">Hoàn tác</string>
+    <string name="moved_to_archive">Đã chuyển qua mục Lưu trữ</string>
+    <string name="archive">Lưu trữ</string>
 </resources>

@@ -26,4 +26,7 @@
     <string name="action_pin">固定</string>
     <string name="pin_selected_notes">固定</string>
     <string name="unpin_selected_notes">固定削除</string>
+    <string name="undo">元に戻す</string>
+    <string name="moved_to_archive">一件のノートをアーカイブしました</string>
+    <string name="archive">アーカイブ</string>
 </resources>

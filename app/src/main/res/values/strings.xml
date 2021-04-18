@@ -14,6 +14,8 @@
     <string name="add_new_tag">Add new tag</string>
     <string name="remove">Remove</string>
     <string name="cancel" translatable="false">@android:string/cancel</string>
+    <string name="undo">Undo</string>
+    <string name="moved_to_archive">Moved to Archive</string>
     <string name="nothing_here">Nothing here</string>
     <string name="format_bold">Format Bold</string>
     <string name="format_italic">Format italic</string>
@@ -31,4 +33,5 @@
     <string name="action_pin">Pin the note</string>
     <string name="pin_selected_notes">Pin selected notes</string>
     <string name="unpin_selected_notes">Unpin selected notes</string>
+    <string name="archive">Archive</string>
 </resources>
