@@ -15,9 +15,12 @@
         <item name="colorSecondary">@color/indigo_500</item>
         <item name="colorSecondaryVariant">@color/indigo_700</item>
         <item name="colorOnSecondary">@color/white</item>
+        <item name="android:textColor">?colorOnSurface</item>
+        <item name="tint">?colorOnSurface</item>
     </style>
 
-    <style name="Theme.BuggyNote.Popup" parent="Theme.MaterialComponents.CompactMenu">
+    <style name="Theme.BuggyNote.Popup" parent="">
+        <item name="enforceMaterialTheme">true</item>
         <item name="colorPrimary">@color/black</item>
         <item name="colorPrimaryVariant">@color/black</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -30,7 +33,10 @@
 
     <style name="Theme.BuggyNote.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.BuggyNote.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.BuggyNote.PopupOverlay" parent="ThemeOverlay.AppCompat.DayNight.ActionBar">
+        <item name="android:colorBackground">?colorSurface</item>
+        <item name="android:textColor">?colorOnSurface</item>
+    </style>
 
     <style name="Theme.BuggyNote.Tag" parent="Widget.MaterialComponents.Chip.Action">
         <item name="android:textAppearance">?textAppearanceCaption</item>

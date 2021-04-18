@@ -2,7 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <item
         android:id="@+id/action_archive"
         android:icon="@drawable/ic_outline_archive_24"
@@ -19,7 +18,7 @@
         android:id="@+id/action_remove_note"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="@string/remove"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_select_all"

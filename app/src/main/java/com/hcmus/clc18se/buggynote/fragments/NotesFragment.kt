@@ -366,6 +366,7 @@ class NotesFragment : Fragment(), OnBackPressed {
         }
         noteViewModel.requestReordering()
         concatAdapter.notifyDataSetChanged()
+        binding.noteList.startLayoutAnimation()
 //        Handler(Looper.getMainLooper()).postDelayed({
 //            binding.noteList.startLayoutAnimation()
 //        }, requireContext().resources.getInteger(R.integer.anim_recycler_view).toLong())
@@ -425,7 +426,7 @@ class NotesFragment : Fragment(), OnBackPressed {
         mainCab = createCab(R.id.cab_stub) {
             title(literal = "1")
             menu(R.menu.main_context)
-            popupTheme(R.style.ThemeOverlay_AppCompat_Light)
+            popupTheme(R.style.Theme_BuggyNote_PopupOverlay)
             titleColor(literal = colorOnSurface)
             subtitleColor(literal = colorOnSurface)
             backgroundColor(literal = colorSurface)
@@ -467,15 +468,6 @@ class NotesFragment : Fragment(), OnBackPressed {
         val colorOnSurface = getColorAttribute(requireContext(), R.attr.colorOnSurface)
 
         menu.tintAllIcons(colorOnSurface)
-//        if (menu.javaClass.simpleName == "MenuBuilder") {
-//            try {
-//                val field = menu.javaClass.getDeclaredField("mOptionalIconsVisible")
-//                field.isAccessible = true
-//                field.setBoolean(menu, true)
-//            } catch (ignored: Exception) {
-//                ignored.printStackTrace()
-//            }
-//        }
         return true // allow creation
     }
 

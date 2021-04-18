@@ -48,6 +48,10 @@ fun RecyclerView.loadNotes(pinnedNotes: List<NoteWithTags>?, unpinnedNotes: List
     unpinnedNotes?.let {
         (adapters[UNPINNED_POSITION] as NoteAdapter).submitList(it)
     }
+
+//    if (pinnedNotes != null && unpinnedNotes != null) {
+//        startLayoutAnimation()
+//    }
 }
 
 @BindingAdapter("loadTags")
