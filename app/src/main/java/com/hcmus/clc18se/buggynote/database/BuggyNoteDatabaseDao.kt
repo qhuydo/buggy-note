@@ -8,7 +8,7 @@ import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.data.Tag
 
 private const val DEFAULT_SORT_ORDER = "is_pinned desc,`order` asc, note_id desc"
-private const val DEFAULT_CONDITION = "is_archive != 0"
+private const val DEFAULT_CONDITION = ""
 
 @Dao
 interface BuggyNoteDatabaseDao {
