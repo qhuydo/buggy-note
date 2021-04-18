@@ -347,6 +347,7 @@ class NotesFragment : Fragment(), OnBackPressed {
         }
         noteViewModel.requestReordering()
         concatAdapter.notifyDataSetChanged()
+        binding.noteList.startLayoutAnimation()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
