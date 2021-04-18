@@ -30,4 +30,7 @@
     <string name="undo">Hoàn tác</string>
     <string name="moved_to_archive">Đã chuyển qua mục Lưu trữ</string>
     <string name="archive">Lưu trữ</string>
+    <string name="move_to_archive">Chuyển qua mục lưu trữ</string>
+    <string name="unarchive">Gỡ lưu trữ</string>
+    <string name="unarchived_moved_to_note_list">Đã chuyển qua mục ghi chú</string>
 </resources>

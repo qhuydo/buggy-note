@@ -6,11 +6,31 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_notes"
-            android:icon="@drawable/ic_baseline_note_24"
+            android:icon="@drawable/ic_note"
             android:title="@string/menu_notes" />
         <item
             android:id="@+id/nav_tags"
-            android:icon="@drawable/ic_baseline_label_24"
+            android:icon="@drawable/ic_tag"
             android:title="@string/menu_tags" />
+    </group>
+
+    <group
+        android:id="@+id/other_list_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_archive"
+            android:icon="@drawable/ic_archive"
+            android:title="@string/archive" />
+    </group>
+
+    <group
+        android:visible="false"
+        android:id="@+id/setting_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_outline_settings_24"
+            android:title="@string/settings" />
+
     </group>
 </menu>

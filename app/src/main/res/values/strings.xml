@@ -29,9 +29,12 @@
     <string name="remove_from_device">Remove from device</string>
     <string name="remove_confirmation">Do you really want to delete this?</string>
     <string name="pinned">Pinned</string>
-    <string name="others">others</string>
+    <string name="others">Others</string>
     <string name="action_pin">Pin the note</string>
     <string name="pin_selected_notes">Pin selected notes</string>
     <string name="unpin_selected_notes">Unpin selected notes</string>
     <string name="archive">Archive</string>
+    <string name="move_to_archive">Move to archive</string>
+    <string name="unarchive">Unarchive</string>
+    <string name="unarchived_moved_to_note_list">Unarchived</string>
 </resources>

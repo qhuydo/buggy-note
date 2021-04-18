@@ -27,6 +27,9 @@
     <string name="pin_selected_notes">固定</string>
     <string name="unpin_selected_notes">固定削除</string>
     <string name="undo">元に戻す</string>
-    <string name="moved_to_archive">一件のノートをアーカイブしました</string>
+    <string name="moved_to_archive">ノートをアーカイブしました</string>
     <string name="archive">アーカイブ</string>
+    <string name="move_to_archive">アーカイブする</string>
+    <string name="unarchive">アーカイブ削除</string>
+    <string name="unarchived_moved_to_note_list">ノートをアーカイブ削除しました</string>
 </resources>

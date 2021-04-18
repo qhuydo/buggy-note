@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-
-    <item
-        android:id="@+id/action_archive"
-        android:icon="@drawable/ic_outline_archive_24"
-        android:title="@string/move_to_archive"
-        app:showAsAction="always" />
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/action_toggle_pin"
-        android:icon="@drawable/ic_baseline_push_pin_24"
-        android:title="@string/pin_selected_notes"
+        android:id="@+id/action_unarchived"
+        android:icon="@drawable/ic_outline_unarchive_24"
+        android:title="@string/unarchive"
         app:showAsAction="always" />
 
     <item
