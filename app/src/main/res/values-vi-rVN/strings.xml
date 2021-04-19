@@ -33,4 +33,5 @@
     <string name="move_to_archive">Chuyển qua mục lưu trữ</string>
     <string name="unarchive">Gỡ lưu trữ</string>
     <string name="unarchived_moved_to_note_list">Đã chuyển qua mục ghi chú</string>
+    <string name="add_new_note">Tạo ghi chú</string>
 </resources>

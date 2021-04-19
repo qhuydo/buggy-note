@@ -144,7 +144,6 @@ class NotesFragment : Fragment(), OnBackPressed {
         setHasOptionsMenu(true)
 
         binding.fab.setOnClickListener {
-
             lifecycleScope.launch {
                 val id = noteViewModel.insertNewNote(Note(title = "", noteContent = ""))
                 noteViewModel.navigateToNoteDetails(id)
@@ -174,7 +173,7 @@ class NotesFragment : Fragment(), OnBackPressed {
         if (addItemDecoration) {
             recyclerView.addItemDecoration(
                     SpaceItemDecoration(
-                            resources.getDimension(R.dimen.item_note_margin).toInt()
+                            resources.getDimension(R.dimen.item_note_padding_top).toInt()
                     )
             )
         }
@@ -273,6 +272,8 @@ class NotesFragment : Fragment(), OnBackPressed {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+
         inflater.inflate(R.menu.main, menu)
 
         val searchItem = menu.findItem(R.id.action_search)
@@ -324,8 +325,6 @@ class NotesFragment : Fragment(), OnBackPressed {
             }
 
         })
-
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -379,10 +378,12 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     private fun setUpNavigation() {
         val toolbar = binding.appBar.toolbar
-        val parentActivity: BuggyNoteActivity = requireActivity() as BuggyNoteActivity
+        val parentActivity = requireActivity() as? BuggyNoteActivity
 
-        parentActivity.setSupportActionBar(toolbar)
-        parentActivity.setupActionBarWithNavController(
+        Timber.e("Parent activity of fragment ${this.tag} is not BuggyNoteActivity")
+
+        parentActivity?.setSupportActionBar(toolbar)
+        parentActivity?.setupActionBarWithNavController(
                 findNavController(),
                 parentActivity.appBarConfiguration
         )

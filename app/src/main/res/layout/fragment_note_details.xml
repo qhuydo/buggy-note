@@ -20,8 +20,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?colorSurface">
+        android:layout_height="match_parent">
 
         <include
             android:id="@+id/app_bar"
@@ -40,7 +39,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="8dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="32dp"
                 android:orientation="vertical"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -138,7 +136,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:layout_gravity="bottom"
-            app:elevation="0dp"
+            app:elevation="1dp"
             app:hideOnScroll="true"
             app:layout_scrollFlags="snap|enterAlways"
             app:menu="@menu/note_detail_bottom" />

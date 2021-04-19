@@ -109,7 +109,7 @@ class ArchivedFragment : Fragment(), OnBackPressed {
         if (addItemDecoration) {
             recyclerView.addItemDecoration(
                     SpaceItemDecoration(
-                            resources.getDimension(R.dimen.item_note_margin).toInt()
+                            resources.getDimension(R.dimen.item_note_padding_top).toInt()
                     )
             )
         }

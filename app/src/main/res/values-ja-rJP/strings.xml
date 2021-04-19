@@ -32,4 +32,5 @@
     <string name="move_to_archive">アーカイブする</string>
     <string name="unarchive">アーカイブ削除</string>
     <string name="unarchived_moved_to_note_list">ノートをアーカイブ削除しました</string>
+    <string name="add_new_note">ノートを作成</string>
 </resources>

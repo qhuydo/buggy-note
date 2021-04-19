@@ -84,11 +84,13 @@
                 unpinnedNotes="@{noteViewModel.unpinnedNotes}"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginHorizontal="@dimen/item_note_margin"
-                android:layout_marginVertical="@dimen/item_note_margin"
                 android:layout_weight="1"
                 android:animateLayoutChanges="false"
                 android:layoutAnimation="@anim/layout_animator"
+                android:paddingHorizontal="@dimen/item_note_padding_top"
+                android:paddingTop="@dimen/item_note_padding_top"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:scrollbars="vertical"
                 app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                 app:spanCount="2"
                 tools:itemCount="3"
@@ -102,9 +104,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
+            android:contentDescription="@string/add_new_note"
+            app:layout_anchor="@id/note_list"
             app:layout_anchorGravity="bottom|end"
-            app:srcCompat="@drawable/ic_baseline_mode_edit_24"
-            tools:ignore="ContentDescription" />
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+            app:srcCompat="@drawable/ic_baseline_mode_edit_24" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

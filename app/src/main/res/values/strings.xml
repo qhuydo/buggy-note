@@ -37,4 +37,5 @@
     <string name="move_to_archive">Move to archive</string>
     <string name="unarchive">Unarchive</string>
     <string name="unarchived_moved_to_note_list">Unarchived</string>
+    <string name="add_new_note">Create a note</string>
 </resources>

@@ -2,9 +2,14 @@
 
     <!-- Base application theme. -->
     <style name="Theme.Base.BuggyNote" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="android:navigationBarColor">@color/black</item>
-        <item name="android:statusBarColor">@color/black</item>
-        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/useLightSystemBars</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/useLightSystemBars</item>
+
+        <item name="android:statusBarColor">@color/status_bar_scrim</item>
+        <item name="android:navigationBarColor">@color/nav_bar_scrim</item>
+
     </style>
 
     <!-- Base application theme. -->
@@ -30,6 +35,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="Widget.AppTheme.AppBar" parent="ThemeOverlay.MaterialComponents.Dark" />
 
     <style name="Theme.BuggyNote.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
