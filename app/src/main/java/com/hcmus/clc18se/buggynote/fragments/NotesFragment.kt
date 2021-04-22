@@ -200,7 +200,7 @@ class NotesFragment : Fragment(), OnBackPressed {
     private fun initObservers() {
 
         noteViewModel.noteList.observe(viewLifecycleOwner) {
-            Timber.d("noteList")
+            // Timber.d("noteList")
             concatAdapter.notifyDataSetChanged()
         }
 
@@ -216,7 +216,7 @@ class NotesFragment : Fragment(), OnBackPressed {
             if (it != null) {
 
                 findNavController().navigate(
-                        ArchivedFragmentDirections.actionNavNotesToNoteDetailsFragment(it)
+                        NotesFragmentDirections.actionNavNotesToNoteDetailsFragment(it)
                 )
                 noteViewModel.doneNavigatingToNoteDetails()
             }

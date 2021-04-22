@@ -11,7 +11,6 @@ import com.hcmus.clc18se.buggynote.databinding.ItemNoteBinding
 import timber.log.Timber
 import java.util.*
 
-// TODO: remove these dirty flags
 // dirty flags
 // position of the NoteAdapter containing a list of pinned notes in a ConcatAdapter
 const val PINNED_POSITION = 1

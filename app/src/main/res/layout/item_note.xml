@@ -35,47 +35,34 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="2"
+                style="@style/note_item_title"
                 android:text="@{note.title}"
-                android:textAppearance="?textAppearanceHeadline6"
                 app:noteTitleFormat="@{note}"
                 tools:text="Title" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/note_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="10"
+                style="@style/note_item_content"
                 android:text="@{note.noteContent}"
-                android:textAlignment="gravity"
-                android:textAppearance="?textAppearanceBody2"
                 app:noteContentFormat="@{note}"
                 tools:text="@tools:sample/lorem/random" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/time_stamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textAppearance="?textAppearanceCaption"
+                style="@style/note_item_time_stamp"
                 app:drawableStartCompat="@drawable/ic_baseline_access_time_24"
                 app:timeStampFromLong="@{note.note.lastModify}"
                 tools:text="@tools:sample/date/ddmmyy" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/tag_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="0dp"
-                android:paddingVertical="0dp"
                 app:chipLimit="@{3}"
                 app:chipSpacingHorizontal="4dp"
                 app:itemSpacing="0dp"
                 app:lineSpacing="0dp"
                 app:loadTagList="@{note.tags}"
-                app:setOnClickToChips="@{chipOnClickListener}" />
+                app:setOnClickToChips="@{chipOnClickListener}"
+                style="@style/note_item_tag_group" />
 
         </LinearLayout>
 

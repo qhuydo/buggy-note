@@ -70,9 +70,11 @@
                 android:id="@+id/tag_filter_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:nestedScrollingEnabled="false"
                 android:orientation="horizontal"
+                android:background="@android:color/transparent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:loadFilterTags="@{tagViewModel.tags}"
                 tools:itemCount="5"
@@ -107,7 +109,6 @@
             android:contentDescription="@string/add_new_note"
             app:layout_anchor="@id/note_list"
             app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
             app:srcCompat="@drawable/ic_baseline_mode_edit_24" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
