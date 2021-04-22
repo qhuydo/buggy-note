@@ -6,10 +6,10 @@
 
         <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/useLightSystemBars</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/useLightSystemBars</item>
-
         <item name="android:statusBarColor">@color/status_bar_scrim</item>
         <item name="android:navigationBarColor">@color/nav_bar_scrim</item>
 
+        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">@color/grey_200</item>
     </style>
 
     <!-- Base application theme. -->

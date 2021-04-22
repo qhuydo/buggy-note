@@ -4,6 +4,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 fun convertLongToDateString(systemTime: Long): String {
-    return SimpleDateFormat("EEEE MMM-dd-yyyy HH:mm", Locale.getDefault())
+    return SimpleDateFormat("MMM-dd-yyyy HH:mm", Locale.getDefault())
             .format(systemTime).toString()
 }

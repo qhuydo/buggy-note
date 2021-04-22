@@ -13,7 +13,6 @@
         <item name="colorSecondary">@color/indigo_A200</item>
         <item name="colorSecondaryVariant">@color/indigo_A200</item>
         <item name="colorOnSecondary">@color/black</item>
-
     </style>
 
 </resources>
