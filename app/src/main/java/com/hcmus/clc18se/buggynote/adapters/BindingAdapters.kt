@@ -15,6 +15,7 @@ import com.google.android.material.chip.ChipGroup
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.data.Tag
+import com.hcmus.clc18se.buggynote.utils.TextFormatter
 import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_MONOSPACE
 import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_SANS_SERIF
 import com.hcmus.clc18se.buggynote.utils.TextFormatter.Companion.TYPEFACE_SERIF
@@ -79,12 +80,10 @@ fun loadFilterTags(recyclerView: RecyclerView, tags: List<Tag>?) {
 }
 
 
-@SuppressLint("SetTextI18n")
 @BindingAdapter("timeStampFromLong")
 fun setTimeStampFromLong(textView: TextView, value: Long) {
     val text = convertLongToDateString(value)
-    // textView.text = textView.context.resources.getString(R.string.last_edit, text)
-    textView.text = "  $text"
+    textView.text = text
 }
 
 @BindingAdapter(value = ["loadTagList", "chipLimit", "setOnClickToChips"], requireAll = false)
@@ -105,10 +104,10 @@ fun ChipGroup.setTags(tags: List<Tag>?, limit: Int?, onClickListener: View.OnCli
 
             val chip = Chip(this.context)
             val chipDrawable = ChipDrawable.createFromAttributes(
-                this.context,
-                null,
-                0,
-                R.style.Theme_BuggyNote_Tag
+                    this.context,
+                    null,
+                    0,
+                    R.style.Theme_BuggyNote_Tag
             )
             chip.setChipDrawable(chipDrawable)
             chip.setTextAppearanceResource(R.style.TextAppearance_AppCompat_Caption)
@@ -147,42 +146,33 @@ fun TextView.setPlaceHolderEmoticon(nothing: Nothing?) {
 @BindingAdapter("noteContentFormat")
 fun TextView.setNoteContentFormat(noteWithTags: NoteWithTags?) {
     noteWithTags?.let {
-
         val formatter = it.getContentFormat()
-
-        gravity = formatter.gravity
-
-        val typeface = when (formatter.typefaceType) {
-            TYPEFACE_SERIF -> Typeface.SERIF
-            TYPEFACE_SANS_SERIF -> Typeface.SANS_SERIF
-            TYPEFACE_MONOSPACE -> Typeface.MONOSPACE
-            else -> null
-        }
-
-        setTypeface(typeface, formatter.typefaceStyle)
-
-        invalidate()
-        requestLayout()
+        setFormat(formatter)
     }
 }
 
 @BindingAdapter("noteTitleFormat")
 fun TextView.setNoteTitleFormat(noteWithTags: NoteWithTags?) {
     noteWithTags?.let {
-
         val formatter = it.getTitleFormat()
-
-        val typeface = when (formatter.typefaceType) {
-            TYPEFACE_SERIF -> Typeface.SERIF
-            TYPEFACE_SANS_SERIF -> Typeface.SANS_SERIF
-            TYPEFACE_MONOSPACE -> Typeface.MONOSPACE
-            else -> null
-        }
-
-        gravity = formatter.gravity
-        setTypeface(typeface, formatter.typefaceStyle)
-
-        invalidate()
-        requestLayout()
+        setFormat(formatter)
     }
+}
+
+fun TextView.setFormat(formatter: TextFormatter) {
+    // get Typeface object from TYPEFACE_* flag
+    val typeface = when (formatter.typefaceType) {
+        TYPEFACE_SERIF -> Typeface.SERIF
+        TYPEFACE_SANS_SERIF -> Typeface.SANS_SERIF
+        TYPEFACE_MONOSPACE -> Typeface.MONOSPACE
+        else -> null
+    }
+
+    textAlignment = TextView.TEXT_ALIGNMENT_GRAVITY
+    gravity = formatter.gravity
+
+    setTypeface(typeface, formatter.typefaceStyle)
+
+    invalidate()
+    requestLayout()
 }
