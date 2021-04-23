@@ -12,10 +12,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import androidx.preference.PreferenceManager
 import com.hcmus.clc18se.buggynote.databinding.ActivityMainBinding
+import com.hcmus.clc18se.buggynote.utils.ControllableDrawerActivity
 import com.hcmus.clc18se.buggynote.utils.OnBackPressed
 import timber.log.Timber
 
-class BuggyNoteActivity : AppCompatActivity() {
+class BuggyNoteActivity : AppCompatActivity(), ControllableDrawerActivity {
 
     private val navHostFragment by lazy { supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment }
 
@@ -88,8 +89,16 @@ class BuggyNoteActivity : AppCompatActivity() {
 
     private val onDestinationChangedListener = NavController.OnDestinationChangedListener { _, destination, _ ->
         when (destination.id in topDestination) {
-            false -> binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            else -> binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            false -> lockTheDrawer()
+            else -> unlockTheDrawer()
         }
+    }
+
+    override fun lockTheDrawer() {
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+    }
+
+    override fun unlockTheDrawer() {
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 }

@@ -93,6 +93,10 @@ class NotesFragment : Fragment(), OnBackPressed {
 
         override fun onMultipleSelect(note: NoteWithTags): Boolean {
             invalidateCab()
+            val parentActivity = requireActivity()
+            if (parentActivity is ControllableDrawerActivity) {
+                parentActivity.lockTheDrawer()
+            }
             return true
         }
 
@@ -441,6 +445,10 @@ class NotesFragment : Fragment(), OnBackPressed {
             onDestroy {
                 pinnedNoteAdapter.finishSelection()
                 unPinnedNoteAdapter.finishSelection()
+                val parentActivity = requireActivity()
+                if (parentActivity is ControllableDrawerActivity) {
+                    parentActivity.unlockTheDrawer()
+                }
                 mainCab = null
                 true
             }
