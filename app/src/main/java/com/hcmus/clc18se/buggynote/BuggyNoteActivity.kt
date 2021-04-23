@@ -27,6 +27,8 @@ class BuggyNoteActivity : AppCompatActivity() {
 
     internal lateinit var appBarConfiguration: AppBarConfiguration
 
+    companion object private val topDestination = listOf(R.id.nav_notes, R.id.nav_tags, R.id.nav_archive)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,8 +40,7 @@ class BuggyNoteActivity : AppCompatActivity() {
 
         drawerLayout = binding.drawerLayout
 
-        appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_notes, R.id.nav_tags, R.id.nav_archive), drawerLayout)
+        appBarConfiguration = AppBarConfiguration(setOf(*topDestination.toTypedArray()), drawerLayout)
 
         val navView: NavigationView = binding.navView
         navView.setupWithNavController(navController)
@@ -85,7 +86,10 @@ class BuggyNoteActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private val onDestinationChangedListener = NavController.OnDestinationChangedListener { _, _, _ ->
-
+    private val onDestinationChangedListener = NavController.OnDestinationChangedListener { _, destination, _ ->
+        when (destination.id in topDestination) {
+            false -> binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            else -> binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        }
     }
 }
