@@ -33,4 +33,6 @@
     <string name="unarchive">アーカイブ削除</string>
     <string name="unarchived_moved_to_note_list">ノートをアーカイブ削除しました</string>
     <string name="add_new_note">ノートを作成</string>
+    <string name="remove_tag_dialog_title">タグを削除しますか？</string>
+    <string name="remove_tag_dialog_content">このタグを削除し、すべてのノートを削除されません。</string>
 </resources>

@@ -28,7 +28,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">0dp</item>
-        <item name="android:paddingVertical" tools:targetApi="o">0dp</item>
+        <item name="android:paddingTop" tools:targetApi="o">0dp</item>
+        <item name="android:paddingBottom" tools:targetApi="o">0dp</item>
     </style>
 
     <style name="note_details_time_stamp">
@@ -70,7 +71,8 @@
         <item name="android:layout_weight">1</item>
         <item name="android:animateLayoutChanges">false</item>
         <item name="android:layoutAnimation">@anim/layout_animator</item>
-        <item name="android:paddingHorizontal">@dimen/item_note_padding_top</item>
+        <item name="android:paddingStart">@dimen/item_note_padding_top</item>
+        <item name="android:paddingEnd">@dimen/item_note_padding_top</item>
         <item name="android:paddingTop">@dimen/item_note_padding_top</item>
         <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
         <item name="android:scrollbars">vertical</item>

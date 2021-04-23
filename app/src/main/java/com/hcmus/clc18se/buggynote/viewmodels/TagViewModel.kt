@@ -64,6 +64,7 @@ class TagViewModel(val database: BuggyNoteDatabaseDao) : ViewModel() {
         var succeed: Boolean
 
         return runBlocking {
+            tag.name = tag.name.trim()
             async {
                 succeed = updateTagFromDatabase(tag)
                 if (succeed) {
@@ -71,6 +72,14 @@ class TagViewModel(val database: BuggyNoteDatabaseDao) : ViewModel() {
                 }
                 return@async succeed
 
+            }.await()
+        }
+    }
+
+    fun isTagExistedInTheNoteList(tag: Tag): Boolean {
+        return runBlocking {
+            async {
+                return@async database.isTagExistedInTheNoteList(tag.id)
             }.await()
         }
     }

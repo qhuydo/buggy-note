@@ -9,7 +9,7 @@
     <string name="content">Content</string>
     <string name="save">Save</string>
     <string name="create_new_tag">Create new tag</string>
-    <string name="exist_tag">The tag was existed</string>
+    <string name="exist_tag">Tag existed</string>
     <string name="last_edit">Last edited: %1$s</string>
     <string name="add_new_tag">Add new tag</string>
     <string name="remove">Remove</string>
@@ -38,4 +38,6 @@
     <string name="unarchive">Unarchive</string>
     <string name="unarchived_moved_to_note_list">Unarchived</string>
     <string name="add_new_note">Create a note</string>
+    <string name="remove_tag_dialog_title">Remove Tag?</string>
+    <string name="remove_tag_dialog_content">Your notes won\'t be removed when delete this tag.</string>
 </resources>

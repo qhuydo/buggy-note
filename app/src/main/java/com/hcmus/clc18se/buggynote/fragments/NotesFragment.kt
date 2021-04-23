@@ -1,8 +1,10 @@
 package com.hcmus.clc18se.buggynote.fragments
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -246,6 +248,10 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     override fun onPause() {
         super.onPause()
+
+        val imm: InputMethodManager? =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
 
         lifecycleScope.launch {
             if (noteViewModel.orderChanged.value == true &&

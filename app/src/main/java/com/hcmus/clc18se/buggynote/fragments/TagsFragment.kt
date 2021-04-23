@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.ItemEditorFocusListener
@@ -21,23 +22,21 @@ import com.hcmus.clc18se.buggynote.adapters.TagAdapter
 import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentTagsBinding
+import com.hcmus.clc18se.buggynote.utils.OnBackPressed
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModelFactory
+import timber.log.Timber
 
-class TagsFragment : Fragment() {
+class TagsFragment : Fragment(), OnBackPressed {
 
     private lateinit var binding: FragmentTagsBinding
 
-    private val adapter by lazy {
-        TagAdapter(onItemEditorFocusListener)
-    }
+    private val adapter by lazy { TagAdapter(onItemEditorFocusListener) }
 
     private val tagViewModel: TagViewModel by activityViewModels {
-        TagViewModelFactory(
-                BuggyNoteDatabase.getInstance(requireContext()).buggyNoteDatabaseDao
-        )
+        TagViewModelFactory(BuggyNoteDatabase.getInstance(requireContext()).buggyNoteDatabaseDao)
     }
 
     private val parentContext: Context by lazy {
@@ -51,10 +50,47 @@ class TagsFragment : Fragment() {
         )
     }
 
+    private fun updateATag(tag: Tag) {
+        val newTag = binding.addTagContent.text.toString().trim()
+
+        if (tag.name == newTag) {
+            // Do nothing when the tag is unchanged
+            return
+        }
+
+        val updatedTag = Tag(id = tag.id, name = newTag)
+        val succeed = tagViewModel.updateTag(updatedTag)
+        if (!succeed) {
+            Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show()
+            binding.addTagContent.setText(tag.name)
+        } else {
+            noteViewModel.requestReloadingData()
+        }
+    }
+
+    private fun performRemovingTag(tag: Tag) {
+        // Hide the keyboard when remove a tag
+        hideTheKeyboard()
+        tagViewModel.deleteTag(tag)
+        noteViewModel.requestReloadingData()
+    }
+
+    private fun removeATag(tag: Tag) {
+        if (!tagViewModel.isTagExistedInTheNoteList(tag)) {
+            performRemovingTag(tag)
+            return
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.remove_tag_dialog_title)
+                .setMessage(R.string.remove_tag_dialog_content)
+                .setPositiveButton(R.string.remove) { _, _ -> performRemovingTag(tag) }
+                .setNegativeButton(R.string.cancel) { _, _ -> }
+                .show()
+    }
+
     private val onItemEditorFocusListener = ItemEditorFocusListener { binding, hasFocus, tag ->
-
-        // TODO: refactor me
-
+        Timber.d("On focus listener is called")
         var removeIcon = R.drawable.ic_outline_label_24
         var checkIcon = R.drawable.ic_baseline_mode_edit_24
 
@@ -62,30 +98,14 @@ class TagsFragment : Fragment() {
             removeIcon = R.drawable.ic_baseline_delete_24
             checkIcon = R.drawable.ic_baseline_done_24
 
-
-            binding.checkButton.setOnClickListener {
-                val updatedTag = Tag(id = tag.id, name = binding.tagContent.text.toString())
-                val succeed = tagViewModel.updateTag(updatedTag)
-                if (!succeed) {
-                    // TODO: notify error
-                    Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show()
-                    binding.tagContent.setText(tag.name)
-                } else {
-                    noteViewModel.requestReloadingData()
-                }
-            }
-
-            binding.removeButton.setOnClickListener {
-                val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-                imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
-                tagViewModel.deleteTag(tag)
-                noteViewModel.requestReloadingData()
-            }
+            binding.checkButton.setOnClickListener { updateATag(tag) }
+            binding.removeButton.setOnClickListener { removeATag(tag) }
         } else {
             binding.checkButton.isClickable = false
             binding.removeButton.isClickable = false
         }
 
+        // set drawable based on the current focus state
         binding.checkButton.apply {
             setImageDrawable(ResourcesCompat.getDrawable(resources, checkIcon, parentContext.theme))
             invalidate()
@@ -130,6 +150,11 @@ class TagsFragment : Fragment() {
         binding.addTagDone.setOnClickListener {
 
             val tagContent = binding.addTagContent.text.toString().trim()
+            if (tagContent.isBlank()) {
+                binding.addTagLayout.editText?.text?.clear()
+                return@setOnClickListener
+            }
+
             val succeed = tagViewModel.addNewTag(tagContent)
 
             binding.addTagLayout.apply {
@@ -141,10 +166,18 @@ class TagsFragment : Fragment() {
         }
     }
 
-    override fun onDetach() {
-        val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
-        super.onDetach()
+    override fun onBackPress(): Boolean {
+
+        if (binding.tagList.hasFocus()) {
+            binding.tagList.clearFocus()
+            return true
+        }
+        return false
+    }
+
+    override fun onPause() {
+        hideTheKeyboard()
+        super.onPause()
     }
 
     private fun setUpNavigation() {
@@ -156,5 +189,10 @@ class TagsFragment : Fragment() {
         parentActivity.setupActionBarWithNavController(findNavController(), parentActivity.appBarConfiguration)
         NavigationUI.setupWithNavController(toolbar, navHostFragment, parentActivity.appBarConfiguration)
 
+    }
+
+    private fun hideTheKeyboard() {
+        val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
 }

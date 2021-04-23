@@ -40,8 +40,8 @@
                 tools:text="(っ◔◡◔)っ ❤" />
 
             <TextView
-                android:text="@string/nothing_here"
-                style="@style/placeholder_text" />
+                style="@style/placeholder_text"
+                android:text="@string/nothing_here" />
 
         </LinearLayout>
 

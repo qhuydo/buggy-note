@@ -89,4 +89,7 @@ interface BuggyNoteDatabaseDao {
                 "and $DEFAULT_CONDITION order by $DEFAULT_SORT_ORDER"
     )
     suspend fun filterNoteByKeyWord(keyword: String): List<NoteWithTags>
+
+    @Query("select count(*) from notecrossref where tag_id = :tagId")
+    suspend fun isTagExistedInTheNoteList(tagId: Long): Boolean
 }
