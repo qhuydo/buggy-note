@@ -223,8 +223,8 @@ class NotesFragment : Fragment(), OnBackPressed {
         }
 
         noteViewModel.reloadDataRequest.observe(viewLifecycleOwner) {
-            Timber.d("reloadDataRequest.observe")
             if (it) {
+                Timber.d("reloadDataRequest.observe")
                 if (tagViewModel.tags.value != null) {
                     noteViewModel.filterByTagsFromDatabase(tagViewModel.tags.value!!)
                 } else {
@@ -380,7 +380,9 @@ class NotesFragment : Fragment(), OnBackPressed {
         val toolbar = binding.appBar.toolbar
         val parentActivity = requireActivity() as? BuggyNoteActivity
 
-        Timber.e("Parent activity of fragment ${this.tag} is not BuggyNoteActivity")
+        if (parentActivity == null) {
+            Timber.e("Parent activity of fragment ${this.tag} is not BuggyNoteActivity")
+        }
 
         parentActivity?.setSupportActionBar(toolbar)
         parentActivity?.setupActionBarWithNavController(

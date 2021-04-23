@@ -8,6 +8,10 @@
         <variable
             name="noteViewModel"
             type="com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel" />
+
+        <variable
+            name="tagViewModel"
+            type="com.hcmus.clc18se.buggynote.viewmodels.TagViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -31,35 +35,43 @@
 
             <TextView
                 android:id="@+id/placeholder_emoticon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textAppearance="?textAppearanceHeadline2"
-                android:textColor="?colorOnSurface"
                 app:placeHolderEmoticon="@{null}"
-                tools:text="(っ◔◡◔)っ ❤" />
+                tools:text="(っ◔◡◔)っ ❤"
+                style="@style/placeholder_emoticon" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="@string/nothing_here"
-                android:textAppearance="?textAppearanceHeadline6" />
+                style="@style/placeholder_text" />
 
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/note_list"
-            loadNotes="@{noteViewModel.archivedNotes}"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/item_note_padding_top"
-            android:layout_marginVertical="@dimen/item_note_padding_top"
-            android:layoutAnimation="@anim/layout_animator"
-            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:spanCount="2"
-            tools:itemCount="3"
-            tools:listitem="@layout/item_note" />
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tag_filter_list"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:loadFilterTags="@{tagViewModel.tags}"
+                tools:itemCount="5"
+                tools:listitem="@layout/item_tag_filter"
+                style="@style/tag_filter_list_recycler_view" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/note_list"
+                style="@style/note_list_recycler_view"
+                loadNotes="@{noteViewModel.archivedNotes}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:spanCount="2"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_note" />
+
+        </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

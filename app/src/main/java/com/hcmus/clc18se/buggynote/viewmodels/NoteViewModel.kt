@@ -20,11 +20,11 @@ class NoteViewModel(
         get() = _noteList
 
     val unpinnedNotes = Transformations.map(_noteList) {
-        it.filter { noteWithTags -> !noteWithTags.isPinned() && !noteWithTags.isArchived()}
+        it.filter { noteWithTags -> !noteWithTags.isPinned() && !noteWithTags.isArchived() }
     }
 
     val pinnedNotes = Transformations.map(_noteList) {
-        it.filter { noteWithTags -> noteWithTags.isPinned() && !noteWithTags.isArchived()}
+        it.filter { noteWithTags -> noteWithTags.isPinned() && !noteWithTags.isArchived() }
     }
     val archivedNotes = Transformations.map(_noteList) {
         it.filter { noteWithTags -> noteWithTags.isArchived() }
@@ -34,10 +34,9 @@ class NoteViewModel(
         if (it.isEmpty()) View.GONE else View.VISIBLE
     }
 
-    val noteListVisibility = Transformations.map(_noteList) {
-        if (it.any { noteWithTags -> !noteWithTags.isArchived() }) View.INVISIBLE else View.VISIBLE
-
-    }
+    private var _noteListVisibility = MutableLiveData<Int>(View.GONE)
+    val noteListVisibility: LiveData<Int>
+        get() = _noteListVisibility
 
     private var _navigateToNoteDetails = MutableLiveData<Long?>()
     val navigateToNoteDetails: LiveData<Long?>
@@ -53,6 +52,17 @@ class NoteViewModel(
 
     init {
         loadNotes()
+        _noteList.observeForever { noteList ->
+            viewModelScope.launch {
+                if (noteList != null) {
+                    val visibility = if (
+                            noteList.isNotEmpty() &&
+                            noteList.any { noteWithTags -> !noteWithTags.isArchived() }) View.GONE
+                    else View.VISIBLE
+                    _noteListVisibility.postValue(visibility)
+                }
+            }
+        }
     }
 
     fun loadNotes() {
@@ -177,13 +187,12 @@ class NoteViewModel(
     }
 
     fun moveToArchive(vararg notes: NoteWithTags) {
-        updateArchiveStatus( true, *notes)
+        updateArchiveStatus(true, *notes)
     }
 
     fun moveToNoteList(vararg notes: NoteWithTags) {
-        updateArchiveStatus( false, *notes)
+        updateArchiveStatus(false, *notes)
     }
-
 }
 
 @Suppress("UNCHECKED_CAST")
