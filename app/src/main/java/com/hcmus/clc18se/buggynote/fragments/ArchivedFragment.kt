@@ -19,17 +19,17 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
-import com.hcmus.clc18se.buggynote.adapters.ARCHIVE_TAG
-import com.hcmus.clc18se.buggynote.adapters.NoteAdapter
-import com.hcmus.clc18se.buggynote.adapters.NoteAdapterCallbacks
-import com.hcmus.clc18se.buggynote.adapters.NoteItemTouchHelperCallBack
+import com.hcmus.clc18se.buggynote.adapters.*
 import com.hcmus.clc18se.buggynote.data.NoteWithTags
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentArchivedBinding
 import com.hcmus.clc18se.buggynote.utils.*
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
+import com.hcmus.clc18se.buggynote.viewmodels.TagViewModel
+import com.hcmus.clc18se.buggynote.viewmodels.TagViewModelFactory
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 // TODO: refactor the fragment
@@ -45,7 +45,11 @@ class ArchivedFragment : Fragment(), OnBackPressed {
         NoteViewModelFactory(requireActivity().application, db)
     }
 
+    private val tagViewModel: TagViewModel by activityViewModels { TagViewModelFactory(db) }
+
     private val archivedNoteAdapter by lazy { NoteAdapter(noteAdapterCallbacks, ARCHIVE_TAG) }
+
+    private val filterTagAdapter by lazy { TagFilterAdapter(onTagCheckedChangeListener) }
 
     private val noteListTouchHelper by lazy {
         val callback = NoteItemTouchHelperCallBack(archivedNoteAdapter)
@@ -73,11 +77,30 @@ class ArchivedFragment : Fragment(), OnBackPressed {
                     .setAction(R.string.undo) {
                         noteViewModel.moveToArchive(note)
                     }.show()
+
+            mainCab?.destroy()
+        }
+    }
+
+    private val onTagCheckedChangeListener = ItemOnCheckedChangeListener { isChecked, tag ->
+        if (tag.selectState != isChecked) {
+            archivedNoteAdapter.finishSelection()
+            mainCab?.destroy()
+
+            runBlocking {
+                if (noteViewModel.orderChanged.value == true &&
+                        tagViewModel.tags.value?.all { !it.selectState } == true
+                ) {
+                    noteViewModel.reorderNotes(archivedNoteAdapter.currentList)
+                }
+            }
+
+            tag.selectState = isChecked
+            tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
         }
     }
 
     private var mainCab: AttachedCab? = null
-
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -90,6 +113,7 @@ class ArchivedFragment : Fragment(), OnBackPressed {
         binding.apply {
             lifecycleOwner = this@ArchivedFragment
             noteViewModel = this@ArchivedFragment.noteViewModel
+            tagViewModel = this@ArchivedFragment.tagViewModel
         }
 
         initRecyclerViews()
@@ -119,6 +143,11 @@ class ArchivedFragment : Fragment(), OnBackPressed {
     private fun initRecyclerViews() {
         binding.apply {
             initNoteAdapter(noteList, archivedNoteAdapter, noteListTouchHelper, true)
+            tagFilterList.adapter = filterTagAdapter
+            tagFilterList.addItemDecoration(
+                    SpaceItemDecoration(resources.getDimension(R.dimen.item_tag_margin).toInt())
+            )
+
         }
     }
 
@@ -130,6 +159,10 @@ class ArchivedFragment : Fragment(), OnBackPressed {
 
         noteViewModel.headerLabelVisibility.observe(viewLifecycleOwner) {
             archivedNoteAdapter.notifyDataSetChanged()
+        }
+
+        tagViewModel.tags.observe(viewLifecycleOwner) {
+            filterTagAdapter.notifyDataSetChanged()
         }
 
         noteViewModel.navigateToNoteDetails.observe(viewLifecycleOwner) {
@@ -145,7 +178,11 @@ class ArchivedFragment : Fragment(), OnBackPressed {
         noteViewModel.reloadDataRequest.observe(viewLifecycleOwner) {
             if (it) {
                 Timber.d("reloadDataRequest.observe")
-                noteViewModel.loadNotes()
+                if (tagViewModel.tags.value != null) {
+                    noteViewModel.filterByTagsFromDatabase(tagViewModel.tags.value!!)
+                } else {
+                    noteViewModel.loadNotes()
+                }
                 noteViewModel.doneRequestingLoadData()
                 binding.apply {
                     noteList.invalidate()
@@ -238,10 +275,14 @@ class ArchivedFragment : Fragment(), OnBackPressed {
 
     private fun setUpNavigation() {
         val toolbar = binding.appBar.toolbar
-        val parentActivity: BuggyNoteActivity = requireActivity() as BuggyNoteActivity
+        val parentActivity = requireActivity() as? BuggyNoteActivity
 
-        parentActivity.setSupportActionBar(toolbar)
-        parentActivity.setupActionBarWithNavController(
+        if (parentActivity == null) {
+            Timber.e("Parent activity of fragment ${this.tag} is not BuggyNoteActivity")
+        }
+
+        parentActivity?.setSupportActionBar(toolbar)
+        parentActivity?.setupActionBarWithNavController(
                 findNavController(),
                 parentActivity.appBarConfiguration
         )

@@ -30,19 +30,13 @@
 
             <TextView
                 android:id="@+id/placeholder_emoticon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textAppearance="?textAppearanceHeadline2"
-                android:textColor="?colorOnSurface"
                 app:placeHolderEmoticon="@{null}"
-                tools:text="(っ◔◡◔)っ ❤" />
+                tools:text="(っ◔◡◔)っ ❤"
+                style="@style/placeholder_emoticon" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="@string/nothing_here"
-                android:textAppearance="?textAppearanceHeadline6" />
+                style="@style/placeholder_text" />
 
         </LinearLayout>
 

@@ -12,15 +12,6 @@
         <variable
             name="tagViewModel"
             type="com.hcmus.clc18se.buggynote.viewmodels.TagViewModel" />
-
-
-        <import type="java.util.List" />
-
-        <import type="com.hcmus.clc18se.buggynote.data.Tag" />
-
-        <variable
-            name="selectedTags"
-            type="List&lt;Tag>" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -34,29 +25,23 @@
             layout="@layout/app_bar_main" />
 
         <LinearLayout
-            placeholderVisibility="@{noteViewModel.noteList}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
+            android:visibility="@{noteViewModel.noteListVisibility}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:visibility="gone">
 
             <TextView
                 android:id="@+id/placeholder_emoticon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textAppearance="?textAppearanceHeadline2"
-                android:textColor="?colorOnSurface"
+                style="@style/placeholder_emoticon"
                 app:placeHolderEmoticon="@{null}"
                 tools:text="(っ◔◡◔)っ ❤" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="@string/nothing_here"
-                android:textAppearance="?textAppearanceHeadline6" />
+                style="@style/placeholder_text" />
 
         </LinearLayout>
 
@@ -68,13 +53,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/tag_filter_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:nestedScrollingEnabled="false"
-                android:orientation="horizontal"
-                android:background="@android:color/transparent"
+                style="@style/tag_filter_list_recycler_view"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:loadFilterTags="@{tagViewModel.tags}"
                 tools:itemCount="5"
@@ -82,17 +61,12 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/note_list"
+                style="@style/note_list_recycler_view"
                 pinnedNotes="@{noteViewModel.pinnedNotes}"
                 unpinnedNotes="@{noteViewModel.unpinnedNotes}"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:animateLayoutChanges="false"
-                android:layoutAnimation="@anim/layout_animator"
-                android:paddingHorizontal="@dimen/item_note_padding_top"
-                android:paddingTop="@dimen/item_note_padding_top"
-                android:scrollbarAlwaysDrawVerticalTrack="true"
-                android:scrollbars="vertical"
                 app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                 app:spanCount="2"
                 tools:itemCount="3"

@@ -65,4 +65,38 @@
         <item name="android:labelFor">@id/content_layout</item>
         <item name="android:textAlignment">gravity</item>
     </style>
+
+    <style name="note_list_recycler_view">
+        <item name="android:layout_weight">1</item>
+        <item name="android:animateLayoutChanges">false</item>
+        <item name="android:layoutAnimation">@anim/layout_animator</item>
+        <item name="android:paddingHorizontal">@dimen/item_note_padding_top</item>
+        <item name="android:paddingTop">@dimen/item_note_padding_top</item>
+        <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
+        <item name="android:scrollbars">vertical</item>
+    </style>
+
+    <style name="tag_filter_list_recycler_view">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:nestedScrollingEnabled">false</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+    </style>
+
+    <style name="placeholder_emoticon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">?textAppearanceHeadline2</item>
+        <item name="android:textColor">?colorOnSurface</item>
+    </style>
+
+    <style name="placeholder_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?textAppearanceHeadline6</item>
+    </style>
 </resources>
