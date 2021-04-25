@@ -189,9 +189,16 @@ class NoteItemTouchHelperCallBack(private vararg val adapters: NoteAdapter) :
         return !adapters.any { it.tag == ARCHIVE_TAG }
     }
 
+    override fun getSwipeDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        if (viewHolder is NoteAdapter.ViewHolder) {
+            return super.getSwipeDirs(recyclerView, viewHolder)
+        }
+        return 0
+    }
+
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         (viewHolder as? NoteAdapter.ViewHolder)?.let { vh ->
-            Timber.d(vh.tag)
+            // Timber.d(vh.tag)
             adapters.firstOrNull { it.tag == vh.tag }?.onItemSwipe(vh.bindingAdapterPosition)
         }
     }
@@ -202,7 +209,7 @@ class NoteItemTouchHelperCallBack(private vararg val adapters: NoteAdapter) :
             target: RecyclerView.ViewHolder
     ): Boolean {
         (viewHolder as? NoteAdapter.ViewHolder)?.let { vh ->
-            Timber.d(vh.tag)
+            // Timber.d(vh.tag)
             return adapters.firstOrNull { it.tag == vh.tag }?.onItemMove(
                     viewHolder.bindingAdapterPosition, target.bindingAdapterPosition
             ) ?: false

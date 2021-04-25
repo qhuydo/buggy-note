@@ -28,7 +28,9 @@ class BuggyNoteActivity : AppCompatActivity(), ControllableDrawerActivity {
 
     internal lateinit var appBarConfiguration: AppBarConfiguration
 
-    companion object private val topDestination = listOf(R.id.nav_notes, R.id.nav_tags, R.id.nav_archive)
+    companion object {
+        private val topDestination = listOf(R.id.nav_notes, R.id.nav_tags, R.id.nav_archive)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
