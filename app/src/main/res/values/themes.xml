@@ -4,12 +4,16 @@
     <style name="Theme.Base.BuggyNote" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
 
-        <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/useLightSystemBars</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/useLightSystemBars</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/useLightSystemBars
+        </item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">
+            @bool/useLightSystemBars
+        </item>
         <item name="android:statusBarColor">@color/status_bar_scrim</item>
         <item name="android:navigationBarColor">@color/nav_bar_scrim</item>
 
-        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">@color/grey_200</item>
+        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">@color/grey_200
+        </item>
     </style>
 
     <!-- Base application theme. -->
@@ -46,8 +50,6 @@
     </style>
 
     <style name="Theme.BuggyNote.Tag" parent="Widget.MaterialComponents.Chip.Action">
-        <item name="android:textAppearance">?textAppearanceCaption</item>
-        <item name="android:textSize">5sp</item>
         <item name="chipBackgroundColor">?colorSurface</item>
         <item name="android:textColor">?colorOnSurface</item>
         <item name="chipStrokeWidth">1dp</item>
@@ -57,13 +59,14 @@
     </style>
 
     <style name="Theme.BuggyNote.TagFilter" parent="Widget.MaterialComponents.Chip.Filter">
-        <item name="android:textSize">5sp</item>
-        <item name="chipBackgroundColor">?colorSurface</item>
+        <item name="maxWidth">@dimen/tag_filter_max_width</item>
+        <item name="checkedIconTint">?colorPrimary</item>
         <item name="android:textColor">?colorOnSurface</item>
+        <item name="chipBackgroundColor">?colorSurface</item>
         <item name="chipStrokeWidth">1dp</item>
         <item name="chipStrokeColor">@drawable/stroke_color</item>
-        <item name="checkedIconVisible">false</item>
         <item name="shapeAppearanceOverlay">@null</item>
     </style>
+    <!--        <item name="checkedIconVisible">false</item>-->
 
 </resources>

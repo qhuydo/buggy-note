@@ -147,6 +147,13 @@ class NotesFragment : Fragment(), OnBackPressed {
             savedInstanceState: Bundle?
     ): View {
         binding = FragmentNotesBinding.inflate(inflater, container, false)
+
+        binding.apply {
+            lifecycleOwner = this@NotesFragment
+            noteViewModel = this@NotesFragment.noteViewModel
+            tagViewModel = this@NotesFragment.tagViewModel
+        }
+
         setHasOptionsMenu(true)
 
         binding.fab.setOnClickListener {
@@ -154,12 +161,6 @@ class NotesFragment : Fragment(), OnBackPressed {
                 val id = noteViewModel.insertNewNote(Note(title = "", noteContent = ""))
                 noteViewModel.navigateToNoteDetails(id)
             }
-        }
-
-        binding.apply {
-            lifecycleOwner = this@NotesFragment
-            noteViewModel = this@NotesFragment.noteViewModel
-            tagViewModel = this@NotesFragment.tagViewModel
         }
 
         initRecyclerViews()

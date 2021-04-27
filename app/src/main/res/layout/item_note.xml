@@ -47,24 +47,17 @@
                 app:noteContentFormat="@{note}"
                 tools:text="@tools:sample/lorem/random" />
 
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/tag_group"
-                    style="@style/note_item_tag_group"
-                    app:chipLimit="@{3}"
-                    app:chipSpacingHorizontal="4dp"
-                    app:chipSpacingVertical="0dp"
-                    app:itemSpacing="0dp"
-                    app:lineSpacing="0dp"
-                    app:loadTagList="@{note.tags}"
-                    app:setOnClickToChips="@{chipOnClickListener}" />
-
-            </HorizontalScrollView>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/tag_group"
+                style="@style/note_item_tag_group"
+                chipLimit="@{3}"
+                loadTagList="@{note.tags}"
+                setOnClickToChips="@{chipOnClickListener}"
+                chipSmallText="@{true}"
+                app:chipSpacingHorizontal="4dp"
+                app:chipSpacingVertical="4dp"
+                app:itemSpacing="0dp"
+                app:lineSpacing="4dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/time_stamp"

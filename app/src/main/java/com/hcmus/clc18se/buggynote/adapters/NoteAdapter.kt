@@ -147,9 +147,7 @@ class NoteAdapter(
         fun bind(noteWithTags: NoteWithTags) {
             when (binding) {
                 is ItemNoteBinding -> {
-                    binding.apply {
-                        note = noteWithTags
-                    }
+                    binding.note = noteWithTags
                 }
             }
             binding.executePendingBindings()

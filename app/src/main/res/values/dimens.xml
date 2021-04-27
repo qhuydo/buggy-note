@@ -8,5 +8,7 @@
     <dimen name="item_note_padding_top">4dp</dimen>
     <dimen name="item_tag_margin">4dp</dimen>
     <dimen name="chip_corner_radius">1dp</dimen>
+    <dimen name="chip_vertical_spacing">1dp</dimen>
     <dimen name="item_note_padding_bottom">48dp</dimen>
+    <dimen name="tag_filter_max_width">128dp</dimen>
 </resources>

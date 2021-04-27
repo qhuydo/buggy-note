@@ -5,22 +5,18 @@
 
     <data>
 
-        <variable
-            name="tag"
-            type="com.hcmus.clc18se.buggynote.data.Tag" />
     </data>
 
     <com.google.android.material.chip.Chip
-        android:id="@+id/tag_filter"
-        style="@style/Theme.BuggyNote.TagFilter"
+        style="@style/Theme.BuggyNote.Tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:checked="@{tag.selectState}"
         android:ellipsize="end"
         android:maxWidth="@dimen/tag_filter_max_width"
-        android:text="@{tag.name}"
+        android:minWidth="0dp"
         android:textAppearance="?textAppearanceCaption"
         app:ensureMinTouchTargetSize="false"
-        tools:text="@tools:sample/cities" />
+        tools:text="@tools:sample/cities">
 
+    </com.google.android.material.chip.Chip>
 </layout>
