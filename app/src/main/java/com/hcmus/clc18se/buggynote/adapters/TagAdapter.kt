@@ -27,8 +27,15 @@ class TagAdapter(private val onItemEditorFocusListener: ItemEditorFocusListener)
         }
 
         fun setOnFocusListenerForEditor(onFocusEditorFocusListener: ItemEditorFocusListener, tag: Tag) {
-            binding.tagContent.setOnFocusChangeListener { _, hasFocus ->
-                onFocusEditorFocusListener.onFocus(binding, hasFocus, tag)
+            binding.apply {
+
+                tagContent.setOnFocusChangeListener { _, hasFocus ->
+                    onFocusEditorFocusListener.onFocus(binding, hasFocus, tag)
+                }
+
+                checkButton.setOnClickListener { tagContent.requestFocus() }
+                removeButton.setOnClickListener { tagContent.requestFocus() }
+
             }
         }
 

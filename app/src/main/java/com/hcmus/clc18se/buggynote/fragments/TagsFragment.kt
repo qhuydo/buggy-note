@@ -22,6 +22,7 @@ import com.hcmus.clc18se.buggynote.adapters.TagAdapter
 import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentTagsBinding
+import com.hcmus.clc18se.buggynote.databinding.ItemTagBinding
 import com.hcmus.clc18se.buggynote.utils.OnBackPressed
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
@@ -50,8 +51,8 @@ class TagsFragment : Fragment(), OnBackPressed {
         )
     }
 
-    private fun updateATag(tag: Tag) {
-        val newTag = binding.addTagContent.text.toString().trim()
+    private fun updateATag(tag: Tag, itemTagBinding: ItemTagBinding) {
+        val newTag = itemTagBinding.tagContent.text.toString().trim()
 
         if (tag.name == newTag) {
             // Do nothing when the tag is unchanged
@@ -62,7 +63,7 @@ class TagsFragment : Fragment(), OnBackPressed {
         val succeed = tagViewModel.updateTag(updatedTag)
         if (!succeed) {
             Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show()
-            binding.addTagContent.setText(tag.name)
+            itemTagBinding.tagContent.setText(tag.name)
         } else {
             noteViewModel.requestReloadingData()
         }
@@ -98,11 +99,15 @@ class TagsFragment : Fragment(), OnBackPressed {
             removeIcon = R.drawable.ic_baseline_delete_24
             checkIcon = R.drawable.ic_baseline_done_24
 
-            binding.checkButton.setOnClickListener { updateATag(tag) }
-            binding.removeButton.setOnClickListener { removeATag(tag) }
+            binding.apply {
+                checkButton.setOnClickListener { updateATag(tag, this) }
+                removeButton.setOnClickListener { removeATag(tag) }
+            }
         } else {
-            binding.checkButton.isClickable = false
-            binding.removeButton.isClickable = false
+            binding.apply {
+                checkButton.setOnClickListener { tagContent.requestFocus() }
+                removeButton.setOnClickListener { tagContent.requestFocus() }
+            }
         }
 
         // set drawable based on the current focus state
