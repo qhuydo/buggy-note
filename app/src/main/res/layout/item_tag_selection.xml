@@ -27,25 +27,14 @@
 
         <TextView
             android:id="@+id/tag_content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?colorSurface"
-            android:focusable="true"
-            android:labelFor="@id/add_tag_layout"
-            android:paddingVertical="16dp"
             android:text="@{tag.name}"
-            android:textAppearance="?textAppearanceListItem"
-            android:textColor="?colorOnSurface"
-            tools:text="@tools:sample/cities" />
+            tools:text="@tools:sample/cities"
+            style="@style/tag_selection_content" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/tag_check_box"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:checked="@{tag.selectState}"
-            android:clickable="false"
-            android:focusable="false"
-            android:paddingHorizontal="8dp" />
+            android:id="@+id/tag_check_box"
+            style="@style/tag_selection_checkbox" />
     </LinearLayout>
 </layout>
