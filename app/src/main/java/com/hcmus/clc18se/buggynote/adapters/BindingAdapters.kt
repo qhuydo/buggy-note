@@ -86,7 +86,7 @@ fun setTimeStampFromLong(textView: TextView, value: Long) {
     textView.text = text
 }
 
-@BindingAdapter(value = ["loadTagList", "chipLimit", "setOnClickToChips", "chipSmallText"], requireAll = false)
+@BindingAdapter(value = ["loadTagList", "chipLimit", "setOnClickToChips"], requireAll = false)
 fun ChipGroup.setTags(tags: List<Tag>?, limit: Int?, onClickListener: View.OnClickListener?) {
 
     tags?.let { it ->
