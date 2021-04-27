@@ -30,11 +30,11 @@ class NoteViewModel(
         it.filter { noteWithTags -> noteWithTags.isArchived() }
     }
 
-    val headerLabelVisibility = Transformations.map(pinnedNotes) {
-        if (it.isEmpty()) View.GONE else View.VISIBLE
+    val headerLabelVisibility = Transformations.map(pinnedNotes) { pinnedNotes ->
+        if (pinnedNotes.isEmpty()) View.GONE else View.VISIBLE
     }
 
-    private var _noteListVisibility = MutableLiveData<Int>(View.GONE)
+    private var _noteListVisibility = MutableLiveData(View.GONE)
     val noteListVisibility: LiveData<Int>
         get() = _noteListVisibility
 
@@ -85,7 +85,7 @@ class NoteViewModel(
     }
 
     fun navigateToNoteDetails(id: Long) {
-        _navigateToNoteDetails.value = id
+        _navigateToNoteDetails.postValue(id)
     }
 
     fun doneNavigatingToNoteDetails() {

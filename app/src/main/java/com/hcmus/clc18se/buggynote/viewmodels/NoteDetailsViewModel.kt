@@ -50,7 +50,7 @@ class NoteDetailsViewModel(
     }
 
     fun navigateToTagSelection() {
-        _navigateToTagSelection.value = noteId
+        _navigateToTagSelection.postValue(noteId)
     }
 
     fun doneNavigatingToTagSelection() {
@@ -95,6 +95,10 @@ class NoteDetailsViewModel(
                 // database.updateNote(it.note)
             }
         }
+    }
+
+    fun doneHandlingDeleteRequest() {
+        _deleteRequest.value = false
     }
 }
 

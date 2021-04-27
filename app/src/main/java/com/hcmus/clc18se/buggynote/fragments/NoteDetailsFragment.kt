@@ -106,6 +106,7 @@ class NoteDetailsFragment : Fragment() {
             if (it == true) {
                 noteViewModel.requestReloadingData()
                 requireActivity().onBackPressed()
+                viewModel.doneHandlingDeleteRequest()
             }
         }
     }
@@ -133,9 +134,11 @@ class NoteDetailsFragment : Fragment() {
                         || content != noteWithTags.getNoteContent()
                         || require
                 ) {
-                    noteWithTags.note.title = title
-                    noteWithTags.note.noteContent = content
-                    noteWithTags.note.lastModify = System.currentTimeMillis()
+                    noteWithTags.apply {
+                        note.title = title
+                        note.noteContent = content
+                        note.lastModify = System.currentTimeMillis()
+                    }
 
                     Timber.d("Set new note content")
 
