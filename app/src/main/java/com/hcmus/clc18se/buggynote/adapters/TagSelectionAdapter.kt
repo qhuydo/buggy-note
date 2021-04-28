@@ -31,6 +31,7 @@ class TagSelectionAdapter(
 
         fun bind(tag: Tag) {
             binding.tag = tag
+            binding.tagContent.isSelected = true
             binding.executePendingBindings()
         }
 

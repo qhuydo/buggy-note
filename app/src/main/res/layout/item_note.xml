@@ -53,11 +53,10 @@
                 chipLimit="@{3}"
                 loadTagList="@{note.tags}"
                 setOnClickToChips="@{chipOnClickListener}"
-                chipSmallText="@{true}"
-                app:chipSpacingHorizontal="4dp"
-                app:chipSpacingVertical="4dp"
-                app:itemSpacing="0dp"
-                app:lineSpacing="4dp" />
+                app:chipSpacingHorizontal="@dimen/tag_chip_spacing_horizontal"
+                app:chipSpacingVertical="@dimen/tag_chip_spacing_vertical"
+                app:itemSpacing="@dimen/tag_chip_item_spacing"
+                app:lineSpacing="@dimen/tag_chip_line_spacing" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/time_stamp"
@@ -65,7 +64,6 @@
                 app:drawableStartCompat="@drawable/ic_baseline_access_time_24"
                 app:timeStampFromLong="@{note.note.lastModify}"
                 tools:text="@tools:sample/date/ddmmyy" />
-
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

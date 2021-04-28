@@ -55,11 +55,11 @@
 
                     <EditText
                         android:id="@+id/text_view_title"
+                        style="@style/note_details_title"
                         android:hint="@string/title"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.title}"
                         app:noteTitleFormat="@{noteDetailsViewModel.noteWithTags}"
-                        tools:text="Title"
-                        style="@style/note_details_title" />
+                        tools:text="Title" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -74,32 +74,33 @@
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/note_content"
+                        style="@style/note_details_content"
                         android:hint="@string/content"
                         android:text="@{noteDetailsViewModel.noteWithTags.note.noteContent}"
                         app:noteContentFormat="@{noteDetailsViewModel.noteWithTags}"
-                        tools:text="@tools:sample/lorem/random"
-                        style="@style/note_details_content" />
+                        tools:text="@tools:sample/lorem/random" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/tag_group"
+                    style="@style/note_item_tag_group"
                     android:layout_marginStart="16dp"
                     android:clickable="false"
                     android:focusable="false"
-                    app:chipSpacingHorizontal="4dp"
-                    app:itemSpacing="0dp"
-                    app:lineSpacing="0dp"
+                    app:chipSpacingHorizontal="@dimen/tag_chip_spacing_horizontal"
+                    app:chipSpacingVertical="@dimen/tag_chip_spacing_vertical"
+                    app:itemSpacing="@dimen/tag_chip_item_spacing"
+                    app:lineSpacing="@dimen/tag_chip_line_spacing"
                     app:loadTagList="@{noteDetailsViewModel.noteWithTags.tags}"
-                    app:setOnClickToChips="@{chipOnClickListener}"
-                    style="@style/note_item_tag_group" />
+                    app:setOnClickToChips="@{chipOnClickListener}" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/time_stamp"
+                    style="@style/note_details_time_stamp"
                     app:drawableStartCompat="@drawable/ic_baseline_access_time_24"
                     app:timeStampFromLong="@{noteDetailsViewModel.noteWithTags.note.lastModify}"
-                    tools:text="@tools:sample/date/ddmmyy"
-                    style="@style/note_details_time_stamp" />
+                    tools:text="@tools:sample/date/ddmmyy" />
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
@@ -109,9 +110,9 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:layout_gravity="bottom"
+            android:backgroundTint="@color/system_ui_scrim"
             app:elevation="1dp"
             app:hideOnScroll="true"
-            android:backgroundTint="@color/system_ui_scrim"
             app:layout_scrollFlags="snap|enterAlways|snapMargins"
             app:menu="@menu/note_detail_bottom" />
 

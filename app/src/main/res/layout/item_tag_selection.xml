@@ -27,14 +27,14 @@
 
         <TextView
             android:id="@+id/tag_content"
+            style="@style/tag_selection_content"
             android:text="@{tag.name}"
-            tools:text="@tools:sample/cities"
-            style="@style/tag_selection_content" />
+            tools:text="@tools:sample/cities" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
-            android:layout_gravity="center"
-            android:checked="@{tag.selectState}"
             android:id="@+id/tag_check_box"
-            style="@style/tag_selection_checkbox" />
+            style="@style/tag_selection_checkbox"
+            android:layout_gravity="center"
+            android:checked="@{tag.selectState}" />
     </LinearLayout>
 </layout>

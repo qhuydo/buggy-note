@@ -48,9 +48,9 @@
             android:labelFor="@id/add_tag_layout"
             android:padding="16dp"
             android:text="@{tag.name}"
+            android:textAppearance="?textAppearanceListItem"
             android:textColor="?colorOnSurface"
             tools:text="@tools:sample/cities" />
-
         <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <ImageButton
