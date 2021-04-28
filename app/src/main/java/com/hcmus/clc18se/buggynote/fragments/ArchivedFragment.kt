@@ -201,7 +201,9 @@ class ArchivedFragment : Fragment(), OnBackPressed {
         super.onPause()
 
         lifecycleScope.launch {
-            if (noteViewModel.orderChanged.value == true) {
+            if (noteViewModel.orderChanged.value == true &&
+                tagViewModel.tags.value?.all { !it.selectState } == true
+            ) {
                 noteViewModel.reorderNotes(archivedNoteAdapter.currentList)
                 noteViewModel.loadNoteFromDatabase()
             }

@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class NoteViewModel(
-        application: Application,
-        private val database: BuggyNoteDatabaseDao
+    application: Application,
+    private val database: BuggyNoteDatabaseDao
 ) : AndroidViewModel(application) {
 
     private var _noteList = MutableLiveData<List<NoteWithTags>>()
@@ -28,6 +28,7 @@ class NoteViewModel(
     }
     val archivedNotes = Transformations.map(_noteList) {
         it.filter { noteWithTags -> noteWithTags.isArchived() }
+            .sortedBy { noteWithTags -> noteWithTags.note.order }
     }
 
     val headerLabelVisibility = Transformations.map(pinnedNotes) { pinnedNotes ->
@@ -56,8 +57,9 @@ class NoteViewModel(
             viewModelScope.launch {
                 if (noteList != null) {
                     val visibility = if (
-                            noteList.isNotEmpty() &&
-                            noteList.any { noteWithTags -> !noteWithTags.isArchived() }) View.GONE
+                        noteList.isNotEmpty() &&
+                        noteList.any { noteWithTags -> !noteWithTags.isArchived() }
+                    ) View.GONE
                     else View.VISIBLE
                     _noteListVisibility.postValue(visibility)
                 }
@@ -197,8 +199,8 @@ class NoteViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class NoteViewModelFactory(
-        private val application: Application,
-        val database: BuggyNoteDatabaseDao
+    private val application: Application,
+    val database: BuggyNoteDatabaseDao
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
