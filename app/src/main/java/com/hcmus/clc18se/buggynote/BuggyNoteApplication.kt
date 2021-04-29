@@ -22,7 +22,9 @@ class BuggyNoteApplication : Application() {
     private fun delayInit() {
         // Init Timber instance
         applicationScope.launch {
-            Timber.plant(Timber.DebugTree())
+            if (BuildConfig.DEBUG) {
+                Timber.plant(Timber.DebugTree())
+            }
         }
     }
 

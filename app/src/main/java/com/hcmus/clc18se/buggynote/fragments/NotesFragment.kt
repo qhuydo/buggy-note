@@ -94,11 +94,11 @@ class NotesFragment : Fragment(), OnBackPressed {
         }
 
         override fun onMultipleSelect(note: NoteWithTags): Boolean {
-            invalidateCab()
             val parentActivity = requireActivity()
             if (parentActivity is ControllableDrawerActivity) {
                 parentActivity.lockTheDrawer()
             }
+            invalidateCab()
             return true
         }
 
