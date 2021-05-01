@@ -6,12 +6,11 @@ import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.Fragment
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -22,7 +21,6 @@ import com.afollestad.materialcab.attached.isActive
 import com.afollestad.materialcab.createCab
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.*
 import com.hcmus.clc18se.buggynote.data.Note
@@ -37,7 +35,7 @@ import com.hcmus.clc18se.buggynote.viewmodels.TagViewModelFactory
 import kotlinx.coroutines.*
 import timber.log.Timber
 
-class NotesFragment : Fragment(), OnBackPressed {
+class NotesFragment : BaseFragment(), OnBackPressed {
 
     private val preferences by lazy { PreferenceManager.getDefaultSharedPreferences(requireContext()) }
 
@@ -389,21 +387,6 @@ class NotesFragment : Fragment(), OnBackPressed {
         setUpNavigation()
     }
 
-    private fun setUpNavigation() {
-        val toolbar = binding.appBar.toolbar
-        val parentActivity = requireActivity() as? BuggyNoteActivity
-
-        if (parentActivity == null) {
-            Timber.e("Parent activity of fragment ${this.tag} is not BuggyNoteActivity")
-        }
-
-        parentActivity?.setSupportActionBar(toolbar)
-        parentActivity?.setupActionBarWithNavController(
-                findNavController(),
-                parentActivity.appBarConfiguration
-        )
-    }
-
     /**
      * Update the mainCab states when the note list is in multi selection mode
      *
@@ -593,4 +576,6 @@ class NotesFragment : Fragment(), OnBackPressed {
             return true
         } ?: return false
     }
+
+    override fun getToolbarView(): Toolbar = binding.appBar.toolbar
 }

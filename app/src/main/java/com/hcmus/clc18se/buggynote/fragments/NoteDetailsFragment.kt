@@ -6,16 +6,12 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.transition.MaterialSharedAxis
-import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
 import com.hcmus.clc18se.buggynote.adapters.setNoteContentFormat
 import com.hcmus.clc18se.buggynote.adapters.setNoteTitleFormat
@@ -28,7 +24,7 @@ import com.hcmus.clc18se.buggynote.viewmodels.NoteViewModelFactory
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class NoteDetailsFragment : Fragment() {
+class NoteDetailsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentNoteDetailsBinding
 
@@ -110,10 +106,8 @@ class NoteDetailsFragment : Fragment() {
 
     private fun saveNote(require: Boolean = false) {
         // TODO: why am I not able to use data binding?
-        val title =
-                binding.layout.findViewById<EditText>(R.id.text_view_title).text.toString()
-        val content =
-                binding.layout.findViewById<EditText>(R.id.note_content).text.toString()
+        val title = binding.layout.findViewById<EditText>(R.id.text_view_title).text.toString()
+        val content = binding.layout.findViewById<EditText>(R.id.note_content).text.toString()
 
         val noteWithTags = viewModel.getNoteWithTags().value
         noteWithTags?.let {
@@ -140,24 +134,7 @@ class NoteDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.appBar.toolbar.elevation = 0f
-        setUpNavigation()
-    }
-
-    private fun setUpNavigation() {
         setHasOptionsMenu(true)
-
-        val toolbar = binding.appBar.toolbar
-        val parentActivity: BuggyNoteActivity = requireActivity() as BuggyNoteActivity
-
-        val bottomBar: BottomAppBar = binding.coordinatorLayout.findViewById(R.id.bottom_bar)
-
-
-        bottomBar.setOnMenuItemClickListener(bottomBarOnItemClickListener)
-        parentActivity.setSupportActionBar(toolbar)
-        parentActivity.setupActionBarWithNavController(
-                findNavController(),
-                parentActivity.appBarConfiguration
-        )
     }
 
     private val bottomBarOnItemClickListener = Toolbar.OnMenuItemClickListener {
@@ -199,6 +176,7 @@ class NoteDetailsFragment : Fragment() {
                 R.id.action_set_italic -> formatter.toggleItalic()
                 R.id.action_alignment -> formatter.toggleAlignment()
                 R.id.action_set_font_type -> formatter.toggleFontType()
+
             }
 
 
@@ -265,5 +243,13 @@ class NoteDetailsFragment : Fragment() {
             }
             else -> false
         }
+    }
+
+    override fun getToolbarView(): Toolbar = binding.appBar.toolbar
+    override fun setUpNavigation() {
+        super.setUpNavigation()
+        val bottomBar: BottomAppBar = binding.coordinatorLayout.findViewById(R.id.bottom_bar)
+        bottomBar.setOnMenuItemClickListener(bottomBarOnItemClickListener)
+
     }
 }

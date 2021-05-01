@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -30,7 +31,7 @@ import com.hcmus.clc18se.buggynote.viewmodels.TagViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.TagViewModelFactory
 import timber.log.Timber
 
-class TagsFragment : Fragment(), OnBackPressed {
+class TagsFragment : BaseFragment(), OnBackPressed {
 
     private lateinit var binding: FragmentTagsBinding
 
@@ -143,7 +144,6 @@ class TagsFragment : Fragment(), OnBackPressed {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpNavigation()
 
         binding.addTagLayout.setOnFocusChangeListener { _, hasFocus ->
             binding.addTagIcon.visibility = if (hasFocus) View.VISIBLE else View.INVISIBLE
@@ -182,19 +182,10 @@ class TagsFragment : Fragment(), OnBackPressed {
         super.onPause()
     }
 
-    private fun setUpNavigation() {
-        val toolbar = binding.appBar.toolbar
-        val parentActivity: BuggyNoteActivity = requireActivity() as BuggyNoteActivity
-
-        parentActivity.setSupportActionBar(toolbar)
-        val navHostFragment = NavHostFragment.findNavController(this)
-        parentActivity.setupActionBarWithNavController(findNavController(), parentActivity.appBarConfiguration)
-        NavigationUI.setupWithNavController(toolbar, navHostFragment, parentActivity.appBarConfiguration)
-
-    }
-
     private fun hideTheKeyboard() {
         val imm: InputMethodManager? = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
+
+    override fun getToolbarView(): Toolbar = binding.appBar.toolbar
 }
