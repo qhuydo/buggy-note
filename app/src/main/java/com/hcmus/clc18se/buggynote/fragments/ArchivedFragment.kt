@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
@@ -86,21 +86,22 @@ class ArchivedFragment : Fragment(), OnBackPressed {
         }
     }
 
-    private val onTagCheckedChangeListener = ItemOnCheckedChangeListener { isChecked, tag ->
+    private val onTagCheckedChangeListener = TagFilterAdapterCallbacks { isChecked, tag ->
         if (tag.selectState != isChecked) {
             archivedNoteAdapter.finishSelection()
             mainCab?.destroy()
 
-            runBlocking {
+            noteViewModel.viewModelScope.launch {
                 if (noteViewModel.orderChanged.value == true &&
                         tagViewModel.tags.value?.all { !it.selectState } == true
                 ) {
                     noteViewModel.reorderNotes(archivedNoteAdapter.currentList)
+                    noteViewModel.finishReordering()
                 }
             }
 
             tag.selectState = isChecked
-            tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
+            tagViewModel.tags.value?.let { noteViewModel.filterByTags(it) }
         }
     }
 
@@ -134,13 +135,12 @@ class ArchivedFragment : Fragment(), OnBackPressed {
     ) {
         recyclerView.setUpLayoutManagerForNoteList(preferences)
         recyclerView.adapter = adapter
+
         if (addItemDecoration) {
-            recyclerView.addItemDecoration(
-                    SpaceItemDecoration(
-                            resources.getDimension(R.dimen.item_note_padding_top).toInt()
-                    )
-            )
+            val margin = resources.getDimension(R.dimen.item_note_padding_top).toInt()
+            recyclerView.addItemDecoration(SpaceItemDecoration(margin))
         }
+
         touchHelper.attachToRecyclerView(recyclerView)
     }
 
@@ -151,7 +151,6 @@ class ArchivedFragment : Fragment(), OnBackPressed {
             tagFilterList.addItemDecoration(
                     SpaceItemDecoration(resources.getDimension(R.dimen.item_tag_margin).toInt())
             )
-
         }
     }
 
@@ -183,7 +182,7 @@ class ArchivedFragment : Fragment(), OnBackPressed {
             if (it) {
                 Timber.d("reloadDataRequest.observe")
                 if (tagViewModel.tags.value != null) {
-                    noteViewModel.filterByTagsFromDatabase(tagViewModel.tags.value!!)
+                    noteViewModel.filterByTags(tagViewModel.tags.value!!)
                 } else {
                     noteViewModel.loadNotes()
                 }
@@ -200,12 +199,15 @@ class ArchivedFragment : Fragment(), OnBackPressed {
     override fun onPause() {
         super.onPause()
 
-        lifecycleScope.launch {
+        noteViewModel.viewModelScope.launch {
             if (noteViewModel.orderChanged.value == true &&
-                tagViewModel.tags.value?.all { !it.selectState } == true
+                    tagViewModel.tags.value?.all { !it.selectState } == true
             ) {
-                noteViewModel.reorderNotes(archivedNoteAdapter.currentList)
-                noteViewModel.loadNoteFromDatabase()
+                noteViewModel.apply {
+                    reorderNotes(archivedNoteAdapter.currentList)
+                    loadNotes()
+                    finishReordering()
+                }
             }
         }
     }

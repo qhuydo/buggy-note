@@ -23,7 +23,7 @@ const val UNPIN_TAG = "UNPIN"
 const val ARCHIVE_TAG = "ARCHIVE"
 
 class NoteAdapter(
-        private val noteAdapterCallbacks: NoteAdapterCallbacks,
+        private val callbacks: NoteAdapterCallbacks,
         val tag: String
 ) : ListAdapter<NoteWithTags, NoteAdapter.ViewHolder>(NoteWithTags.DiffCallBack) {
 
@@ -76,7 +76,7 @@ class NoteAdapter(
 
     fun onItemSwipe(position: Int) {
         // currentList.get(position).note.isPinned = false
-        noteAdapterCallbacks.onItemSwiped(getItem(position))
+        callbacks.onItemSwiped(getItem(position))
     }
 
     /**
@@ -84,7 +84,7 @@ class NoteAdapter(
      * from its old position to the new position.
      */
     fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        Timber.d("$fromPosition to $toPosition")
+        // Timber.d("$fromPosition to $toPosition")
         if (fromPosition == RecyclerView.NO_POSITION
                 || toPosition == RecyclerView.NO_POSITION
                 || toPosition >= currentList.size
@@ -102,7 +102,7 @@ class NoteAdapter(
             }
         }
         submitList(items)
-        noteAdapterCallbacks.onPostReordered(items)
+        callbacks.onPostReordered(items)
         return true
     }
 
@@ -116,9 +116,9 @@ class NoteAdapter(
         holder.itemView.setOnClickListener {
             if (multiSelect) {
                 selectItem(holder, noteWithTags)
-                noteAdapterCallbacks.onMultipleSelect(noteWithTags)
+                callbacks.onMultipleSelect(noteWithTags)
             } else {
-                noteAdapterCallbacks.onClick(noteWithTags)
+                callbacks.onClick(noteWithTags)
             }
         }
 
@@ -126,7 +126,7 @@ class NoteAdapter(
             if (!multiSelect) {
                 multiSelect = true
                 selectItem(holder, noteWithTags)
-                noteAdapterCallbacks.onMultipleSelect(noteWithTags)
+                callbacks.onMultipleSelect(noteWithTags)
             }
             return@setOnLongClickListener true
         }
@@ -207,8 +207,7 @@ class NoteItemTouchHelperCallBack(private vararg val adapters: NoteAdapter) :
             target: RecyclerView.ViewHolder
     ): Boolean {
         (viewHolder as? NoteAdapter.ViewHolder)?.let { vh ->
-            // Timber.d(vh.tag)
-            return adapters.firstOrNull { it.tag == vh.tag }?.onItemMove(
+             return adapters.firstOrNull { it.tag == vh.tag }?.onItemMove(
                     viewHolder.bindingAdapterPosition, target.bindingAdapterPosition
             ) ?: false
         } ?: return false

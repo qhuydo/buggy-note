@@ -19,7 +19,6 @@ buildscript {
         testExtJunit = '1.1.2'
         uiAutomatorVersion = '2.2.0'
         kotlin_version = '1.4.32'
-        gradleVersion = '4.1.2'
         dataBindingCompilerVersion = gradleVersion // Always need to be the same.
     }
     repositories {

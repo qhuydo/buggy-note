@@ -7,12 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.databinding.ItemTagBinding
 
-class TagAdapter(private val onItemEditorFocusListener: ItemEditorFocusListener) : ListAdapter<Tag, TagAdapter.ViewHolder>(Tag.DiffCallBack) {
+class TagAdapter(private val callbacks: TagAdapterCallbacks) : ListAdapter<Tag, TagAdapter.ViewHolder>(Tag.DiffCallBack) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val tag = getItem(position)
         holder.bind(tag)
-        holder.setOnFocusListenerForEditor(onItemEditorFocusListener, tag)
+        holder.setOnFocusListenerForEditor(callbacks, tag)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,7 +26,7 @@ class TagAdapter(private val onItemEditorFocusListener: ItemEditorFocusListener)
             binding.executePendingBindings()
         }
 
-        fun setOnFocusListenerForEditor(onFocusEditorFocusListener: ItemEditorFocusListener, tag: Tag) {
+        fun setOnFocusListenerForEditor(onFocusEditorFocusListener: TagAdapterCallbacks, tag: Tag) {
             binding.apply {
 
                 tagContent.setOnFocusChangeListener { _, hasFocus ->
@@ -53,6 +53,6 @@ class TagAdapter(private val onItemEditorFocusListener: ItemEditorFocusListener)
     }
 }
 
-class ItemEditorFocusListener(private val focusListener: (binding: ItemTagBinding, hasFocus: Boolean, tag: Tag) -> Unit) {
+class TagAdapterCallbacks(private val focusListener: (binding: ItemTagBinding, hasFocus: Boolean, tag: Tag) -> Unit) {
     fun onFocus(binding: ItemTagBinding, hasFocus: Boolean, tag: Tag) = focusListener(binding, hasFocus, tag)
 }

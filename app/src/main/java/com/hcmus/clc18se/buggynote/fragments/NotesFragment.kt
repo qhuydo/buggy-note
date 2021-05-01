@@ -9,6 +9,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
@@ -54,7 +55,7 @@ class NotesFragment : Fragment(), OnBackPressed {
 
     private val unPinnedNoteAdapter by lazy { NoteAdapter(onNoteItemClickListener, UNPIN_TAG) }
 
-    private val filterTagAdapter by lazy { TagFilterAdapter(onTagCheckedChangeListener) }
+    private val tagFilterAdapter by lazy { TagFilterAdapter(onTagCheckedChangeListener) }
 
     private val noteListTouchHelper by lazy {
         val callback = NoteItemTouchHelperCallBack(pinnedNoteAdapter, unPinnedNoteAdapter)
@@ -62,9 +63,9 @@ class NotesFragment : Fragment(), OnBackPressed {
     }
 
     // Adapter of the note list, contains 4 adapters in the following order
-    //  0. DummyHeaderAdapter - header of the pinned note list
+    //  0. NoteHeaderAdapter - header of the pinned note list
     //  1. NoteAdapter - presents list of pinned notes
-    //  2. DummyHeaderAdapter - header of the unpinned note list
+    //  2. NoteHeaderAdapter - header of the unpinned note list
     //  3. NoteAdapter - presents list of unpinned notes
     private val concatAdapter by lazy {
         val config = ConcatAdapter.Config.Builder()
@@ -73,13 +74,13 @@ class NotesFragment : Fragment(), OnBackPressed {
 
         ConcatAdapter(
                 config,
-                DummyHeaderAdapter(
+                NoteHeaderAdapter(
                         getString(R.string.pinned),
                         R.drawable.ic_outline_push_pin_24,
                         noteViewModel.headerLabelVisibility
                 ),
                 pinnedNoteAdapter,
-                DummyHeaderAdapter(
+                NoteHeaderAdapter(
                         getString(R.string.others),
                         null,
                         noteViewModel.headerLabelVisibility
@@ -118,24 +119,26 @@ class NotesFragment : Fragment(), OnBackPressed {
         }
     }
 
-    private val onTagCheckedChangeListener = ItemOnCheckedChangeListener { isChecked, tag ->
+    private val onTagCheckedChangeListener = TagFilterAdapterCallbacks { isChecked, tag ->
         if (tag.selectState != isChecked) {
             pinnedNoteAdapter.finishSelection()
             unPinnedNoteAdapter.finishSelection()
 
             mainCab?.destroy()
 
-            runBlocking {
+            noteViewModel.viewModelScope.launch {
                 if (noteViewModel.orderChanged.value == true &&
                         tagViewModel.tags.value?.all { !it.selectState } == true
                 ) {
-                    noteViewModel.reorderNotes(pinnedNoteAdapter.currentList)
-                    noteViewModel.reorderNotes(unPinnedNoteAdapter.currentList)
+                    noteViewModel.apply {
+                        reorderNotes(pinnedNoteAdapter.currentList + unPinnedNoteAdapter.currentList)
+                        finishReordering()
+                    }
                 }
-            }
 
-            tag.selectState = isChecked
-            tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
+                tag.selectState = isChecked
+                tagViewModel.tags.value?.let { noteViewModel.filterByTags(it) }
+            }
         }
     }
 
@@ -195,7 +198,7 @@ class NotesFragment : Fragment(), OnBackPressed {
 //            Handler(Looper.getMainLooper()).postDelayed({
 //            }, requireContext().resources.getInteger(R.integer.anim_recycler_view).toLong())
 
-            tagFilterList.adapter = filterTagAdapter
+            tagFilterList.adapter = tagFilterAdapter
             tagFilterList.addItemDecoration(
                     SpaceItemDecoration(resources.getDimension(R.dimen.item_tag_margin).toInt())
             )
@@ -216,7 +219,7 @@ class NotesFragment : Fragment(), OnBackPressed {
         }
 
         tagViewModel.tags.observe(viewLifecycleOwner) {
-            filterTagAdapter.notifyDataSetChanged()
+            tagFilterAdapter.notifyDataSetChanged()
         }
 
         noteViewModel.navigateToNoteDetails.observe(viewLifecycleOwner) {
@@ -231,9 +234,8 @@ class NotesFragment : Fragment(), OnBackPressed {
 
         noteViewModel.reloadDataRequest.observe(viewLifecycleOwner) {
             if (it) {
-                Timber.d("reloadDataRequest.observe")
                 if (tagViewModel.tags.value != null) {
-                    noteViewModel.filterByTagsFromDatabase(tagViewModel.tags.value!!)
+                    noteViewModel.filterByTags(tagViewModel.tags.value!!)
                 } else {
                     noteViewModel.loadNotes()
                 }
@@ -254,13 +256,15 @@ class NotesFragment : Fragment(), OnBackPressed {
                 requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
 
-        lifecycleScope.launch {
+        noteViewModel.viewModelScope.launch {
             if (noteViewModel.orderChanged.value == true &&
                     tagViewModel.tags.value?.all { !it.selectState } == true
             ) {
-                noteViewModel.reorderNotes(pinnedNoteAdapter.currentList)
-                noteViewModel.reorderNotes(unPinnedNoteAdapter.currentList)
-                noteViewModel.loadNoteFromDatabase()
+                noteViewModel.apply {
+                    reorderNotes(pinnedNoteAdapter.currentList + unPinnedNoteAdapter.currentList)
+                    loadNotes()
+                    finishReordering()
+                }
             }
         }
     }
@@ -293,7 +297,7 @@ class NotesFragment : Fragment(), OnBackPressed {
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 Timber.d("searchItem.onMenuItemActionCollapse called")
-                tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
+                tagViewModel.tags.value?.let { noteViewModel.filterByTags(it) }
                 noteListTouchHelper.attachToRecyclerView(binding.noteList)
                 return true
             }
@@ -317,7 +321,7 @@ class NotesFragment : Fragment(), OnBackPressed {
                         )
                     }
                 } else {
-                    tagViewModel.tags.value?.let { noteViewModel.filterByTagsFromDatabase(it) }
+                    tagViewModel.tags.value?.let { noteViewModel.filterByTags(it) }
                 }
                 return true
             }
@@ -356,8 +360,7 @@ class NotesFragment : Fragment(), OnBackPressed {
     }
 
     private fun onItemTypeOptionClicked() {
-        val currentItemView =
-                preferences.getString(getString(R.string.note_list_view_type_key), "0")
+        val currentItemView = preferences.getString(getString(R.string.note_list_view_type_key), "0")
         val nextItemView = if (currentItemView == "0") "1" else "0"
 
         preferences.edit()
@@ -370,7 +373,6 @@ class NotesFragment : Fragment(), OnBackPressed {
     private fun refreshNoteList() {
 
         binding.apply {
-            Timber.d("refreshNoteList")
             noteList.adapter = null
             initNoteAdapter(noteList, concatAdapter, noteListTouchHelper)
         }
@@ -566,7 +568,7 @@ class NotesFragment : Fragment(), OnBackPressed {
             return
         }
 
-        lifecycleScope.launch {
+        noteViewModel.viewModelScope.launch {
 
             noteViewModel.togglePin(
                     actionPinAll,

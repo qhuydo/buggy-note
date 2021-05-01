@@ -2,6 +2,7 @@
 <resources>
     <integer name="anim_duration">200</integer>
     <integer name="anim_recycler_view">280</integer>
+
     <integer name="anim_fading_duration">300</integer>
     <integer name="anim_sliding_duration">300</integer>
 

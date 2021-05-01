@@ -17,7 +17,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
-import com.hcmus.clc18se.buggynote.adapters.ItemEditorFocusListener
+import com.hcmus.clc18se.buggynote.adapters.TagAdapterCallbacks
 import com.hcmus.clc18se.buggynote.adapters.TagAdapter
 import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
@@ -40,9 +40,7 @@ class TagsFragment : Fragment(), OnBackPressed {
         TagViewModelFactory(BuggyNoteDatabase.getInstance(requireContext()).buggyNoteDatabaseDao)
     }
 
-    private val parentContext: Context by lazy {
-        requireContext()
-    }
+    private val parentContext: Context by lazy { requireContext() }
 
     private val noteViewModel: NoteViewModel by activityViewModels {
         NoteViewModelFactory(
@@ -90,7 +88,7 @@ class TagsFragment : Fragment(), OnBackPressed {
                 .show()
     }
 
-    private val onItemEditorFocusListener = ItemEditorFocusListener { binding, hasFocus, tag ->
+    private val onItemEditorFocusListener = TagAdapterCallbacks { binding, hasFocus, tag ->
         Timber.d("On focus listener is called")
         var removeIcon = R.drawable.ic_outline_label_24
         var checkIcon = R.drawable.ic_baseline_mode_edit_24
@@ -146,7 +144,6 @@ class TagsFragment : Fragment(), OnBackPressed {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
-
 
         binding.addTagLayout.setOnFocusChangeListener { _, hasFocus ->
             binding.addTagIcon.visibility = if (hasFocus) View.VISIBLE else View.INVISIBLE

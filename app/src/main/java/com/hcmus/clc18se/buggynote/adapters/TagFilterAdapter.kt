@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.databinding.ItemTagFilterBinding
 
-class TagFilterAdapter(private val onCheckedChangedListener: ItemOnCheckedChangeListener) : ListAdapter<Tag, TagFilterAdapter.ViewHolder>(Tag.DiffCallBack) {
+class TagFilterAdapter(private val callbacks: TagFilterAdapterCallbacks) : ListAdapter<Tag, TagFilterAdapter.ViewHolder>(Tag.DiffCallBack) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
@@ -17,7 +17,7 @@ class TagFilterAdapter(private val onCheckedChangedListener: ItemOnCheckedChange
         val item = getItem(position)
         holder.bind(item)
         holder.binding.tagFilter.setOnCheckedChangeListener { _, isChecked ->
-            onCheckedChangedListener.onCheckedChanged(isChecked, item)
+            callbacks.onCheckedChanged(isChecked, item)
         }
     }
 
@@ -41,6 +41,6 @@ class TagFilterAdapter(private val onCheckedChangedListener: ItemOnCheckedChange
     }
 }
 
-class ItemOnCheckedChangeListener(private val onCheckedChangedListener: (isChecked: Boolean, tag: Tag) -> Unit) {
-    fun onCheckedChanged(isCheked: Boolean, tag: Tag) = onCheckedChangedListener(isCheked, tag)
+class TagFilterAdapterCallbacks(private val onCheckedChangedListener: (isChecked: Boolean, tag: Tag) -> Unit) {
+    fun onCheckedChanged(isChecked: Boolean, tag: Tag) = onCheckedChangedListener(isChecked, tag)
 }

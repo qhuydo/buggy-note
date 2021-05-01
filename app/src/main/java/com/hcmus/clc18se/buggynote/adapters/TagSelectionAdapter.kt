@@ -9,7 +9,7 @@ import com.hcmus.clc18se.buggynote.data.Tag
 import com.hcmus.clc18se.buggynote.databinding.ItemTagSelectionBinding
 
 class TagSelectionAdapter(
-        private val onCheckedChangeListener: OnCheckedChangedListener,
+        private val onCheckedChangeListener: TagSelectionAdapterCallbacks,
 ) : ListAdapter<Tag, TagSelectionAdapter.ViewHolder>(Tag.DiffCallBack) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,16 +38,16 @@ class TagSelectionAdapter(
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val binding = ItemTagSelectionBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                )
+                        LayoutInflater.from(parent.context), parent, false)
                 return ViewHolder(binding)
             }
         }
     }
 }
 
-class OnCheckedChangedListener(private val onCheckedChangedListener: (itemView: CompoundButton, isChecked: Boolean, tag: Tag) -> Unit) {
-    fun onCheckedChanged(itemView: CompoundButton, isChecked: Boolean, tag: Tag) = onCheckedChangedListener(itemView, isChecked, tag)
+class TagSelectionAdapterCallbacks(private val onCheckedChangedListener:
+                               (itemView: CompoundButton, isChecked: Boolean, tag: Tag) -> Unit) {
+    fun onCheckedChanged(itemView: CompoundButton,
+                         isChecked: Boolean,
+                         tag: Tag) = onCheckedChangedListener(itemView, isChecked, tag)
 }

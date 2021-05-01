@@ -13,7 +13,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.hcmus.clc18se.buggynote.BuggyNoteActivity
 import com.hcmus.clc18se.buggynote.R
-import com.hcmus.clc18se.buggynote.adapters.OnCheckedChangedListener
+import com.hcmus.clc18se.buggynote.adapters.TagSelectionAdapterCallbacks
 import com.hcmus.clc18se.buggynote.adapters.TagSelectionAdapter
 import com.hcmus.clc18se.buggynote.database.BuggyNoteDatabase
 import com.hcmus.clc18se.buggynote.databinding.FragmentSelectTagBinding
@@ -21,18 +21,16 @@ import com.hcmus.clc18se.buggynote.viewmodels.NoteDetailsViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.NoteDetailsViewModelFactory
 import com.hcmus.clc18se.buggynote.viewmodels.TagSelectionViewModel
 import com.hcmus.clc18se.buggynote.viewmodels.TagSelectionViewModelFactory
-import timber.log.Timber
 
 class TagSelectionFragment : Fragment() {
 
     private lateinit var binding: FragmentSelectTagBinding
 
-    private val onCheckedChangedListener = OnCheckedChangedListener { _, isChecked, tag ->
+    private val onCheckedChangedListener = TagSelectionAdapterCallbacks { _, isChecked, tag ->
         if (tag.selectState == isChecked) {
-            return@OnCheckedChangedListener
+            return@TagSelectionAdapterCallbacks
         }
         tag.selectState = isChecked
-        Timber.d("ping :<")
 
         if (isChecked) {
             tagSelectionViewModel.addSelectedTags(tag)
@@ -41,13 +39,9 @@ class TagSelectionFragment : Fragment() {
         }
     }
 
-    private val db by lazy {
-        BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao
-    }
+    private val db by lazy { BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao }
 
-    private val arguments by lazy {
-        TagSelectionFragmentArgs.fromBundle(requireArguments())
-    }
+    private val arguments by lazy { TagSelectionFragmentArgs.fromBundle(requireArguments()) }
 
     private val tagSelectionViewModel: TagSelectionViewModel by viewModels {
         TagSelectionViewModelFactory(
@@ -57,14 +51,10 @@ class TagSelectionFragment : Fragment() {
     }
 
     private val noteDetailViewModel: NoteDetailsViewModel by navGraphViewModels(R.id.navigation_note_details) {
-        NoteDetailsViewModelFactory(
-                arguments.noteId,
-                db
-        )
+        NoteDetailsViewModelFactory(arguments.noteId, db)
     }
 
     private lateinit var adapter: TagSelectionAdapter
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
@@ -90,7 +80,6 @@ class TagSelectionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
-        // binding.tagList.adapter = adapter
     }
 
     private fun setUpNavigation() {

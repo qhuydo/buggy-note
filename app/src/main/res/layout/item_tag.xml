@@ -18,12 +18,9 @@
 
         <ImageButton
             android:id="@+id/remove_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="?colorSurface"
-            android:paddingHorizontal="16dp"
             android:src="@drawable/tag_delete_icon"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            style="@style/item_tag_start_icon" />
 
 
         <!--        <com.google.android.material.textfield.TextInputLayout-->
@@ -39,28 +36,16 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tag_content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?colorSurface"
-            android:focusable="true"
-            android:inputType="text"
-            android:labelFor="@id/add_tag_layout"
-            android:padding="16dp"
             android:text="@{tag.name}"
-            android:textAppearance="?textAppearanceListItem"
-            android:textColor="?colorOnSurface"
-            tools:text="@tools:sample/cities" />
+            tools:text="@tools:sample/cities"
+            style="@style/item_tag_editor_content" />
         <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <ImageButton
             android:id="@+id/check_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="?colorSurface"
-            android:paddingHorizontal="16dp"
             android:src="@drawable/tag_confirm_icon"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            style="@style/item_tag_start_icon" />
 
     </LinearLayout>
 

@@ -13,30 +13,30 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragment.NotesFragment">
+        tools:context=".fragment.TagsFragment">
 
         <include
             android:id="@+id/app_bar"
             layout="@layout/app_bar_main" />
 
         <LinearLayout
+            placeholderVisibility="@{tagViewModel.tags}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:placeholderVisibility="@{tagViewModel.tags}"
             tools:visibility="gone">
 
             <TextView
                 android:id="@+id/placeholder_emoticon"
-                app:placeHolderEmoticon="@{null}"
-                tools:text="(っ◔◡◔)っ ❤"
-                style="@style/placeholder_emoticon" />
+                style="@style/placeholder_emoticon"
+                placeHolderEmoticon="@{null}"
+                tools:text="(っ◔◡◔)っ ❤" />
 
             <TextView
-                android:text="@string/nothing_here"
-                style="@style/placeholder_text" />
+                style="@style/placeholder_text"
+                android:text="@string/nothing_here" />
 
         </LinearLayout>
 
@@ -58,20 +58,13 @@
 
                     <ImageButton
                         android:id="@+id/add_tag_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:background="?colorSurface"
-                        android:paddingHorizontal="16dp"
+                        style="@style/item_tag_start_icon"
                         android:src="@drawable/ic_baseline_add_24"
                         tools:ignore="ContentDescription" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/add_tag_layout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
+                        style="@style/add_tag_editor_layout"
                         app:boxStrokeWidth="0dp"
                         app:errorContentDescription="@string/exist_tag"
                         app:errorEnabled="false"
@@ -79,22 +72,15 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/add_tag_content"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            style="@style/add_tag_editor_content"
                             android:hint="@string/create_new_tag"
-                            android:inputType="text"
-                            android:labelFor="@id/add_tag_layout"
-                            android:textColor="?colorOnSurface"
                             tools:text="Label" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <ImageButton
                         android:id="@+id/add_tag_done"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:background="?colorSurface"
-                        android:paddingHorizontal="16dp"
+                        style="@style/item_tag_start_icon"
                         android:src="@drawable/ic_baseline_done_24"
                         tools:ignore="ContentDescription" />
                 </LinearLayout>
@@ -103,13 +89,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/tag_list"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layoutAnimation="@anim/layout_animator"
-                android:animateLayoutChanges="false"
+                style="@style/tag_editor_list"
+                loadTags="@{tagViewModel.tags}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:loadTags="@{tagViewModel.tags}"
                 tools:itemCount="5"
                 tools:listitem="@layout/item_tag" />
 

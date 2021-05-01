@@ -3,7 +3,6 @@ package com.hcmus.clc18se.buggynote.adapters
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.inflate
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -94,17 +93,17 @@ fun ChipGroup.setTags(tags: List<Tag>?, limit: Int?, onClickListener: View.OnCli
         invalidate()
         requestLayout()
 
-        val maximumChip = limit.takeIf { limit != null && limit > 0 } ?: Int.MAX_VALUE
+        val maximumChipAllowed = limit.takeIf { limit != null && limit > 0 } ?: Int.MAX_VALUE
 
         for (i in (it.indices)) {
-            if (i == maximumChip) {
+            if (i == maximumChipAllowed) {
                 break
             }
             val chip = TagChipBinding.inflate(LayoutInflater.from(context), this, true).root as Chip
 
             chip.apply {
-                text = if (i == maximumChip - 1 && (it.size - maximumChip) > 0) {
-                    " ${it.size - maximumChip + 1}+ "
+                text = if (i == maximumChipAllowed - 1 && (it.size - maximumChipAllowed) > 0) {
+                    " ${it.size - maximumChipAllowed + 1}+ "
                 } else {
                     it[i].name
                 }

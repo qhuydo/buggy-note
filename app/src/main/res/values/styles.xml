@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="note_item_time_stamp">
         <item name="android:layout_width">wrap_content</item>
@@ -135,6 +135,50 @@
         <item name="android:paddingStart">8dp</item>
         <item name="android:gravity">center</item>
         <item name="android:paddingEnd">8dp</item>
+    </style>
+
+    <style name="item_tag_editor_content">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">?colorSurface</item>
+        <item name="android:focusable">true</item>
+        <item name="android:inputType">text</item>
+        <item name="android:labelFor">@id/add_tag_layout</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textAppearance">?textAppearanceListItem</item>
+        <item name="android:textColor">?colorOnSurface</item>
+    </style>
+
+    <style name="item_tag_start_icon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?colorSurface</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <style name="add_tag_editor_content">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:inputType">text</item>
+        <item name="android:labelFor">@id/add_tag_layout</item>
+        <item name="android:textColor">?colorOnSurface</item>
+    </style>
+
+    <style name="add_tag_editor_layout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="tag_editor_list">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:animateLayoutChanges">false</item>
+        <item name="android:layoutAnimation">@anim/layout_animator</item>
     </style>
 
 </resources>

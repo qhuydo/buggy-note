@@ -32,31 +32,19 @@ class NoteDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentNoteDetailsBinding
 
-    private val db by lazy {
-        BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao
-    }
+    private val db by lazy { BuggyNoteDatabase.getInstance(requireActivity()).buggyNoteDatabaseDao }
 
-    private val arguments by lazy {
-        NoteDetailsFragmentArgs.fromBundle(requireArguments())
-    }
+    private val arguments by lazy { NoteDetailsFragmentArgs.fromBundle(requireArguments()) }
 
     private val viewModel: NoteDetailsViewModel by navGraphViewModels(R.id.navigation_note_details) {
-        NoteDetailsViewModelFactory(
-                arguments.noteId,
-                db
-        )
+        NoteDetailsViewModelFactory(arguments.noteId, db)
     }
 
     private val noteViewModel: NoteViewModel by activityViewModels {
-        NoteViewModelFactory(
-                requireActivity().application,
-                db
-        )
+        NoteViewModelFactory(requireActivity().application, db)
     }
 
-    private val tagOnClickListener = View.OnClickListener {
-        viewModel.navigateToTagSelection()
-    }
+    private val tagOnClickListener = View.OnClickListener { viewModel.navigateToTagSelection() }
 
     private var menu: Menu? = null
 
