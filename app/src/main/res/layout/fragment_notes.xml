@@ -46,8 +46,10 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/list_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:isScrollContainer="true"
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -82,9 +84,9 @@
             android:layout_margin="@dimen/fab_margin"
             android:contentDescription="@string/add_new_note"
             app:hideOnScroll="true"
-            app:layout_anchor="@id/note_list"
+            app:layout_behavior="com.hcmus.clc18se.buggynote.utils.FabScrollingAndShrinkBehaviour"
+            app:layout_anchor="@id/list_item"
             app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
             app:srcCompat="@drawable/ic_baseline_mode_edit_24" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
