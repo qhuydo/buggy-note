@@ -6,8 +6,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="1dp"
         android:fitsSystemWindows="true"
+        app:elevation="1dp"
         app:statusBarForeground="@android:color/transparent">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout

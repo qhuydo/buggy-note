@@ -179,7 +179,6 @@ class NoteDetailsFragment : BaseFragment() {
 
             }
 
-
             if (targetId == R.id.text_view_title) {
                 val title = binding.layout.findViewById<EditText>(R.id.text_view_title)
                 title.setNoteTitleFormat(note)

@@ -66,11 +66,10 @@ class NoteViewModel(
         }
     }
 
-    fun loadNotes() {
-        viewModelScope.launch {
-            loadNoteFromDatabase()
-        }
+    fun loadNotes() = viewModelScope.launch {
+        loadNoteFromDatabase()
     }
+
 
     suspend fun loadNoteFromDatabase() {
         _noteList.value = database.getAllNoteWithTags()
@@ -101,85 +100,77 @@ class NoteViewModel(
         _reloadDataRequest.value = false
     }
 
-    fun removeNote(vararg notes: NoteWithTags) {
-        viewModelScope.launch {
-            val nCol = database.removeNote(*notes.map { it.note }.toTypedArray())
-            Timber.d("Remove note - $nCol affected")
-            loadNoteFromDatabase()
-        }
+    fun removeNote(vararg notes: NoteWithTags) = viewModelScope.launch {
+        val nCol = database.removeNote(*notes.map { it.note }.toTypedArray())
+        Timber.d("Remove note - $nCol affected")
+        loadNoteFromDatabase()
     }
 
     /**
      * Filter notes by a list of tags
      * the filtering will not occurred if every element of the list has selectState == true
      */
-    fun filterByTags(tags: List<Tag>) {
-        viewModelScope.launch {
-            if (tags.any { it.selectState }) {
-                val start = System.currentTimeMillis()
-                val tagIds = tags.filter { it.selectState }.map { it.id }
+    fun filterByTags(tags: List<Tag>) = viewModelScope.launch {
+        if (tags.any { it.selectState }) {
+            val start = System.currentTimeMillis()
+            val tagIds = tags.filter { it.selectState }.map { it.id }
 
-                _noteList.value = database.filterNoteByTagList(tagIds)
+            _noteList.value = database.filterNoteByTagList(tagIds)
 
-                val end = System.currentTimeMillis()
-                Timber.d("filter time: ${end - start}")
-            } else {
-                Timber.d("Reloading note from database")
-                loadNotes()
-            }
+            val end = System.currentTimeMillis()
+            Timber.d("filter time: ${end - start}")
+        } else {
+            Timber.d("Reloading note from database")
+            loadNotes()
         }
     }
 
-    fun reorderNotes(notes: List<NoteWithTags>) {
 
-        viewModelScope.launch {
-            Timber.d("reorderNotes")
-            notes.forEachIndexed { index: Int, note: NoteWithTags -> note.note.order = index }
-            val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
-            Timber.d("$nCols cols affected")
-        }
+    fun reorderNotes(notes: List<NoteWithTags>) = viewModelScope.launch {
+        Timber.d("reorderNotes")
+        notes.forEachIndexed { index: Int, note: NoteWithTags -> note.note.order = index }
+        val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
+        Timber.d("$nCols cols affected")
     }
+
 
     fun finishReordering() {
         _orderChanged.value = false
     }
 
-    fun filterByTagsWithKeyword(tags: List<Tag>, keyword: String) {
-        // TODO: refactor me
-        viewModelScope.launch {
-            val start = System.currentTimeMillis()
+    fun filterByTagsWithKeyword(tags: List<Tag>, keyword: String) = viewModelScope.launch {
+        val start = System.currentTimeMillis()
 
-            if (tags.any { it.selectState }) {
+        if (tags.any { it.selectState }) {
 
-                val tagIds = tags.filter { it.selectState }.map { it.id }
-                _noteList.value = database.filterNoteByKeyWordAndTags(keyword, tagIds)
+            val tagIds = tags.filter { it.selectState }.map { it.id }
+            _noteList.value = database.filterNoteByKeyWordAndTags(keyword, tagIds)
 
-            } else {
-                _noteList.value = database.filterNoteByKeyWord(keyword)
-            }
-            val end = System.currentTimeMillis()
-            Timber.d("filter time: ${end - start}")
+        } else {
+            _noteList.value = database.filterNoteByKeyWord(keyword)
         }
-
+        val end = System.currentTimeMillis()
+        Timber.d("filter time: ${end - start}")
     }
 
     fun requestReordering() {
         _orderChanged.value = true
     }
 
-    suspend fun togglePin(isPinned: Boolean, vararg notes: NoteWithTags) {
+    fun togglePin(isPinned: Boolean, vararg notes: NoteWithTags) = viewModelScope.launch {
         notes.forEach { note: NoteWithTags -> note.note.isPinned = isPinned }
-        val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
+        database.updateNote(*notes.map { it.note }.toTypedArray())
         _reloadDataRequest.value = true
     }
 
-    private fun updateArchiveStatus(isArchived: Boolean, vararg notes: NoteWithTags) {
+
+    private fun updateArchiveStatus(isArchived: Boolean, vararg notes: NoteWithTags) =
         viewModelScope.launch {
             notes.forEach { note: NoteWithTags -> note.note.isArchived = isArchived }
-            val nCols = database.updateNote(*notes.map { it.note }.toTypedArray())
+            database.updateNote(*notes.map { it.note }.toTypedArray())
             _reloadDataRequest.value = true
         }
-    }
+
 
     fun moveToArchive(vararg notes: NoteWithTags) {
         updateArchiveStatus(true, *notes)

@@ -18,27 +18,11 @@
             android:id="@+id/app_bar"
             layout="@layout/app_bar_main" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        <include
+            android:id="@+id/placeholder"
+            layout="@layout/generic_placeholder"
             app:placeholderVisibility="@{viewModel.tags}"
-            tools:visibility="gone">
-
-            <TextView
-                android:id="@+id/placeholder_emoticon"
-                app:placeHolderEmoticon="@{null}"
-                tools:text="(っ◔◡◔)っ ❤"
-                style="@style/placeholder_emoticon" />
-
-            <TextView
-                android:text="@string/nothing_here"
-                style="@style/placeholder_text" />
-
-        </LinearLayout>
-
+            tools:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tag_list"

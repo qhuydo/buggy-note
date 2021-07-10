@@ -49,11 +49,11 @@ class NotesFragment : BaseFragment(), OnBackPressed {
 
     private val tagViewModel: TagViewModel by activityViewModels { TagViewModelFactory(db) }
 
-    private val pinnedNoteAdapter by lazy { NoteAdapter(onNoteItemClickListener, PIN_TAG) }
+    private val pinnedNoteAdapter by lazy { NoteAdapter(noteAdapterCallbacks, PIN_TAG) }
 
-    private val unPinnedNoteAdapter by lazy { NoteAdapter(onNoteItemClickListener, UNPIN_TAG) }
+    private val unPinnedNoteAdapter by lazy { NoteAdapter(noteAdapterCallbacks, UNPIN_TAG) }
 
-    private val tagFilterAdapter by lazy { TagFilterAdapter(onTagCheckedChangeListener) }
+    private val tagFilterAdapter by lazy { TagFilterAdapter(tagFilterAdapterCallbacks) }
 
     private val noteListTouchHelper by lazy {
         val callback = NoteItemTouchHelperCallBack(pinnedNoteAdapter, unPinnedNoteAdapter)
@@ -87,7 +87,7 @@ class NotesFragment : BaseFragment(), OnBackPressed {
         )
     }
 
-    private val onNoteItemClickListener = object : NoteAdapterCallbacks {
+    private val noteAdapterCallbacks = object : NoteAdapterCallbacks {
         override fun onClick(note: NoteWithTags) {
             noteViewModel.navigateToNoteDetails(note.getId())
         }
@@ -117,7 +117,7 @@ class NotesFragment : BaseFragment(), OnBackPressed {
         }
     }
 
-    private val onTagCheckedChangeListener = TagFilterAdapterCallbacks { isChecked, tag ->
+    private val tagFilterAdapterCallbacks = TagFilterAdapterCallbacks { isChecked, tag ->
         if (tag.selectState != isChecked) {
             pinnedNoteAdapter.finishSelection()
             unPinnedNoteAdapter.finishSelection()
@@ -126,7 +126,7 @@ class NotesFragment : BaseFragment(), OnBackPressed {
 
             noteViewModel.viewModelScope.launch {
                 if (noteViewModel.orderChanged.value == true &&
-                        tagViewModel.tags.value?.all { !it.selectState } == true
+                    tagViewModel.tags.value?.all { !it.selectState } == true
                 ) {
                     noteViewModel.apply {
                         reorderNotes(pinnedNoteAdapter.currentList + unPinnedNoteAdapter.currentList)
@@ -402,7 +402,7 @@ class NotesFragment : BaseFragment(), OnBackPressed {
             return
         }
 
-        val numberOfSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
+        val nSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
                 unPinnedNoteAdapter.numberOfSelectedItems()
 
         pinnedNoteAdapter.enableSelection()
@@ -410,7 +410,7 @@ class NotesFragment : BaseFragment(), OnBackPressed {
 
         if (mainCab.isActive()) {
             mainCab?.apply {
-                title(literal = "$numberOfSelectedItems")
+                title(literal = "$nSelectedItems")
             }
         } else {
             createCab()
@@ -454,9 +454,9 @@ class NotesFragment : BaseFragment(), OnBackPressed {
         itemPin?.let { item ->
 
             val pinRes = if (selectedUnpinnedNotes.isEmpty()) {
-                R.drawable.ic_outline_push_pin_24 to requireContext().getString(R.string.unpin_selected_notes)
+                R.drawable.ic_outline_push_pin_24 to getString(R.string.unpin_selected_notes)
             } else {
-                R.drawable.ic_baseline_push_pin_24 to requireContext().getString(R.string.pin_selected_notes)
+                R.drawable.ic_baseline_push_pin_24 to getString(R.string.pin_selected_notes)
             }
             item.setIcon(pinRes.first)
             item.title = pinRes.second
@@ -482,7 +482,6 @@ class NotesFragment : BaseFragment(), OnBackPressed {
                 ) {
                     return true
                 }
-                Timber.d("clicked")
                 noteViewModel.moveToArchive(
                         *pinnedNoteAdapter.getSelectedItems().toTypedArray(),
                         *unPinnedNoteAdapter.getSelectedItems().toTypedArray()
@@ -498,26 +497,26 @@ class NotesFragment : BaseFragment(), OnBackPressed {
                 }
 
                 MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(getString(R.string.remove_from_device))
-                        .setMessage(getString(R.string.remove_confirmation))
-                        .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
-                        .setPositiveButton(resources.getString(R.string.remove)) { _, _ ->
+                    .setTitle(getString(R.string.remove_from_device))
+                    .setMessage(getString(R.string.remove_confirmation))
+                    .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+                    .setPositiveButton(getString(R.string.remove)) { _, _ ->
 
-                            noteViewModel.removeNote(
-                                    *pinnedNoteAdapter.getSelectedItems().toTypedArray(),
-                                    *unPinnedNoteAdapter.getSelectedItems().toTypedArray()
-                            )
+                        noteViewModel.removeNote(
+                            *pinnedNoteAdapter.getSelectedItems().toTypedArray(),
+                            *unPinnedNoteAdapter.getSelectedItems().toTypedArray()
+                        )
 
-                            mainCab?.destroy()
-                        }
+                        mainCab?.destroy()
+                    }
                         .show()
                 true
             }
             R.id.action_select_all -> {
-                var numberOfSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
+                var nSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
                         unPinnedNoteAdapter.numberOfSelectedItems()
 
-                if (numberOfSelectedItems == noteViewModel.noteList.value?.size) {
+                if (nSelectedItems == noteViewModel.noteList.value?.size) {
                     pinnedNoteAdapter.unSelectAll()
                     unPinnedNoteAdapter.unSelectAll()
                 } else {
@@ -525,11 +524,11 @@ class NotesFragment : BaseFragment(), OnBackPressed {
                     unPinnedNoteAdapter.selectAll()
                 }
 
-                numberOfSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
+                nSelectedItems = pinnedNoteAdapter.numberOfSelectedItems() +
                         unPinnedNoteAdapter.numberOfSelectedItems()
 
                 mainCab?.apply {
-                    title(literal = "$numberOfSelectedItems")
+                    title(literal = "$nSelectedItems")
                 }
                 updateCabMenuItem()
                 true
@@ -551,23 +550,19 @@ class NotesFragment : BaseFragment(), OnBackPressed {
             return
         }
 
-        noteViewModel.viewModelScope.launch {
+        noteViewModel.togglePin(
+            actionPinAll,
+            *selectedPinnedNotes.toTypedArray(),
+            *selectedUnpinnedNotes.toTypedArray()
+        )
+        noteViewModel.requestReloadingData()
 
-            noteViewModel.togglePin(
-                    actionPinAll,
-                    *selectedPinnedNotes.toTypedArray(),
-                    *selectedUnpinnedNotes.toTypedArray()
-            )
-            noteViewModel.requestReloadingData()
-            withContext(Dispatchers.Main) {
-                mainCab.destroy()
-            }
-        }
+        mainCab?.destroy()
     }
 
-    override fun onDetach() {
+    override fun onDestroy() {
         mainCab?.destroy()
-        super.onDetach()
+        super.onDestroy()
     }
 
     override fun onBackPress(): Boolean {
